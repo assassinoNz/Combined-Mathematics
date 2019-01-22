@@ -41,7 +41,7 @@ class CustomMath {
         return primeNumbers;
     }
 
-    //Works with numbers only up to 9999 numbers
+    //Works with numbers only up to 9999
     //Returns the name of the given number in Pascal Case English(US)
     static getNumberName(number = 10) {
         if (number.toString().length > 4) {
@@ -294,7 +294,7 @@ class CustomMath {
         });
     }
 
-    //Returns the collatz sequence fot the specified number
+    //Returns the collatz sequence for the specified number
     static getCollatzSequence(startingNumber = 9) {
         const collatzSequence = [startingNumber];
         let nextNumber = startingNumber;
@@ -470,7 +470,7 @@ class StringMath {
 
         numberString1 = number1Parts.join("");
         numberString2 = number2Parts.join("");
-        
+
         const resultDigits = this.addUnsignedInt(numberString1, numberString2).split("");
         resultDigits.splice(resultDigits.length - number1Parts[1].length, 0, ".");
         return resultDigits.join("");
@@ -496,7 +496,7 @@ class StringMath {
 
         largerNumberString = largerNumberParts.join("");
         smallerNumberString = smallerNumberParts.join("");
-        
+
         const resultDigits = this.subtractUnsignedInt(largerNumberString, smallerNumberString).split("");
         resultDigits.splice(resultDigits.length - largerNumberParts[1].length, 0, ".");
         return resultDigits.join("");
@@ -537,7 +537,7 @@ class StringMath {
                         return numberString1Sign + this.subtractUnsignedDec(numberString1, numberString2);
                     } else if (parseInt(numberString1[i]) > parseInt(numberString2[i])) {
                         return numberString1Sign + this.subtractUnsignedDec(numberString1, numberString2);
-                    }  else {
+                    } else {
                         return numberString2Sign + this.subtractUnsignedDec(numberString2, numberString1);
                     }
                 }
@@ -1126,7 +1126,7 @@ class Matrix {
         if (typeof scalar === "number") {
             return new Matrix(MatrixMath.multiplyByScalar(this.multiArray, scalar));
         } else {
-            throw new TypeError("An number is required as the scaler");
+            throw new TypeError("An instance of Number is required as the scaler");
         }
     }
 
@@ -1136,7 +1136,7 @@ class Matrix {
             if (this.columnCount === matrixToMultiply.rowCount) {
                 return new Matrix(MatrixMath.multiplyByMatrix(this.multiArray, matrixToMultiply.multiArray));
             } else {
-                throw new TypeError(`Matrix of ${this.columnCount} columns cannot be multiplied by a matrix of ${matrixToMultiply.rowCount} rows`);
+                throw new TypeError(`A matrix of ${this.columnCount} columns cannot be multiplied by a matrix of ${matrixToMultiply.rowCount} rows`);
             }
         } else {
             throw new TypeError("An instance of Matrix is required as the parameter");
@@ -1160,7 +1160,7 @@ class BigNumber {
         } else {
             throw new SyntaxError("Value string includes one or more invalid characters");
         }
-        
+
         if (valueString.startsWith("-")) {
             this.sign = "-";
             //Remove leading zeros after removing "-" sign and add it back
@@ -1205,7 +1205,7 @@ class BigNumber {
         }
     }
 
-    //Using the multiplyByNumber method is more efficient if the operand is less than Number.MAX_SAFE_INTEGER / 9 (Infinite precision will be compromised) 
+    //Using the multiplyByNumber method is more efficient if the operand is less than (Number.MAX_SAFE_INTEGER / 9 - 9) (Infinite precision will be compromised)
     //Multiplies the current value by the operand value
     multiply(operand) {
         if (operand instanceof BigNumber) {
@@ -1228,7 +1228,7 @@ class BigNumber {
     }
 
     //Operand must be an instance of Number
-    //Using the multiply method is recommended the operand is greater than Number.MAX_SAFE_INTEGER / 9
+    //Using the multiply method is recommended if the operand is greater than (Number.MAX_SAFE_INTEGER / 9 - 9)
     //Multiplies the current value by the operand value
     multiplyByNumber(operand) {
         if (typeof operand === "number") {
