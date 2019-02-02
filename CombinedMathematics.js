@@ -1,5 +1,5 @@
 //@ts-check
-class CustomMath {
+export class CustomMath {
     //Returns all primes up to the specified range
     static getPrimes(range = 4) {
         const primes = [2];
@@ -332,18 +332,90 @@ class CustomMath {
         return fibonacciSequence;
     }
 
-    // Returns all possible permutations for the specified string
-    // static getAllPermutations(string = "ABC") {
-    //     const permutations = [];
-    //     for (let i = 0; i < string.length; i++) {
-    //         for (let j = i; j < string.length; j++) {
-    //             string[]
-    //         }
-    //     }
-    // }
+    //WARNING: OPTIMIZED REPLACEMENT CODE NEEDED
+    //Returns all unique permutations from the specified string
+    static getAllPermutations(string = "ABC") {
+        const permutations = [];
+        permutations.push([string]);
+
+        //"i" is the iterator for the levels (i = currentPermutationLevel)
+        //"i" starts with 1. Because the 0th permutation level is the string itself
+        //eg: 0th permutation level is ["ABC"]
+        for (let i = 1; i < string.length; i++) {
+            //Declare an arry to store current level permutations
+            const currentLevelPermutations = [];
+            //previousPermutationLevel = primaryCharacterIndex of currentPermutationLevel
+            const previousPermutationLevel = i - 1;
+            const primaryCharacterIndex = i - 1;
+            //"j" is the iterator for permutations inside previous level (j = previousLevelPermutedStringIndex)
+            //We derive currentLevelPermutations by swapping letters in each permutation of the previousLevelPermutations
+            for (let j = 0; j < permutations[previousPermutationLevel].length; j++) {
+                //secondaryCharacterIndex starts equal to primaryCharacterIndex
+                //Because all the characters before primaryCharacterIndex is fixed and doesn't need to swapping
+                for (let secondaryCharacterIndex = primaryCharacterIndex; secondaryCharacterIndex < permutations[previousPermutationLevel][j].length; secondaryCharacterIndex++) {
+                    const previousLevelPermutedStringCharacters = permutations[previousPermutationLevel][j].split("");
+                    //Get the primary character to be swapped
+                    const primaryCharacter = previousLevelPermutedStringCharacters[primaryCharacterIndex];
+                    //Get the secondary character to be swapped
+                    const secondaryCharacter = previousLevelPermutedStringCharacters[secondaryCharacterIndex];
+                    //Replace primaryCharacter with secondaryCharacter
+                    previousLevelPermutedStringCharacters.splice(primaryCharacterIndex, 1, secondaryCharacter);
+                    //Replace secondaryCharacter with primaryCharacter
+                    previousLevelPermutedStringCharacters.splice(secondaryCharacterIndex, 1, primaryCharacter);
+                    //Now we have generated another permutation
+                    //Lets add it to our currentLevelPermutations
+                    currentLevelPermutations.push(previousLevelPermutedStringCharacters.join(""));
+                }
+            }
+            permutations.push(currentLevelPermutations);
+        }
+
+        return new Set(permutations.pop());
+    }
+
+    static calculateLevenshteinDistance(columnString = "", rowString = "") {
+        //Convert all the strings into a matching case (in this case, lowercase)
+        columnString = columnString.toLocaleLowerCase();
+        rowString = rowString.toLocaleLowerCase();
+
+        //Generate Dynamic Programming table
+        const dpTable = [];
+        for (let i = 0; i < rowString.length + 1; i++) {
+            dpTable.push(new Array(columnString.length + 1));
+        }
+
+        //Fill-up edit distances compared with the "" (empty string)
+        //Fill the first column (represents number of insertions)
+        for (let i = 0; i < dpTable.length; i++) {
+            dpTable[i][0] = i;
+        }
+        //Fill the first row (represents number of deletions)
+        for (let i = 0; i < dpTable[0].length; i++) {
+            dpTable[0][i] = i;
+        }
+
+        for (let i = 1; i <= columnString.length; i++) {
+            //Get reversed substring for the current iteration from the columnString
+            const reversedSubstrOfColumnString = columnString.slice(0, i).split("").reverse().join("");
+            for (let j = 1; j <= rowString.length; j++) {
+                //Get reversed substring for the current iteration from the rowString
+                const reversedSubstrOfRowString = rowString.slice(0, j).split("").reverse().join("");
+                //Check if the last character of the substrings (i.e first character of the reversed substring) matches
+                if (reversedSubstrOfColumnString[0] === reversedSubstrOfRowString[0]) {
+                    //If matches ignore the edit distance
+                    dpTable[j][i] = dpTable[j-1][i-1];
+                } else {
+                    //If doesn't match add +1 to the previous minimum edit distance
+                    dpTable[j][i] = Math.min(dpTable[j-1][i-1], dpTable[j][i-1], dpTable[j-1][i]) + 1;
+                }
+            }
+        }
+        // console.log(JSON.stringify(dpTable));
+        return dpTable[rowString.length][columnString.length];
+    }
 }
 
-class StringMath {
+export class StringMath {
     //Can only be used for unsigned(positive) integer addition
     //Adds two integers (given as strings) with unlimited precision
     static addUnsignedInt(numberString1 = "1", numberString2 = "1") {
@@ -712,7 +784,7 @@ class StringMath {
     }
 }
 
-class MatrixMath {
+export class MatrixMath {
     //Can only be used with square multi arrays (type of elements must be numbers)
     //Calculates the determinant of a square matrix
     static getDeterminant(matrix = [[1]]) {
@@ -878,7 +950,7 @@ class MatrixMath {
     }
 }
 
-class ExpressionMath {
+export class ExpressionMath {
     //Simplifies the given equation to the default polynomial notation (ax + by + c = 0)
     static simplifyToLHSByAddition(equation) {
         //Remove all spaces
@@ -939,7 +1011,7 @@ class ExpressionMath {
         return equationData;
     }
 
-    //Returns the solution of object for a given equation 
+    //Returns the solution of object for a given set of equations (number of equations must match with the number of variables)
     static getSolution(...equations) {
         const coefficientsMultiArray = [];
         const constantsMultiArray = [];
@@ -980,11 +1052,131 @@ class ExpressionMath {
     }
 }
 
-class BinaryMath {
+export class BinaryMath {
+    //Can only be used with unsigned(positive) base-10 integers below Number.MAX_SAFE_INTEGER
+    //Returns a string of an integer converted to its binary form
+    static convertUnsignedIntToBin(number = 1) {
+        if (number === 0) {
+            return "0";
+        } else {
+            let binaryIntString = "";
+            let numerator = number;
+            while (numerator > 1) {
+                binaryIntString = (numerator % 2).toString() + binaryIntString;
+                numerator = Math.floor(numerator / 2);
+            }
+            binaryIntString = "1" + binaryIntString;
+            return binaryIntString;
+        }
+    }
 
+    //Can only be used with unsigned(positive) base-10 fractions
+    //Returns a string of a fraction converted to its binary form
+    static convertUnsignedFractionToBin(number = 0.1) {
+        if (number === 0.0) {
+            return "0.0";
+        } else {
+            let binaryFractionalString = "";
+            let numerator = number;
+            while (numerator > 0) {
+                const doubledNumerator = numerator * 2;
+                const wholeNumberPart = Math.floor(doubledNumerator);
+                binaryFractionalString = binaryFractionalString + wholeNumberPart;
+                numerator = doubledNumerator - wholeNumberPart;
+            }
+            return "0." + binaryFractionalString;
+        }
+    }
+
+    //Can only be used with unsigned(positive) base-10 integers and decimals
+    //Returns a string of a decimal converted to its binary form (binary form will always have a fractional part)
+    static convertUnsignedDecToBin(number = 1.0) {
+        const wholeNumberPart = Math.floor(number);
+        const fractionalPart = number - wholeNumberPart;
+
+        return this.convertUnsignedIntToBin(wholeNumberPart) + this.convertUnsignedFractionToBin(fractionalPart).slice(1);
+    }
+
+    //Returns sign bit, bias exponent(decimal), mantissa(binary), entered number(binary)
+    //NOTE: Any of the binary strings aren't trimmed or rounded
+    static getIEEERawParts(number = 1.2) {
+        if (number === 0) {
+            return [0, "0".repeat(11), "0".repeat(52), this.convertUnsignedDecToBin(number)];
+        } else if (number === Infinity) {
+            //Test
+        } else if (number === -Infinity) {
+            //Test
+        } else {
+            let signBit = "0";
+            //Determine signBit
+            const absoluteValue = Math.abs(number);
+            if (absoluteValue !== number) {
+                signBit = "1";
+            }
+            //Convert number to its absolute value
+            number = absoluteValue;
+
+            const numberBin = this.convertUnsignedDecToBin(number);
+
+            const radixPosition = numberBin.indexOf(".");
+            //replace(".", "") is used to unify the biased-exponent-finding equation for decimals (101001.00101) and fractions (0.01011) alike
+            let first1BitPosition = numberBin.replace(".", "").indexOf("1");
+            if (first1BitPosition === -1) {
+                first1BitPosition = 0;
+            }
+            const biasedExponent = radixPosition - first1BitPosition - 1;
+
+            //Remove radix point, remove leading zeros, ignore first bit (it is always 1)
+            const mantissaBin = numberBin.replace(".", "").replace(/^0{1,}([0-1]{1})/, "$1").slice(1);
+
+            return [signBit, biasedExponent, mantissaBin, numberBin];
+        }
+    }
+
+    //Converts any unsigned(positive) number to binary32 format
+    static convertDecToBinary32(number = 1.2) {
+        const rawParts = this.getIEEERawParts(number);
+
+        let biasedExponentBin = this.convertUnsignedIntToBin(rawParts[1] + 127);
+        if (biasedExponentBin.length > 8) {
+            biasedExponentBin = biasedExponentBin.substring(0, 8);
+        } else if (biasedExponentBin.length < 8) {
+            biasedExponentBin = "0".repeat(8 - biasedExponentBin.length) + biasedExponentBin;
+        }
+
+        let mantissaBin = rawParts[2];
+        if (mantissaBin.length > 23) {
+            mantissaBin = mantissaBin.substring(0, 23);
+        } else if (mantissaBin.length < 23) {
+            mantissaBin = mantissaBin + "0".repeat(23 - mantissaBin.length);
+        }
+
+        return rawParts[0] + biasedExponentBin + mantissaBin;
+    }
+
+    //Converts any unsigned(positive) number to binary64 format
+    static convertDecToBinary64(number = 1.2) {
+        const rawParts = this.getIEEERawParts(number);
+
+        let biasedExponentBin = this.convertUnsignedIntToBin(rawParts[1] + 1023);
+        if (biasedExponentBin.length > 11) {
+            biasedExponentBin = biasedExponentBin.substring(0, 11);
+        } else if (biasedExponentBin.length < 11) {
+            biasedExponentBin = "0".repeat(11 - biasedExponentBin.length) + biasedExponentBin;
+        }
+
+        let mantissaBin = rawParts[2];
+        if (mantissaBin.length > 52) {
+            mantissaBin = mantissaBin.substring(0, 52);
+        } else if (mantissaBin.length < 52) {
+            mantissaBin = mantissaBin + "0".repeat(52 - mantissaBin.length);
+        }
+
+        return rawParts[0] + biasedExponentBin + mantissaBin;
+    }
 }
 
-class UtilityMath {
+export class UtilityMath {
     static cloneMultiArray(multiArray = [[1]]) {
         //Declare and initialize an array to store clonedArray
         const clonedMultiArray = [[]];
@@ -1068,17 +1260,16 @@ class UtilityMath {
 
 
 //CLASSES THAT MUST BE INSTANTIATED
-class Matrix {
+export class Matrix {
     constructor(multiArray = [[1]]) {
         this.multiArray = multiArray;
         this.rowCount = multiArray.length;
         this.columnCount = multiArray[0].length;
         this.order = `${this.rowCount}x${this.columnCount}`;
+        this.isInvertible = false;
         if (this.rowCount === this.columnCount) {
             this.determinant = MatrixMath.getDeterminant(multiArray);
-            if (this.determinant === 0) {
-                this.isInvertible = false;
-            } else {
+            if (this.determinant !== 0) {
                 this.isInvertible = true;
             }
         }
@@ -1103,6 +1294,8 @@ class Matrix {
     invert() {
         if (this.isInvertible === true) {
             return new Matrix(MatrixMath.getInverseMatrix(this.multiArray));
+        } else if (this.rowCount !== this.columnCount) {
+            throw new TypeError("Matrix inversion is not defined for a non-square matrix");
         } else {
             throw new RangeError("Cannot invert a matrix with a determinant of 0");
         }
@@ -1144,7 +1337,7 @@ class Matrix {
     }
 }
 
-class BigNumber {
+export class BigNumber {
     constructor(valueString = "0") {
         valueString = valueString.toString();
 
@@ -1158,7 +1351,7 @@ class BigNumber {
         } else if (/^[+-]{0,1}[0-9]{1,}$/g.test(valueString)) {
             this.type = "integer";
         } else {
-            throw new SyntaxError("Value string includes one or more invalid characters");
+            throw new SyntaxError("Parameter includes one or more invalid characters");
         }
 
         if (valueString.startsWith("-")) {
@@ -1205,7 +1398,7 @@ class BigNumber {
         }
     }
 
-    //Using the multiplyByNumber method is more efficient if the operand is less than (Number.MAX_SAFE_INTEGER / 9 - 9) (Infinite precision will be compromised)
+    //Using the multiplyByNumber method is more efficient if the operand is less than ((Number.MAX_SAFE_INTEGER - 9) / 9) (Infinite precision will be compromised)
     //Multiplies the current value by the operand value
     multiply(operand) {
         if (operand instanceof BigNumber) {
@@ -1227,12 +1420,14 @@ class BigNumber {
         }
     }
 
-    //Operand must be an instance of Number
-    //Using the multiply method is recommended if the operand is greater than (Number.MAX_SAFE_INTEGER / 9 - 9)
+    //Operand must of type Number
+    //Using the multiply method is recommended if the operand is greater than ((Number.MAX_SAFE_INTEGER - 9) / 9)
     //Multiplies the current value by the operand value
     multiplyByNumber(operand) {
         if (typeof operand === "number") {
-            if (this.type === "decimal" || operand.toString().includes(".")) {
+            if (operand > (Number.MAX_SAFE_INTEGER - 9) / 9) {
+                throw new RangeError("Numbers larger than 1000799917193442.5 aren't allowed to preserve precision. Use 'BigNumber.multiply()' instead");
+            } else if (this.type === "decimal" || operand.toString().includes(".")) {
                 if (this.sign === "+" && (Math.abs(operand) === operand)) {
                     return new BigNumber(StringMath.multiplyUnsignedDec(this.value, operand));
                 } else {
