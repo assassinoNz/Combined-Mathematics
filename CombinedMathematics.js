@@ -1,11 +1,17 @@
 //@ts-check
-export class CustomMath {
-    //Returns all primes up to the specified range
-    static getPrimes(range = 4) {
-        const primes = [2];
-        for (let i = 3; i < range; i = i + 2) {
+class CustomMath {
+    //Minimum possible lowerBound is 3 (therefore prime number 2 is excluded from results)
+    //Returns all primes up between lowerBound(inclusive) and  upperBound(inclusive)
+    static getPrimesBetween(lowerBound = 1001, upperBound = 9999) {
+        //Make the lowerBound an odd number if it is even
+        if (lowerBound % 2 === 0) {
+            lowerBound++;
+        }
+
+        const primes = [];
+        for (let i = lowerBound; i <= upperBound; i = i + 2) {
             let isPrime = true;
-            let factorRange = Math.sqrt(i);
+            let factorRange = Math.ceil(Math.sqrt(i));
             for (let j = 2; j <= factorRange; j++) {
                 if (i % j === 0) {
                     isPrime = false;
@@ -19,27 +25,31 @@ export class CustomMath {
         return primes;
     }
 
-    //lowerBoundOdd must be an odd while the upperBound can be any integer
-    //Calculates all primes using the sieve of Eratosthenes within the lowerBoundOdd and upperBound
-    static getFromSieveOfEratosthenes(lowerBoundOdd = 3, upperBound = 30) {
-        const numbers = [];
-        //Get all natural numbers
-        for (let i = lowerBoundOdd; i <= upperBound; i = i + 2) {
-            numbers.push(i);
-        }
-        const primeNumbers = [];
-        while (numbers.length > 0) {
-            let nextPrime = numbers.unshift();
-            primeNumbers.push(nextPrime);
+    //WARNING: FLAWED IMPLEMENTATION OF THE SIEVE OF ERATOSTHENES. DO NOT USE
+    //Minimum possible lowerBound is 3 (therefore prime number 2 is excluded from results)
+    //Calculates all primes using the sieve of Eratosthenes from lowerBound(inclusive) to upperBound(inclusive)
+    // static getPrimesBetween2(lowerBound = 3, upperBound = 30) {
+    //     if (lowerBound % 2 === 0) {
+    //         lowerBound = lowerBound + 1;
+    //     }
+    //     const oddNumbers = [];
+    //     //Get all odd natural numbers (because only even prime is 2)
+    //     for (let i = lowerBound; i <= upperBound; i = i + 2) {
+    //         oddNumbers.push(i);
+    //     }
+    //     const primes = [];
+    //     while (oddNumbers.length > 0) {
+    //         let nextPrime = oddNumbers.shift();
+    //         primes.push(nextPrime);
 
-            for (let j = 0; j < numbers.length; j++) {
-                if (numbers[j] % nextPrime === 0) {
-                    numbers.splice(j, 1);
-                }
-            }
-        }
-        return primeNumbers;
-    }
+    //         for (let j = 0; j < oddNumbers.length; j++) {
+    //             if (oddNumbers[j] % nextPrime === 0) {
+    //                 oddNumbers.splice(j, 1);
+    //             }
+    //         }
+    //     }
+    //     return primes;
+    // }
 
     //Works with numbers only up to 9999
     //Returns the name of the given number in Pascal Case English(US)
@@ -271,6 +281,7 @@ export class CustomMath {
         return factors;
     }
 
+    //Can only be used with number below 1999993 (the highest prime below 2*10^6)
     //Calculates all prime factors of a given number using a prebuilt primes library (Primes2M.json)
     static getPrimeFactors(number = 10) {
         fetch("Primes2M.json").then(function (response) {
@@ -332,51 +343,74 @@ export class CustomMath {
         return fibonacciSequence;
     }
 
-    //WARNING: OPTIMIZED REPLACEMENT CODE NEEDED
     //Returns all unique permutations from the specified string
-    static getAllPermutations(string = "ABC") {
-        const permutations = [];
-        permutations.push([string]);
+    //WARNING: FOLLOWING ALGORITHM IS INEFFICIENTLY IMPLEMENTED
+    // static getAllPermutations(string = "ABC") {
+    //     const permutations = [];
+    //     permutations.push([string]);
 
-        //"i" is the iterator for the levels (i = currentPermutationLevel)
-        //"i" starts with 1. Because the 0th permutation level is the string itself
-        //eg: 0th permutation level is ["ABC"]
-        for (let i = 1; i < string.length; i++) {
-            //Declare an arry to store current level permutations
-            const currentLevelPermutations = [];
-            //previousPermutationLevel = primaryCharacterIndex of currentPermutationLevel
-            const previousPermutationLevel = i - 1;
-            const primaryCharacterIndex = i - 1;
-            //"j" is the iterator for permutations inside previous level (j = previousLevelPermutedStringIndex)
-            //We derive currentLevelPermutations by swapping letters in each permutation of the previousLevelPermutations
-            for (let j = 0; j < permutations[previousPermutationLevel].length; j++) {
-                //secondaryCharacterIndex starts equal to primaryCharacterIndex
-                //Because all the characters before primaryCharacterIndex is fixed and doesn't need to swapping
-                for (let secondaryCharacterIndex = primaryCharacterIndex; secondaryCharacterIndex < permutations[previousPermutationLevel][j].length; secondaryCharacterIndex++) {
-                    const previousLevelPermutedStringCharacters = permutations[previousPermutationLevel][j].split("");
-                    //Get the primary character to be swapped
-                    const primaryCharacter = previousLevelPermutedStringCharacters[primaryCharacterIndex];
-                    //Get the secondary character to be swapped
-                    const secondaryCharacter = previousLevelPermutedStringCharacters[secondaryCharacterIndex];
-                    //Replace primaryCharacter with secondaryCharacter
-                    previousLevelPermutedStringCharacters.splice(primaryCharacterIndex, 1, secondaryCharacter);
-                    //Replace secondaryCharacter with primaryCharacter
-                    previousLevelPermutedStringCharacters.splice(secondaryCharacterIndex, 1, primaryCharacter);
-                    //Now we have generated another permutation
-                    //Lets add it to our currentLevelPermutations
-                    currentLevelPermutations.push(previousLevelPermutedStringCharacters.join(""));
+    //     //"i" is the iterator for the levels (i = currentPermutationLevel)
+    //     //"i" starts with 1. Because the 0th permutation level is the string itself
+    //     //eg: 0th permutation level is ["ABC"]
+    //     for (let i = 1; i < string.length; i++) {
+    //         //Declare an arry to store current level permutations
+    //         const currentLevelPermutations = [];
+    //         //previousPermutationLevel = primaryCharacterIndex of currentPermutationLevel
+    //         const previousPermutationLevel = i - 1;
+    //         const primaryCharacterIndex = i - 1;
+    //         //"j" is the iterator for permutations inside previous level (j = previousLevelPermutedStringIndex)
+    //         //We derive currentLevelPermutations by swapping letters in each permutation of the previousLevelPermutations
+    //         for (let j = 0; j < permutations[previousPermutationLevel].length; j++) {
+    //             //secondaryCharacterIndex starts equal to primaryCharacterIndex
+    //             //Because all the characters before primaryCharacterIndex is fixed and doesn't need to swapping
+    //             for (let secondaryCharacterIndex = primaryCharacterIndex; secondaryCharacterIndex < permutations[previousPermutationLevel][j].length; secondaryCharacterIndex++) {
+    //                 const previousLevelPermutedStringCharacters = permutations[previousPermutationLevel][j].split("");
+    //                 //Get the primary character to be swapped
+    //                 const primaryCharacter = previousLevelPermutedStringCharacters[primaryCharacterIndex];
+    //                 //Get the secondary character to be swapped
+    //                 const secondaryCharacter = previousLevelPermutedStringCharacters[secondaryCharacterIndex];
+    //                 //Replace primaryCharacter with secondaryCharacter
+    //                 previousLevelPermutedStringCharacters.splice(primaryCharacterIndex, 1, secondaryCharacter);
+    //                 //Replace secondaryCharacter with primaryCharacter
+    //                 previousLevelPermutedStringCharacters.splice(secondaryCharacterIndex, 1, primaryCharacter);
+    //                 //Now we have generated another permutation
+    //                 //Lets add it to our currentLevelPermutations
+    //                 currentLevelPermutations.push(previousLevelPermutedStringCharacters.join(""));
+    //             }
+    //         }
+    //         permutations.push(currentLevelPermutations);
+    //     }
+
+    //     return new Set(permutations.pop());
+    // }
+
+    //WARNING: LIMITED RELIABILITY (Tested reliably for a maximum of 10 characters on a Core i7 8550U 1.8GHz which boosts upto 4.00GHz)
+    //Returns all unique permutation strings from the specified string array
+    static getUniquePermutations(string = "") {
+        const permutations = [];
+
+        function getPermutationsRecursively(string, possibleChars) {
+            if (possibleChars.length === 1) {
+                permutations.push(string + possibleChars.shift());
+            } else {
+                for (let i = 0; i < possibleChars.length; i++) {
+                    const clonedPossibleChars = possibleChars.slice(0);
+                    const appendedString = string + clonedPossibleChars.splice(i, 1)[0];
+                    getPermutationsRecursively(appendedString, clonedPossibleChars);
                 }
             }
-            permutations.push(currentLevelPermutations);
         }
 
-        return new Set(permutations.pop());
+        getPermutationsRecursively("", string.split(""));
+        return new Set(permutations);
     }
 
-    static calculateLevenshteinDistance(columnString = "", rowString = "") {
-        //Convert all the strings into a matching case (in this case, lowercase)
-        columnString = columnString.toLocaleLowerCase();
-        rowString = rowString.toLocaleLowerCase();
+    //NOTE: All the editing methods (insertion, deletion, substitution) have a distance of +1, unlike Levenshtein Distance where substitution has +2 distance
+    //Calculates the minimum edit distance between two strings (between columnString & rowString)
+    static calculateMinEditDistance(columnString = "", rowString = "") {
+        //Convert all the strings into same case (in this case, lowercase)
+        columnString = columnString.toLowerCase();
+        rowString = rowString.toLowerCase();
 
         //Generate Dynamic Programming table
         const dpTable = [];
@@ -395,27 +429,53 @@ export class CustomMath {
         }
 
         for (let i = 1; i <= columnString.length; i++) {
-            //Get reversed substring for the current iteration from the columnString
-            const reversedSubstrOfColumnString = columnString.slice(0, i).split("").reverse().join("");
             for (let j = 1; j <= rowString.length; j++) {
-                //Get reversed substring for the current iteration from the rowString
-                const reversedSubstrOfRowString = rowString.slice(0, j).split("").reverse().join("");
-                //Check if the last character of the substrings (i.e first character of the reversed substring) matches
-                if (reversedSubstrOfColumnString[0] === reversedSubstrOfRowString[0]) {
-                    //If matches ignore the edit distance
-                    dpTable[j][i] = dpTable[j-1][i-1];
+                //Check if the last characters of both the column and row substrings matches
+                //columnString[i-1] = last character of the column substring for the current iteration
+                //rowString[j-1] = last character of the row substring for the current iteration
+                if (columnString[i - 1] === rowString[j - 1]) {
+                    //If matches, no edits are required. New min edit distance = previous min edit distance
+                    dpTable[j][i] = dpTable[j - 1][i - 1];
                 } else {
-                    //If doesn't match add +1 to the previous minimum edit distance
-                    dpTable[j][i] = Math.min(dpTable[j-1][i-1], dpTable[j][i-1], dpTable[j-1][i]) + 1;
+                    //If doesn't match, one or more edits are required. New min edit distance = (previous min edit distance) + (required number of edits)
+                    //Required number of edits is always +1.
+                    //Therefore, New min edit distance = (previous min edit distance) + 1
+                    dpTable[j][i] = Math.min(dpTable[j - 1][i - 1], dpTable[j][i - 1], dpTable[j - 1][i]) + 1;
                 }
             }
         }
-        // console.log(JSON.stringify(dpTable));
+
+        //Minimum edit distance is the lower right value of the dpTable
         return dpTable[rowString.length][columnString.length];
+    }
+
+    //Reverses the digit order of an integer using only mathematical operations
+    static reverseIntMathematically(integer = 123) {
+        //NOTE: Explanation considers the integer 123
+        //positionalIntegers is for storing [300, 20, 1];
+        const positionalIntegers = [];
+        const integerLength = integer.toString().length;
+        //nextInteger is for storing 123, 12, 1
+        let nextInteger = integer;
+        for (let i = 0; i < integerLength; i++) {
+            //lastDroppedDigit is for calculating 123, 12, 1
+            const lastDigitDroppedInt = Math.floor(nextInteger / 10);
+            //positionedPositionalInt is for calculating 300, 20, 1 from 3, 2, 1
+            const positionedPositionalInt = (nextInteger - (lastDigitDroppedInt * 10)) * Math.pow(10, integerLength - i - 1);
+            positionalIntegers.push(positionedPositionalInt);
+            nextInteger = lastDigitDroppedInt;
+        }
+
+        let sum = 0;
+        for (let i = 0; i < positionalIntegers.length; i++) {
+            sum = sum + positionalIntegers[i];
+        }
+
+        return sum;
     }
 }
 
-export class StringMath {
+class StringMath {
     //Can only be used for unsigned(positive) integer addition
     //Adds two integers (given as strings) with unlimited precision
     static addUnsignedInt(numberString1 = "1", numberString2 = "1") {
@@ -784,7 +844,7 @@ export class StringMath {
     }
 }
 
-export class MatrixMath {
+class MatrixMath {
     //Can only be used with square multi arrays (type of elements must be numbers)
     //Calculates the determinant of a square matrix
     static getDeterminant(matrix = [[1]]) {
@@ -858,7 +918,7 @@ export class MatrixMath {
     }
 
     //Can only be used with multi arrays (type of elements must be numbers)
-    //Multiples the first matrix by the second matrix only where column count of the first matrix equals to the row count of the second matrix
+    //Multiplies the first matrix by the second matrix only where column count of the first matrix equals to the row count of the second matrix
     static multiplyByMatrix(matrix1 = [[1]], matrix2 = [[2]]) {
         const resultMatrix = [[]];
         const matrix1RowCount = matrix1.length;
@@ -950,7 +1010,7 @@ export class MatrixMath {
     }
 }
 
-export class ExpressionMath {
+class ExpressionMath {
     //Simplifies the given equation to the default polynomial notation (ax + by + c = 0)
     static simplifyToLHSByAddition(equation) {
         //Remove all spaces
@@ -1052,7 +1112,7 @@ export class ExpressionMath {
     }
 }
 
-export class BinaryMath {
+class BinaryMath {
     //Can only be used with unsigned(positive) base-10 integers below Number.MAX_SAFE_INTEGER
     //Returns a string of an integer converted to its binary form
     static convertUnsignedIntToBin(number = 1) {
@@ -1176,11 +1236,11 @@ export class BinaryMath {
     }
 }
 
-export class UtilityMath {
+class UtilityMath {
     static cloneMultiArray(multiArray = [[1]]) {
         //Declare and initialize an array to store clonedArray
         const clonedMultiArray = [[]];
-        //Recursively clone every immutable elements inside the multiArray into clonedMultiArray
+        //Iteratively clone every immutable elements inside the multiArray into clonedMultiArray
         for (let i = 0; i < multiArray.length; i++) {
             clonedMultiArray[i] = [];
             for (let j = 0; j < multiArray[i].length; j++) {
@@ -1260,7 +1320,7 @@ export class UtilityMath {
 
 
 //CLASSES THAT MUST BE INSTANTIATED
-export class Matrix {
+class Matrix {
     constructor(multiArray = [[1]]) {
         this.multiArray = multiArray;
         this.rowCount = multiArray.length;
@@ -1337,7 +1397,7 @@ export class Matrix {
     }
 }
 
-export class BigNumber {
+class BigNumber {
     constructor(valueString = "0") {
         valueString = valueString.toString();
 
@@ -1420,13 +1480,13 @@ export class BigNumber {
         }
     }
 
-    //Operand must of type Number
+    //Operand must be of type Number
     //Using the multiply method is recommended if the operand is greater than ((Number.MAX_SAFE_INTEGER - 9) / 9)
     //Multiplies the current value by the operand value
     multiplyByNumber(operand) {
         if (typeof operand === "number") {
             if (operand > (Number.MAX_SAFE_INTEGER - 9) / 9) {
-                throw new RangeError("Numbers larger than 1000799917193442.5 aren't allowed to preserve precision. Use 'BigNumber.multiply()' instead");
+                throw new RangeError("Numbers larger than 1000799917193442.5 aren't allowed due to loss of precision. Use 'BigNumber.multiply()' instead");
             } else if (this.type === "decimal" || operand.toString().includes(".")) {
                 if (this.sign === "+" && (Math.abs(operand) === operand)) {
                     return new BigNumber(StringMath.multiplyUnsignedDec(this.value, operand));
