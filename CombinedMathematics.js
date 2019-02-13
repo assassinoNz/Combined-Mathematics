@@ -1,7 +1,7 @@
 //@ts-check
 class CustomMath {
+    //Returns all primes between lowerBound(inclusive) and upperBound(inclusive)
     //Minimum possible lowerBound is 3 (therefore prime number 2 is excluded from results)
-    //Returns all primes up between lowerBound(inclusive) and  upperBound(inclusive)
     static getPrimesBetween(lowerBound = 1001, upperBound = 9999) {
         //Make the lowerBound an odd number if it is even
         if (lowerBound % 2 === 0) {
@@ -25,34 +25,29 @@ class CustomMath {
         return primes;
     }
 
-    //WARNING: FLAWED IMPLEMENTATION OF THE SIEVE OF ERATOSTHENES. DO NOT USE
-    //Minimum possible lowerBound is 3 (therefore prime number 2 is excluded from results)
-    //Calculates all primes using the sieve of Eratosthenes from lowerBound(inclusive) to upperBound(inclusive)
-    // static getPrimesBetween2(lowerBound = 3, upperBound = 30) {
-    //     if (lowerBound % 2 === 0) {
-    //         lowerBound = lowerBound + 1;
-    //     }
-    //     const oddNumbers = [];
-    //     //Get all odd natural numbers (because only even prime is 2)
-    //     for (let i = lowerBound; i <= upperBound; i = i + 2) {
-    //         oddNumbers.push(i);
-    //     }
-    //     const primes = [];
-    //     while (oddNumbers.length > 0) {
-    //         let nextPrime = oddNumbers.shift();
-    //         primes.push(nextPrime);
+    //Calculates all primes using the sieve of Eratosthenes up to the specified range(inclusive)
+    static getPrimesUpto(range = 30) {
+        const oddNumbers = [];
+        //Get all odd natural numbers starting from 3 (because only even prime is 2, and 1 is not a prime)
+        for (let i = 3; i <= range; i = i + 2) {
+            oddNumbers.push(i);
+        }
+        const primes = [2];
+        while (oddNumbers.length > 0) {
+            let nextPrime = oddNumbers.shift();
+            primes.push(nextPrime);
 
-    //         for (let j = 0; j < oddNumbers.length; j++) {
-    //             if (oddNumbers[j] % nextPrime === 0) {
-    //                 oddNumbers.splice(j, 1);
-    //             }
-    //         }
-    //     }
-    //     return primes;
-    // }
+            for (let j = 0; j < oddNumbers.length; j++) {
+                if (oddNumbers[j] % nextPrime === 0) {
+                    oddNumbers.splice(j, 1);
+                }
+            }
+        }
+        return primes;
+    }
 
-    //Works with numbers only up to 9999
     //Returns the name of the given number in Pascal Case English(US)
+    //Works with numbers only up to 9999
     static getNumberName(number = 10) {
         if (number.toString().length > 4) {
             return "Number out of range";
@@ -281,8 +276,8 @@ class CustomMath {
         return factors;
     }
 
-    //Can only be used with number below 1999993 (the highest prime below 2*10^6)
     //Calculates all prime factors of a given number using a prebuilt primes library (Primes2M.json)
+    //Can only be used with numbers below 1999993 (which is the highest prime below 2*10^6)
     static getPrimeFactors(number = 10) {
         fetch("Primes2M.json").then(function (response) {
             return response.json();
@@ -329,69 +324,111 @@ class CustomMath {
         return factorialProduct;
     }
 
-    //Returns the fibonacci sequence up to the specified range
-    static getFibonacciSequence(range = 12) {
+    //Returns the fibonacci sequence with the specified number of terms
+    //Returned fibonacci sequence is an array of strings representing numbers (this is to preserve precision of large numbers)
+    static getFibonacciSequence(numberOfTerms = 12) {
         //Fibonacci sequence
         //1 1 2 3 5 8 13 21 34 55 89 144 ...
         //Fibonacci sequence formula
         //T(n)=4T(n-3)+T(n-6)
-        const fibonacciSequence = ["0", "1", "1", "2", "3", "5"];
-        for (let i = 6; i < range + 1; i++) {
+        const fibonacciSequence = ["1", "1", "2", "3", "5", "8"];
+        for (let i = 6; i < numberOfTerms; i++) {
             fibonacciSequence[i] = StringMath.multiplyUnsignedInt(fibonacciSequence[i - 3], 4);
             fibonacciSequence[i] = StringMath.addUnsignedInt(fibonacciSequence[i], fibonacciSequence[i - 6]);
         }
         return fibonacciSequence;
     }
 
-    //Returns all unique permutations from the specified string
-    //WARNING: FOLLOWING ALGORITHM IS INEFFICIENTLY IMPLEMENTED
-    // static getAllPermutations(string = "ABC") {
-    //     const permutations = [];
-    //     permutations.push([string]);
+    //Returns unique permuted strings from the specified string (duplicates are filtered)
+    //NOTE: This algorithm is much faster with strings which include duplicate characters
+    static getUniquePermutations(string = "ABC") {
+        let previousLevelPermutations = [string];
+        //"i" is the iterator for the levels (i = currentPermutationLevel)
+        //"i" starts with 1. Because the 0th permutation level is the string itself
+        for (let i = 1; i < string.length; i++) {
+            //Declare a set to store current level permutations
+            //NOTE: Sets don't allow duplicate values
+            const currentLevelPermutations = new Set();
+            //primaryCharacterIndex of currentPermutationLevel = previousPermutationLevel
+            const primaryCharacterIndex = i - 1;
+            //"j" is the iterator for permutations inside previous level (j = previousLevelPermutationIndex)
+            //NOTE: Permutations array's 0th index will always be the previousPermutationLevel
+            //We derive currentLevelPermutations by swapping letters in each permutation of the previous level permutations
+            for (let j = 0; j < previousLevelPermutations.length; j++) {
+                //secondaryCharacterIndex starts equal to primaryCharacterIndex
+                //Because all the characters before primaryCharacterIndex is fixed and doesn't need swapping
+                for (let secondaryCharIndex = primaryCharacterIndex; secondaryCharIndex < previousLevelPermutations[j].length; secondaryCharIndex++) {
+                    const previousLevelPermutationChars = previousLevelPermutations[j].split("");
+                    //Get the primary character to be swapped
+                    const primaryChar = previousLevelPermutationChars[primaryCharacterIndex];
+                    //Get the secondary character to be swapped
+                    const secondaryChar = previousLevelPermutationChars[secondaryCharIndex];
+                    //Replace primaryCharacter with secondaryCharacter
+                    previousLevelPermutationChars.splice(primaryCharacterIndex, 1, secondaryChar);
+                    //Replace secondaryCharacter with primaryCharacter
+                    previousLevelPermutationChars.splice(secondaryCharIndex, 1, primaryChar);
+                    //Now we have generated another permutation
+                    //Since currentLevelPermutations set takes care of the duplication checking, we just have to add the generated permutation to currentLevelPermutations
+                    currentLevelPermutations.add(previousLevelPermutationChars.join(""));
+                }
+            }
+            //At the end of the current iteration currentLevelPermutations should become previousLevelPermutations for the next iteration
+            previousLevelPermutations = Array.from(currentLevelPermutations);
+        }
+        //At last previousLevelPermutations represents all the possible permutations for the given string
+        return previousLevelPermutations;
+    }
 
-    //     //"i" is the iterator for the levels (i = currentPermutationLevel)
-    //     //"i" starts with 1. Because the 0th permutation level is the string itself
-    //     //eg: 0th permutation level is ["ABC"]
-    //     for (let i = 1; i < string.length; i++) {
-    //         //Declare an arry to store current level permutations
-    //         const currentLevelPermutations = [];
-    //         //previousPermutationLevel = primaryCharacterIndex of currentPermutationLevel
-    //         const previousPermutationLevel = i - 1;
-    //         const primaryCharacterIndex = i - 1;
-    //         //"j" is the iterator for permutations inside previous level (j = previousLevelPermutedStringIndex)
-    //         //We derive currentLevelPermutations by swapping letters in each permutation of the previousLevelPermutations
-    //         for (let j = 0; j < permutations[previousPermutationLevel].length; j++) {
-    //             //secondaryCharacterIndex starts equal to primaryCharacterIndex
-    //             //Because all the characters before primaryCharacterIndex is fixed and doesn't need to swapping
-    //             for (let secondaryCharacterIndex = primaryCharacterIndex; secondaryCharacterIndex < permutations[previousPermutationLevel][j].length; secondaryCharacterIndex++) {
-    //                 const previousLevelPermutedStringCharacters = permutations[previousPermutationLevel][j].split("");
-    //                 //Get the primary character to be swapped
-    //                 const primaryCharacter = previousLevelPermutedStringCharacters[primaryCharacterIndex];
-    //                 //Get the secondary character to be swapped
-    //                 const secondaryCharacter = previousLevelPermutedStringCharacters[secondaryCharacterIndex];
-    //                 //Replace primaryCharacter with secondaryCharacter
-    //                 previousLevelPermutedStringCharacters.splice(primaryCharacterIndex, 1, secondaryCharacter);
-    //                 //Replace secondaryCharacter with primaryCharacter
-    //                 previousLevelPermutedStringCharacters.splice(secondaryCharacterIndex, 1, primaryCharacter);
-    //                 //Now we have generated another permutation
-    //                 //Lets add it to our currentLevelPermutations
-    //                 currentLevelPermutations.push(previousLevelPermutedStringCharacters.join(""));
-    //             }
-    //         }
-    //         permutations.push(currentLevelPermutations);
-    //     }
+    //Returns all permuted strings from the specified string (duplicates aren't filtered)
+    //NOTE: This algorithm is faster with strings which don't include duplicate characters
+    static getAllPermutations(string = "ABC") {
+        let previousLevelPermutations = [string];
+        //"i" is the iterator for the levels (i = currentPermutationLevel)
+        //"i" starts with 1. Because the 0th permutation level is the string itself
+        for (let i = 1; i < string.length; i++) {
+            //Declare an array to store current level permutations
+            const currentLevelPermutations = [];
+            //primaryCharacterIndex of currentPermutationLevel = previousPermutationLevel
+            const primaryCharacterIndex = i - 1;
+            //"j" is the iterator for permutations inside previous level (j = previousLevelPermutationIndex)
+            //NOTE: Permutations array's 0th index will always be the previousPermutationLevel
+            //We derive currentLevelPermutations by swapping letters in each permutation of the previous level permutations
+            for (let j = 0; j < previousLevelPermutations.length; j++) {
+                //secondaryCharacterIndex starts equal to primaryCharacterIndex
+                //Because all the characters before primaryCharacterIndex is fixed and doesn't need swapping
+                for (let secondaryCharIndex = primaryCharacterIndex; secondaryCharIndex < previousLevelPermutations[j].length; secondaryCharIndex++) {
+                    const previousLevelPermutationChars = previousLevelPermutations[j].split("");
+                    //Get the primary character to be swapped
+                    const primaryChar = previousLevelPermutationChars[primaryCharacterIndex];
+                    //Get the secondary character to be swapped
+                    const secondaryChar = previousLevelPermutationChars[secondaryCharIndex];
+                    //Replace primaryCharacter with secondaryCharacter
+                    previousLevelPermutationChars.splice(primaryCharacterIndex, 1, secondaryChar);
+                    //Replace secondaryCharacter with primaryCharacter
+                    previousLevelPermutationChars.splice(secondaryCharIndex, 1, primaryChar);
+                    //Now we have generated another permutation
+                    //Just add the new permutations (checking for duplicates is skipped)
+                    currentLevelPermutations.push(previousLevelPermutationChars.join(""));
+                }
+            }
+            //At the end of the current iteration currentLevelPermutations should become previousLevelPermutations for the next iteration
+            previousLevelPermutations = currentLevelPermutations;
+        }
+        //At last previousLevelPermutations represents all the possible permutations for the given string
+        return previousLevelPermutations;
+    }
 
-    //     return new Set(permutations.pop());
-    // }
-
-    //WARNING: LIMITED RELIABILITY (Tested reliably for a maximum of 10 characters on a Core i7 8550U 1.8GHz which boosts upto 4.00GHz)
-    //Returns all unique permutation strings from the specified string array
-    static getUniquePermutations(string = "") {
+    //WARNING: ABYSMAL PERFORMANCE. METHOD EXISTS ONLY TO DEMONSTRATE THE ALGORITHM
+    //Returns all unique permuted strings from the specified string
+    static getUniquePermutations2(string = "ABC") {
         const permutations = [];
 
         function getPermutationsRecursively(string, possibleChars) {
             if (possibleChars.length === 1) {
-                permutations.push(string + possibleChars.shift());
+                const permutation = string + possibleChars.shift();
+                if (!permutations.includes(permutation)) {
+                    permutations.push(permutation);
+                }
             } else {
                 for (let i = 0; i < possibleChars.length; i++) {
                     const clonedPossibleChars = possibleChars.slice(0);
@@ -402,11 +439,11 @@ class CustomMath {
         }
 
         getPermutationsRecursively("", string.split(""));
-        return new Set(permutations);
+        return permutations;
     }
 
-    //NOTE: All the editing methods (insertion, deletion, substitution) have a distance of +1, unlike Levenshtein Distance where substitution has +2 distance
     //Calculates the minimum edit distance between two strings (between columnString & rowString)
+    //NOTE: All the editing methods (insertion, deletion, substitution) have a distance of +1, unlike Levenshtein Distance where substitution has +2 distance
     static calculateMinEditDistance(columnString = "", rowString = "") {
         //Convert all the strings into same case (in this case, lowercase)
         columnString = columnString.toLowerCase();
@@ -476,8 +513,8 @@ class CustomMath {
 }
 
 class StringMath {
-    //Can only be used for unsigned(positive) integer addition
     //Adds two integers (given as strings) with unlimited precision
+    //Can only be used for unsigned(positive) integer addition
     static addUnsignedInt(numberString1 = "1", numberString2 = "1") {
         //Make both numbers have the same length by adding leading zeros
         if (numberString1.length - numberString2.length > 0) {
@@ -505,8 +542,8 @@ class StringMath {
         return resultDigits.join("");
     }
 
-    //Can only be used for unsigned(positive) integer subtraction (subtraction refers to the operation and not the number's sign)
     //Subtracts the first integer (given as a string) from the second integer (given as a string) with unlimited precision
+    //Can only be used for unsigned(positive) integer subtraction (subtraction refers to the operation and not the number's sign)
     static subtractUnsignedInt(largerNumberString = "2", smallerNumberString = "1") {
         //Make both numbers have the same length by adding leading zeros
         if (largerNumberString.length - smallerNumberString.length > 0) {
@@ -543,8 +580,8 @@ class StringMath {
         return digitsArray.join("");
     }
 
-    //Can only be used for signed(both positive and negative) integer addition
     //Adds two integers (given as strings) with unlimited precision
+    //Can only be used for signed(both positive and negative) integer addition
     static addInt(numberString1 = "-1", numberString2 = "-1") {
         let numberString1Sign = "";
         let numberString2Sign = "";
@@ -582,8 +619,8 @@ class StringMath {
         }
     }
 
-    //Can only be used for unsigned(positive) decimal addition (no integers allowed)
     //Adds two decimals (given as strings) with unlimited precision
+    //Can only be used for unsigned(positive) decimal addition (no integers allowed)
     static addUnsignedDec(numberString1 = "1.0", numberString2 = "1.0") {
         const number1Parts = numberString1.split(".");
         const number2Parts = numberString2.split(".");
@@ -608,8 +645,8 @@ class StringMath {
         return resultDigits.join("");
     }
 
-    //Can only be used for unsigned(positive) decimal subtraction (no integers allowed, subtraction refers to the operation and not the number's sign)
     //Subtracts the first decimal (given as a string) from the second decimal (given as a string) with unlimited precision
+    //Can only be used for unsigned(positive) decimal subtraction (no integers allowed, subtraction refers to the operation and not the number's sign)
     static subtractUnsignedDec(largerNumberString = "2.0", smallerNumberString = "1.0") {
         const largerNumberParts = largerNumberString.split(".");
         const smallerNumberParts = smallerNumberString.split(".");
@@ -634,8 +671,8 @@ class StringMath {
         return resultDigits.join("");
     }
 
-    //Can only be used for signed(both positive and negative) decimal addition (no integers allowed)
     //Adds two decimals (given as strings) with unlimited precision
+    //Can only be used for signed(both positive and negative) decimal addition (no integers allowed)
     static addDec(numberString1 = "-1.0", numberString2 = "-1.0") {
         let numberString1Sign = "";
         let numberString2Sign = "";
@@ -677,8 +714,8 @@ class StringMath {
         }
     }
 
-    //Can only be used for unsigned(positive) integer multiplication
     //Multiplies a much higher int value (given as a string) with a relatively much lower int value (given as an integer) with relatively higher precision
+    //Can only be used for unsigned(positive) integer multiplication
     static multiplyUnsignedInt(numberString = "1", multiplier = 1) {
         const resultDigits = [];
         let carryValue = 0;
@@ -699,8 +736,8 @@ class StringMath {
         return resultDigits.join("");
     }
 
-    //Can only be used for signed(both positive and negative) integer multiplication
     //Multiplies a much higher int value (given as a string) with a relatively much lower int value (given as an integer) with relatively higher precision
+    //Can only be used for signed(both positive and negative) integer multiplication
     static multiplyInt(numberString = "-1", multiplier = -1) {
         let signString = "";
         if (!numberString.startsWith("-") !== !multiplier.toString().startsWith("-")) {
@@ -712,8 +749,8 @@ class StringMath {
         return signString + this.multiplyUnsignedInt(numberString, multiplier);
     }
 
-    //Can be used for unsigned(positive) integer and decimal multiplication
     //Multiplies a much higher dec value (given as a string) with a relatively much lower dec value (given as an integer) with relatively higher precision
+    //Can be used for unsigned(positive) integer and decimal multiplication
     static multiplyUnsignedDec(numberString = "1.0", multiplier = 1.0) {
         let numberStringDecimals = numberString.split("").reverse().indexOf(".");
         let multiplierDecimals = multiplier.toString().split("").reverse().indexOf(".");
@@ -736,8 +773,8 @@ class StringMath {
         }
     }
 
-    //Can be used for signed(both positive and negative) integer and decimal multiplication
     //Multiplies a much higher dec value (given as a string) with a relatively much lower dec value (given as an integer) with relatively higher precision
+    //Can be used for signed(both positive and negative) integer and decimal multiplication
     static multiplyDec(numberString = "-1.0", multiplier = -1.0) {
         let signString = "";
         if (!numberString.startsWith("-") !== !multiplier.toString().startsWith("-")) {
@@ -749,8 +786,8 @@ class StringMath {
         return signString + this.multiplyUnsignedDec(numberString, multiplier);
     }
 
-    //Can only be used for unsigned(positive) integer multiplication
     //Multiplies two integers (given as strings) with much higher precision
+    //Can only be used for unsigned(positive) integer multiplication
     static multiplyUnsignedInt2(numberString1 = "1", numberString2 = "1") {
         const productRows = [];
 
@@ -783,8 +820,8 @@ class StringMath {
         return resultDigits;
     }
 
-    //Can only be used for signed(both positive and negative) integer multiplication
     //Multiplies two signed integers (given as strings) with much higher precision
+    //Can only be used for signed(both positive and negative) integer multiplication
     static multiplyInt2(numberString1 = "-1", numberString2 = "-1") {
         let signString = "";
         if (!numberString1.startsWith("-") !== !numberString2.startsWith("-")) {
@@ -796,8 +833,8 @@ class StringMath {
         return signString + this.multiplyUnsignedInt2(numberString1, numberString2);
     }
 
-    //Can be used for unsigned(positive) integer and decimal multiplication
     //Multiplies two decimals (given as strings) with much higher precision
+    //Can be used for unsigned(positive) integer and decimal multiplication
     static multiplyUnsignedDec2(numberString1 = "1.0", numberString2 = "1.0") {
         const numberString1Decimals = numberString1.split("").reverse().indexOf(".");
         const numberString2Decimals = numberString2.split("").reverse().indexOf(".");
@@ -820,8 +857,8 @@ class StringMath {
         }
     }
 
-    //Can be used for signed(both positive and negative) integer and decimal multiplication
     //Multiplies two signed decimals (given as strings) with much higher precision
+    //Can be used for signed(both positive and negative) integer and decimal multiplication
     static multiplyDec2(numberString1 = "-1.0", numberString2 = "-1.0") {
         let signString = "";
         if (!numberString1.startsWith("-") !== !numberString2.startsWith("-")) {
@@ -833,8 +870,8 @@ class StringMath {
         return signString + this.multiplyUnsignedDec2(numberString1, numberString2);
     }
 
-    //Can be used with signed(both positive and negative) integers and decimals (both number and power must be instances of Number)
     //Raises the number to the given power
+    //Can be used with signed(both positive and negative) integers and decimals (both number and power must be instances of Number)
     static pow(number, power) {
         let finalProduct = number.toString();
         for (let i = 1; i < power; i++) {
@@ -845,8 +882,8 @@ class StringMath {
 }
 
 class MatrixMath {
-    //Can only be used with square multi arrays (type of elements must be numbers)
     //Calculates the determinant of a square matrix
+    //Can only be used with square multi arrays (type of elements must be numbers)
     static getDeterminant(matrix = [[1]]) {
         let determinant = 0;
         //Check if there is only one element inside the matrix
@@ -870,8 +907,8 @@ class MatrixMath {
         return determinant;
     }
 
-    //Can only be used with multi arrays (type of elements must be numbers)
     //Calculates the transpose of a matrix
+    //Can only be used with multi arrays (type of elements must be numbers)
     static getTransposeMatrix(matrix = [[1]]) {
         const transposeMatrix = [];
         const columnCount = matrix[0].length;
@@ -886,8 +923,8 @@ class MatrixMath {
         return transposeMatrix;
     }
 
-    //Can only be used with multi arrays (type of elements must be numbers)
     //Removes the specified row and column from a matrix
+    //Can only be used with multi arrays (type of elements must be numbers)
     static getSplicedMatrix(matrix = [[1]], rowIndexToRemove = 0, columnIndexToRemove = 0) {
         const splicedMatrix = UtilityMath.cloneMultiArray(matrix);
         //Remove rowToRemove
@@ -901,8 +938,8 @@ class MatrixMath {
         return splicedMatrix;
     }
 
-    //Can only be used with multi arrays (type of elements must be numbers)
     //Multiplies each element of a matrix with corresponding element of the sign matrix
+    //Can only be used with multi arrays (type of elements must be numbers)
     static getSignedMatrix(matrix = [[1]]) {
         const signedMatrix = UtilityMath.cloneMultiArray(matrix);
         const rowCount = signedMatrix.length;
@@ -917,8 +954,8 @@ class MatrixMath {
         return signedMatrix;
     }
 
-    //Can only be used with multi arrays (type of elements must be numbers)
     //Multiplies the first matrix by the second matrix only where column count of the first matrix equals to the row count of the second matrix
+    //Can only be used with multi arrays (type of elements must be numbers)
     static multiplyByMatrix(matrix1 = [[1]], matrix2 = [[2]]) {
         const resultMatrix = [[]];
         const matrix1RowCount = matrix1.length;
@@ -937,8 +974,8 @@ class MatrixMath {
         return resultMatrix;
     }
 
-    //Can only be used with square multi arrays (type of elements must be numbers)
     //Multiplies each element of a matrix by the given scalar
+    //Can only be used with square multi arrays (type of elements must be numbers)
     static multiplyByScalar(matrix = [[1]], scalar = 1) {
         const resultMatrix = [[]];
         const rowCount = matrix.length;
@@ -952,8 +989,8 @@ class MatrixMath {
         return resultMatrix;
     }
 
-    //Can only be used with multi arrays (type of elements must be numbers)
     //Adds two matrices only where column and row count of first matrix equals to the column and row count of second matrix
+    //Can only be used with multi arrays (type of elements must be numbers)
     static add(matrix1 = [[1]], matrix2 = [[2]]) {
         const resultMatrix = [[]];
         const matrix1RowCount = matrix1.length;
@@ -967,8 +1004,8 @@ class MatrixMath {
         return resultMatrix;
     }
 
-    //Can only be used with square multi arrays (type of elements must be numbers)
     //Replaces each element with determinant of the spliced matrix obtained after removing the relevant column and row
+    //Can only be used with square multi arrays (type of elements must be numbers)
     static getMinorMatrix(matrix = [[1]]) {
         const minorMatrix = [[]];
         const rowCount = matrix.length;
@@ -982,20 +1019,20 @@ class MatrixMath {
         return minorMatrix;
     }
 
-    //Can only be used with square multi arrays (type of elements must be numbers)
     //Calculates cofactor matrix of the given matrix using the relevant minor and sign matrices
+    //Can only be used with square multi arrays (type of elements must be numbers)
     static getCofactorMatrix(matrix = [[1]]) {
         return this.getSignedMatrix(this.getMinorMatrix(matrix));
     }
 
-    //Can only be used with square multi arrays (type of elements must be numbers)
     //Calculates adjoint matrix of the given matrix using the relevant minor, sign and cofactor matrices
+    //Can only be used with square multi arrays (type of elements must be numbers)
     static getAdjointMatrix(matrix = [[1]]) {
         return this.getTransposeMatrix(this.getCofactorMatrix(matrix));
     }
 
-    //Can only be used with square multi arrays (type of elements must be numbers)
     //Calculates inverse matrix of the given matrix using the relevant minor, sign, cofactor and adjoint matrices where the determinant isn't zero
+    //Can only be used with square multi arrays (type of elements must be numbers)
     static getInverseMatrix(matrix = [[1]]) {
         const determinant = this.getDeterminant(matrix);
         const inverseMatrix = this.getAdjointMatrix(matrix);
@@ -1011,7 +1048,10 @@ class MatrixMath {
 }
 
 class ExpressionMath {
-    //Simplifies the given equation to the default polynomial notation (ax + by + c = 0)
+    //Simplifies the given equation to the default polynomial notation (ax + by + c = 0) and returns all terms isolated
+    //All the variables must have their coefficient explicitly given (x - y = 3 isn't valid. It must be 1x - 1y = 3)
+    //NOTE: Variables abc, acb, cab in the same set of equations are considered equivalent
+    //NOTE: Variables abc, ab, a, b in the same set of equations are considered distinct
     static simplifyToLHSByAddition(equation) {
         //Remove all spaces
         equation = equation.replace(/\s/g, "");
@@ -1113,8 +1153,8 @@ class ExpressionMath {
 }
 
 class BinaryMath {
-    //Can only be used with unsigned(positive) base-10 integers below Number.MAX_SAFE_INTEGER
     //Returns a string of an integer converted to its binary form
+    //Can only be used with unsigned(positive) base-10 integers below Number.MAX_SAFE_INTEGER
     static convertUnsignedIntToBin(number = 1) {
         if (number === 0) {
             return "0";
@@ -1130,8 +1170,8 @@ class BinaryMath {
         }
     }
 
-    //Can only be used with unsigned(positive) base-10 fractions
     //Returns a string of a fraction converted to its binary form
+    //Can only be used with unsigned(positive) base-10 fractions
     static convertUnsignedFractionToBin(number = 0.1) {
         if (number === 0.0) {
             return "0.0";
@@ -1148,8 +1188,8 @@ class BinaryMath {
         }
     }
 
-    //Can only be used with unsigned(positive) base-10 integers and decimals
     //Returns a string of a decimal converted to its binary form (binary form will always have a fractional part)
+    //Can only be used with unsigned(positive) base-10 integers and decimals
     static convertUnsignedDecToBin(number = 1.0) {
         const wholeNumberPart = Math.floor(number);
         const fractionalPart = number - wholeNumberPart;
@@ -1158,7 +1198,7 @@ class BinaryMath {
     }
 
     //Returns sign bit, bias exponent(decimal), mantissa(binary), entered number(binary)
-    //NOTE: Any of the binary strings aren't trimmed or rounded
+    //Any of the binary strings aren't trimmed or rounded
     static getIEEERawParts(number = 1.2) {
         if (number === 0) {
             return [0, "0".repeat(11), "0".repeat(52), this.convertUnsignedDecToBin(number)];
@@ -1237,6 +1277,8 @@ class BinaryMath {
 }
 
 class UtilityMath {
+    //Clones a multiArray
+    //NOTE: This won't be necessary if ECMAScript specification includes a method for deep copying of objects
     static cloneMultiArray(multiArray = [[1]]) {
         //Declare and initialize an array to store clonedArray
         const clonedMultiArray = [[]];
@@ -1251,6 +1293,7 @@ class UtilityMath {
         return clonedMultiArray;
     }
 
+    //Returns the HTMLTableElement for a given multiArray
     static getTableForMultiArray(multiArray = [[1]]) {
         var table = document.createElement("table");
         var tableBody = document.createElement("tbody");
@@ -1271,6 +1314,7 @@ class UtilityMath {
         return table;
     }
 
+    //Logs the comparison result after a comparison of two signed numbers given as strings
     static logComparisonReport(numberString1 = "-1.0", numberString2 = "-1.0") {
         let numberString1Sign = "";
         let numberString2Sign = "";
@@ -1327,6 +1371,7 @@ class Matrix {
         this.columnCount = multiArray[0].length;
         this.order = `${this.rowCount}x${this.columnCount}`;
         this.isInvertible = false;
+        this.determinant = null;
         if (this.rowCount === this.columnCount) {
             this.determinant = MatrixMath.getDeterminant(multiArray);
             if (this.determinant !== 0) {
@@ -1457,9 +1502,9 @@ class BigNumber {
             throw new TypeError("An instance of BigNumber is required as the operand");
         }
     }
-
-    //Using the multiplyByNumber method is more efficient if the operand is less than ((Number.MAX_SAFE_INTEGER - 9) / 9) (Infinite precision will be compromised)
+    
     //Multiplies the current value by the operand value
+    //Using the multiplyByNumber method is more efficient if the operand is less than ((Number.MAX_SAFE_INTEGER - 9) / 9) (Infinite precision will be compromised)
     multiply(operand) {
         if (operand instanceof BigNumber) {
             if (this.type === "decimal" || operand.type === "decimal") {
@@ -1480,9 +1525,9 @@ class BigNumber {
         }
     }
 
+    //Multiplies the current value by the operand value
     //Operand must be of type Number
     //Using the multiply method is recommended if the operand is greater than ((Number.MAX_SAFE_INTEGER - 9) / 9)
-    //Multiplies the current value by the operand value
     multiplyByNumber(operand) {
         if (typeof operand === "number") {
             if (operand > (Number.MAX_SAFE_INTEGER - 9) / 9) {
