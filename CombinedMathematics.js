@@ -350,23 +350,23 @@ class CustomMath {
             //NOTE: Sets don't allow duplicate values
             const currentLevelPermutations = new Set();
             //primaryCharacterIndex of currentPermutationLevel = previousPermutationLevel
-            const primaryCharacterIndex = i - 1;
+            const primaryCharIndex = i - 1;
             //"j" is the iterator for permutations inside previous level (j = previousLevelPermutationIndex)
             //NOTE: Permutations array's 0th index will always be the previousPermutationLevel
             //We derive currentLevelPermutations by swapping letters in each permutation of the previous level permutations
             for (let j = 0; j < previousLevelPermutations.length; j++) {
                 //secondaryCharacterIndex starts equal to primaryCharacterIndex
                 //Because all the characters before primaryCharacterIndex is fixed and doesn't need swapping
-                for (let secondaryCharIndex = primaryCharacterIndex; secondaryCharIndex < previousLevelPermutations[j].length; secondaryCharIndex++) {
+                for (let secondaryCharIndex = primaryCharIndex; secondaryCharIndex < previousLevelPermutations[j].length; secondaryCharIndex++) {
                     const previousLevelPermutationChars = previousLevelPermutations[j].split("");
                     //Get the primary character to be swapped
-                    const primaryChar = previousLevelPermutationChars[primaryCharacterIndex];
+                    const primaryChar = previousLevelPermutationChars[primaryCharIndex];
                     //Get the secondary character to be swapped
                     const secondaryChar = previousLevelPermutationChars[secondaryCharIndex];
                     //Replace primaryCharacter with secondaryCharacter
-                    previousLevelPermutationChars.splice(primaryCharacterIndex, 1, secondaryChar);
+                    previousLevelPermutationChars[primaryCharIndex] = secondaryChar;
                     //Replace secondaryCharacter with primaryCharacter
-                    previousLevelPermutationChars.splice(secondaryCharIndex, 1, primaryChar);
+                    previousLevelPermutationChars[secondaryCharIndex] = primaryChar;
                     //Now we have generated another permutation
                     //Since currentLevelPermutations set takes care of the duplication checking, we just have to add the generated permutation to currentLevelPermutations
                     currentLevelPermutations.add(previousLevelPermutationChars.join(""));
@@ -403,9 +403,9 @@ class CustomMath {
                     //Get the secondary character to be swapped
                     const secondaryChar = previousLevelPermutationChars[secondaryCharIndex];
                     //Replace primaryCharacter with secondaryCharacter
-                    previousLevelPermutationChars.splice(primaryCharacterIndex, 1, secondaryChar);
+                    previousLevelPermutationChars[primaryCharacterIndex] = secondaryChar;
                     //Replace secondaryCharacter with primaryCharacter
-                    previousLevelPermutationChars.splice(secondaryCharIndex, 1, primaryChar);
+                    previousLevelPermutationChars[secondaryCharIndex] = primaryChar;
                     //Now we have generated another permutation
                     //Just add the new permutations (checking for duplicates is skipped)
                     currentLevelPermutations.push(previousLevelPermutationChars.join(""));
@@ -509,6 +509,10 @@ class CustomMath {
         }
 
         return sum;
+    }
+
+    static solveSudokuPuzzle(sudokuMultiArray) {
+        
     }
 }
 
@@ -1171,7 +1175,7 @@ class BinaryMath {
     }
 
     //Returns a string of a fraction converted to its binary form
-    //Can only be used with unsigned(positive) base-10 fractions
+    //Can only be used with unsigned(positive) base-10 fractions(whole number part of the fraction should be 0)
     static convertUnsignedFractionToBin(number = 0.1) {
         if (number === 0.0) {
             return "0.0";
@@ -1189,8 +1193,8 @@ class BinaryMath {
     }
 
     //Returns a string of a decimal converted to its binary form (binary form will always have a fractional part)
-    //Can only be used with unsigned(positive) base-10 integers and decimals
-    static convertUnsignedDecToBin(number = 1.0) {
+    //Can only be used with unsigned(positive) base-10 integers and decimals(decimals cannot be integers)
+    static convertUnsignedDecToBin(number = 1.1) {
         const wholeNumberPart = Math.floor(number);
         const fractionalPart = number - wholeNumberPart;
 
@@ -1201,11 +1205,29 @@ class BinaryMath {
     //Any of the binary strings aren't trimmed or rounded
     static getIEEERawParts(number = 1.2) {
         if (number === 0) {
-            return [0, "0".repeat(11), "0".repeat(52), this.convertUnsignedDecToBin(number)];
+            //0 can be represented as follows
+            //Sing bit: 0 or 1
+            //Biased Exponent: all 0
+            //Mantissa: all 0
+            return ["0", "0".repeat(11), "0".repeat(52), "0"];
         } else if (number === Infinity) {
-            //Test
+            //+Infinity can be represented as follows
+            //Sing bit: 0
+            //Biased Exponent: all 1
+            //Mantissa: all 0
+            return ["0", "1".repeat(11), "0".repeat(52), "Positive Infinity"];
         } else if (number === -Infinity) {
-            //Test
+            //-Infinity can be represented as follows
+            //Sing bit: 1
+            //Biased Exponent: all 1
+            //Mantissa: all 0
+            return ["1", "1".repeat(11), "0".repeat(52), "Negative Infinity"];
+        } else if (isNaN(number)) {
+            //NaN can be represented as follows
+            //Sing bit: 0 or 1
+            //Biased Exponent: all 1
+            //Mantissa: any binary pattern except all 0
+            return ["1", "1".repeat(11), "1".repeat(52), "Not A Number"];
         } else {
             let signBit = "0";
             //Determine signBit
@@ -1213,10 +1235,8 @@ class BinaryMath {
             if (absoluteValue !== number) {
                 signBit = "1";
             }
-            //Convert number to its absolute value
-            number = absoluteValue;
 
-            const numberBin = this.convertUnsignedDecToBin(number);
+            const numberBin = this.convertUnsignedDecToBin(absoluteValue);
 
             const radixPosition = numberBin.indexOf(".");
             //replace(".", "") is used to unify the biased-exponent-finding equation for decimals (101001.00101) and fractions (0.01011) alike
@@ -1229,7 +1249,7 @@ class BinaryMath {
             //Remove radix point, remove leading zeros, ignore first bit (it is always 1)
             const mantissaBin = numberBin.replace(".", "").replace(/^0{1,}([0-1]{1})/, "$1").slice(1);
 
-            return [signBit, biasedExponent, mantissaBin, numberBin];
+            return [signBit, biasedExponent.toString(), mantissaBin, numberBin];
         }
     }
 
@@ -1237,7 +1257,7 @@ class BinaryMath {
     static convertDecToBinary32(number = 1.2) {
         const rawParts = this.getIEEERawParts(number);
 
-        let biasedExponentBin = this.convertUnsignedIntToBin(rawParts[1] + 127);
+        let biasedExponentBin = this.convertUnsignedIntToBin(parseInt(rawParts[1]) + 127);
         if (biasedExponentBin.length > 8) {
             biasedExponentBin = biasedExponentBin.substring(0, 8);
         } else if (biasedExponentBin.length < 8) {
@@ -1258,7 +1278,7 @@ class BinaryMath {
     static convertDecToBinary64(number = 1.2) {
         const rawParts = this.getIEEERawParts(number);
 
-        let biasedExponentBin = this.convertUnsignedIntToBin(rawParts[1] + 1023);
+        let biasedExponentBin = this.convertUnsignedIntToBin(parseInt(rawParts[1]) + 1023);
         if (biasedExponentBin.length > 11) {
             biasedExponentBin = biasedExponentBin.substring(0, 11);
         } else if (biasedExponentBin.length < 11) {
@@ -1390,7 +1410,7 @@ class Matrix {
         return new Matrix(MatrixMath.getMinorMatrix(this.multiArray));
     }
 
-    //multiplies each element of the current matrix with relevant element of the sign matrix
+    //Multiplies each element of the current matrix with relevant element of the sign matrix
     signify() {
         return new Matrix(MatrixMath.getSignedMatrix(this.multiArray));
     }
