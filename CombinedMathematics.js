@@ -278,14 +278,13 @@ class CustomMath {
 
     //Calculates all prime factors of a given number using a prebuilt primes library (Primes2M.json)
     //Can only be used with numbers below 1999993 (which is the highest prime below 2*10^6)
-    static getPrimeFactors(number = 10) {
+    static getPrimeFactorsWithLibrary(number = 10) {
         fetch("Primes2M.json").then(function (response) {
             return response.json();
         }).then(function (primes) {
             let numerator = number;
             const primeFactors = [];
-            let primesLength = primes.length;
-            for (let i = 0; i < primesLength;) {
+            for (let i = 0; i < primes.length;) {
                 if (primes[i] > numerator) {
                     break;
                 } else if (numerator % primes[i] === 0) {
@@ -298,6 +297,24 @@ class CustomMath {
             }
             return primeFactors;
         });
+    }
+
+    static getPrimeFactors(number = 10) {
+        const primeFactors = new Set();
+        while (number % 2 === 0) {
+            number = number / 2;
+            primeFactors.add(2);
+        }
+        for (let i = 3; i <= Math.sqrt(number); i = i + 2) {
+            while(number % i === 0) {
+                number = number / i;
+                primeFactors.add(i);
+            }
+        }
+        if (number > 2) {
+            primeFactors.add(number);
+        }
+        return Array.from(primeFactors);
     }
 
     //Returns the collatz sequence for the specified number
@@ -511,8 +528,9 @@ class CustomMath {
         return sum;
     }
 
+    // WARNING: NOT IMPLEMENTED
     static solveSudokuPuzzle(sudokuMultiArray) {
-        
+
     }
 }
 
@@ -920,7 +938,7 @@ class MatrixMath {
         for (let i = 0; i < columnCount; i++) {
             let transposeMatrixRow = [];
             for (let j = 0; j < rowCount; j++) {
-                transposeMatrixRow.push(matrix[j][i]);
+                transposeMatrixRow.push(firstElement);
             }
             transposeMatrix.push(transposeMatrixRow);
         }
@@ -1048,6 +1066,26 @@ class MatrixMath {
             }
         }
         return inverseMatrix;
+    }
+
+    //NOTE: NOT IMPLEMENTED
+    static getRowEcholenMatrix(matrix = [[1]]) {
+        matrix = UtilityMath.cloneMultiArray(matrix);
+        //In here i acts as the row selector as well as column selector
+        for (let i = 0; i < matrix.length - 1; i++) {
+            for (let j = i + 1; j < matrix.length; j++) {
+                // for (let k = i; k < matrix[0].length; k++) {
+                //     matrix[j][k] = matrix[j][k] - ((matrix[i][k] / matrix[i][i]) * matrix[j][i]);
+                // }
+                for (let k = matrix[0].length - 1; k >= i; k--) {
+                    console.log(`R${j + 1}[${k + 1}] = ${matrix[j][k]} - ((${matrix[i][k]} / ${matrix[i][i]}) * ${matrix[j][i]})`);
+                    matrix[j][k] = matrix[j][k] - ((matrix[i][k] / matrix[i][i]) * matrix[j][i]);
+                }
+            }
+            console.log("matrix");
+            // return;
+        }
+        return matrix;
     }
 }
 
@@ -1296,6 +1334,43 @@ class BinaryMath {
     }
 }
 
+class CryptoMath {
+    static async getRSALock() {
+        const primes = await fetch("Primes2M.json").then(function (response) {
+            return response.json();
+        });
+        //Get a random prime from the library and calculate its digit cont
+        const randomPrime1Index = Math.floor(Math.random() * primes.length + 1);
+        const prime1Length = primes[randomPrime1Index].toString().length;
+        //Get another random prime from the library and calculate its digit cont
+        let randomPrime2Index;
+        let prime2Length;
+        //Iterate through random primes until prime1Length === prime2Length
+        while (!(prime1Length === prime2Length)) {
+            randomPrime2Index = Math.floor(Math.random() * primes.length + 1);
+            //If randomPrime2 === randomPrime1 continue iteration (Because we don't want the same prime again)
+            if (randomPrime2Index === randomPrime1Index) {
+                continue;
+            } else {
+                prime2Length = primes[randomPrime2Index].toString().length;
+            }
+        }
+        //Calculate n and phiOfn
+        const n = primes[randomPrime1Index] * primes[randomPrime2Index];
+        const phiOfn = (primes[randomPrime1Index] - 1) * (primes[randomPrime2Index] - 1);
+        //Choose an encryption key
+        //Encryption key must be an odd
+        //Encryption key must not be a factor of phiOfn
+        let encryptionKey = 3;
+        while (phiOfn % encryptionKey === 0) {
+            encryptionKey = encryptionKey + 2;
+        }
+        //Calculate decryption key
+        const decryptionKey = (phiOfn + 1) / encryptionKey;
+        return {prime1: primes[randomPrime1Index], prime2: primes[randomPrime2Index], n: n, phiOfn: phiOfn, encryptionKey: encryptionKey, decryptionKey: decryptionKey};
+    }
+}
+
 class UtilityMath {
     //Clones a multiArray
     //NOTE: This won't be necessary if ECMAScript specification includes a method for deep copying of objects
@@ -1381,7 +1456,6 @@ class UtilityMath {
         }
     }
 }
-
 
 //CLASSES THAT MUST BE INSTANTIATED
 class Matrix {
@@ -1522,7 +1596,7 @@ class BigNumber {
             throw new TypeError("An instance of BigNumber is required as the operand");
         }
     }
-    
+
     //Multiplies the current value by the operand value
     //Using the multiplyByNumber method is more efficient if the operand is less than ((Number.MAX_SAFE_INTEGER - 9) / 9) (Infinite precision will be compromised)
     multiply(operand) {
