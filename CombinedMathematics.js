@@ -938,7 +938,7 @@ class MatrixMath {
         for (let i = 0; i < columnCount; i++) {
             let transposeMatrixRow = [];
             for (let j = 0; j < rowCount; j++) {
-                transposeMatrixRow.push(firstElement);
+                transposeMatrixRow.push(matrix[j][i]);
             }
             transposeMatrix.push(transposeMatrixRow);
         }
