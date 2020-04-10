@@ -1,5 +1,5 @@
 //@ts-check
-class CustomMath {
+export class CustomMath {
     //Returns all primes between lowerBound(inclusive) and upperBound(inclusive)
     //Minimum possible lowerBound is 3 (therefore prime number 2 is excluded from results)
     static getPrimesBetween(lowerBound = 1001, upperBound = 9999) {
@@ -528,13 +528,40 @@ class CustomMath {
         return sum;
     }
 
+    static isPerfectSquare(integer = 123) {
+        // const strInt = integer.toString();
+        // const lastDigit = strInt.slice(-1);
+        // if (["2", "3", "7", "8"].includes(lastDigit)) {
+        //     return false;
+        // } else if (lastDigit === "5") {
+        //     let digitalSum = strInt;
+        //     while (strInt.length>1) {
+        //         let iterationSum = "0";
+        //         for (let i = 0; i < digitalSum.length; i++) {
+        //             iterationSum = StringMath.addUnsignedInt(iterationSum, digitalSum[i]);
+        //         }
+        //         digitalSum = iterationSum;
+        //     }
+        // }
+        const squareRoot = Math.sqrt(integer);
+        if (Math.trunc(squareRoot) === squareRoot) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    static isTriangular(integer = 123) {
+        return this.isPerfectSquare((8*integer) + 1);
+    }
+
     // WARNING: NOT IMPLEMENTED
     static solveSudokuPuzzle(sudokuMultiArray) {
 
     }
 }
 
-class StringMath {
+export class StringMath {
     //Adds two integers (given as strings) with unlimited precision
     //Can only be used for unsigned(positive) integer addition
     static addUnsignedInt(numberString1 = "1", numberString2 = "1") {
@@ -903,7 +930,7 @@ class StringMath {
     }
 }
 
-class MatrixMath {
+export class MatrixMath {
     //Calculates the determinant of a square matrix
     //Can only be used with square multi arrays (type of elements must be numbers)
     static getDeterminant(matrix = [[1]]) {
@@ -1089,7 +1116,7 @@ class MatrixMath {
     }
 }
 
-class ExpressionMath {
+export class ExpressionMath {
     //Simplifies the given equation to the default polynomial notation (ax + by + c = 0) and returns all terms isolated
     //All the variables must have their coefficient explicitly given (x - y = 3 isn't valid. It must be 1x - 1y = 3)
     //NOTE: Variables abc, acb, cab in the same set of equations are considered equivalent
@@ -1194,7 +1221,7 @@ class ExpressionMath {
     }
 }
 
-class BinaryMath {
+export class BinaryMath {
     //Returns a string of an integer converted to its binary form
     //Can only be used with unsigned(positive) base-10 integers below Number.MAX_SAFE_INTEGER
     static convertUnsignedIntToBin(number = 1) {
@@ -1334,7 +1361,7 @@ class BinaryMath {
     }
 }
 
-class CryptoMath {
+export class CryptoMath {
     static async getRSALock() {
         const primes = await fetch("Primes2M.json").then(function (response) {
             return response.json();
@@ -1371,7 +1398,7 @@ class CryptoMath {
     }
 }
 
-class UtilityMath {
+export class UtilityMath {
     //Clones a multiArray
     //NOTE: This won't be necessary if ECMAScript specification includes a method for deep copying of objects
     static cloneMultiArray(multiArray = [[1]]) {
@@ -1458,7 +1485,7 @@ class UtilityMath {
 }
 
 //CLASSES THAT MUST BE INSTANTIATED
-class Matrix {
+export class Matrix {
     constructor(multiArray = [[1]]) {
         this.multiArray = multiArray;
         this.rowCount = multiArray.length;
@@ -1536,7 +1563,7 @@ class Matrix {
     }
 }
 
-class BigNumber {
+export class BigNumber {
     constructor(valueString = "0") {
         valueString = valueString.toString();
 
