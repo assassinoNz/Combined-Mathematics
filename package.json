@@ -1,0 +1,23 @@
+{
+    "name": "combined-mathematics",
+    "version": "1.0.0",
+    "description": "A set of classes for math related functionality",
+    "main": "index.mjs",
+    "scripts": {
+        "start": "node .",
+        "test": "jest"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Nirmal-Diaz/Combined-Mathematics.git"
+    },
+    "author": "Nirmal Diaz",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/Nirmal-Diaz/Combined-Mathematics/issues"
+    },
+    "homepage": "https://github.com/Nirmal-Diaz/Combined-Mathematics#readme",
+    "devDependencies": {
+        "jest": "^25.5.4"
+    }
+}
