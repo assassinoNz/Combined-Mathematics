@@ -5,7 +5,7 @@
     "main": "index.mjs",
     "scripts": {
         "start": "node .",
-        "test": "jest"
+        "test": "mocha"
     },
     "repository": {
         "type": "git",
@@ -18,6 +18,6 @@
     },
     "homepage": "https://github.com/Nirmal-Diaz/Combined-Mathematics#readme",
     "devDependencies": {
-        "jest": "^25.5.4"
+        "mocha": "^7.1.2"
     }
 }
