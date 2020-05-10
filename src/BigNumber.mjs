@@ -1,5 +1,5 @@
 //@ts-check
-import { StringMath } from "./StringMath.mjs"
+import { StringMath } from "./StringMath.mjs";
 
 export class BigNumber {
     constructor(valueString = "0") {
