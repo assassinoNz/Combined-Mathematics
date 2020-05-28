@@ -543,4 +543,18 @@ export class CustomMath {
 
         return sum;
     }
+
+    /**
+     * Returns the greatest common divisor of 2 integers
+     * @param {number} integer1
+     * @param {number} integer2
+     * @return {number} The greatest common divisor of integer1 and integer2
+     */
+    static getGCD(integer1, integer2) {
+        if (integer2 === 0) {
+            return integer1;
+        } else {
+            return CustomMath.getGCD(integer2, integer1%integer2);
+        }
+    }
 }
