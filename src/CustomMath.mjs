@@ -346,7 +346,7 @@ export class CustomMath {
         if (integer <= 1) {
             return false;
         } else {
-            for (let i = 2; i < Math.sqrt(integer); i++) {
+            for (let i = 2; i <= Math.sqrt(integer); i++) {
                 if (integer % i == 0) {
                     return false;
                 }
