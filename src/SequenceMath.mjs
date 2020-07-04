@@ -3,9 +3,9 @@ import { StringMath } from "./StringMath.mjs";
 
 export class SequenceMath {
     /**
-     * Returns the collatz sequence of an integer
+     * Returns the Collatz sequence of an integer
      * @param {number} startingInt
-     * @return {number[]} An array of all the numbers involved in the collatz sequence of the startingInt
+     * @return {number[]} An array of all the numbers involved in the Collatz sequence of the startingInt
      */
     static getCollatzSequence(startingInt) {
         const collatzSequence = [startingInt];
@@ -45,7 +45,7 @@ export class SequenceMath {
     * @param {number} integer
     * @return {boolean}
     */
-    static isPerfectSquare(integer) {
+    static isSquare(integer) {
         // const strInt = integer.toString();
         // const lastDigit = strInt.slice(-1);
         // if (["2", "3", "7", "8"].includes(lastDigit)) {
@@ -74,6 +74,16 @@ export class SequenceMath {
      * @return {boolean}
      */
     static isTriangular(integer) {
-        return this.isPerfectSquare((8 * integer) + 1);
+        return this.isSquare((8 * integer) + 1);
+    }
+
+    /**
+     * Checks if an integer triplet makes a Pythagorean triangle (A triangle with integer valued sides)
+     * @param {number[]} triplet
+     * @return {boolean}
+     */
+    static isPythagoreanTriplet(triplet) {
+        const sortedTriplet = triplet.sort();
+        return sortedTriplet[2]*sortedTriplet[2] === sortedTriplet[1]*sortedTriplet[1] + sortedTriplet[0]*sortedTriplet[0];
     }
 }

@@ -338,6 +338,24 @@ export class CustomMath {
     }
 
     /**
+     * Checks if an integer is a prime
+     * @param {number} integer
+     * @return {boolean}
+     */
+    static isPrime(integer) {
+        if (integer <= 1) {
+            return false;
+        } else {
+            for (let i = 2; i < Math.sqrt(integer); i++) {
+                if (integer % i == 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
      * Returns the factorial of an integer
      * @param {number} integer
      * @return {number} The factorial value of the integer
@@ -554,7 +572,18 @@ export class CustomMath {
         if (integer2 === 0) {
             return integer1;
         } else {
-            return CustomMath.getGCD(integer2, integer1%integer2);
+            return CustomMath.getGCD(integer2, integer1 % integer2);
         }
+    }
+
+    /**
+     * Checks if an integer has no square factors other than 1
+     * @param {number} integer
+     * @return {boolean}
+     */
+    static isSquareFree(integer) {
+        const intPrimeFactorization = CustomMath.getPrimeFactorization(integer);
+        const uniquePrimeFactors = new Set(intPrimeFactorization);
+        return intPrimeFactorization.length === uniquePrimeFactors.size;
     }
 }
