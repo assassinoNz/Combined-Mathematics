@@ -26,6 +26,22 @@ switch (module) {
                 break;
             }
 
+            case "commonFactors": {
+                //Parse all arguments to integers
+                process.argv[4] = Math.abs(parseInt(process.argv[4]));
+                process.argv[5] = Math.abs(parseInt(process.argv[5]));
+
+                if (isNaN(process.argv[4])) {
+                    output = `TypeError: Cannot parse argument "${process.argv[4]}" as Integer`;
+                } if (isNaN(process.argv[5])) {
+                    output = `TypeError: Cannot parse argument "${process.argv[5]}" as Integer`;
+                } else {
+                    output = BasicMath.getCommonIntFactors(process.argv[4], process.argv[5]);
+                }
+
+                break;
+            }
+
             case "factorial": {
                 //Parse all arguments to integers
                 process.argv[4] = Math.abs(parseInt(process.argv[4]));

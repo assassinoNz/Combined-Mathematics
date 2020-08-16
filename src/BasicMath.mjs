@@ -32,11 +32,29 @@ export class BasicMath {
     }
 
     /**
-         * Returns the greatest common divisor of 2 integers
-         * @param {number} integer1
-         * @param {number} integer2
-         * @return {number} The greatest common divisor of integer1 and integer2
-         */
+     * Returns all the common integer factors of 2 integers
+     * @param {number} integer1
+     * @param {number} integer2
+     * @return {number[]} The common integer factors of integer1 and integer2
+     */
+    static getCommonIntFactors(integer1, integer2) {
+        if (integer1 === 0) {
+            return this.getIntFactors(integer2);
+        } else if (integer2 === 0) {
+            return this.getIntFactors(integer1);
+        } else {
+            const largerInt = Math.max(integer1, integer2);
+            const smallerInt = Math.min(integer1, integer2);
+            return this.getCommonIntFactors(smallerInt, largerInt % smallerInt);
+        }
+    }
+
+    /**
+     * Returns the greatest common divisor of 2 integers
+     * @param {number} integer1
+     * @param {number} integer2
+     * @return {number} The greatest common divisor of integer1 and integer2
+     */
     static getGCD(integer1, integer2) {
         if (integer2 === 0) {
             return integer1;
