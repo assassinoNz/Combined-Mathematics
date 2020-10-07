@@ -390,24 +390,13 @@ export class CustomMath {
      * @return {number} The other palindromic half of the integer
      */
     static reverseIntMathematically(integer) {
-        //NOTE: Explanation considers the integer 123
-        //positionalIntegers is for storing [300, 20, 1];
-        const positionalIntegers = [];
-        const integerLength = integer.toString().length;
-        //nextInteger is for storing 123, 12, 1
-        let nextInteger = integer;
-        for (let i = 0; i < integerLength; i++) {
-            //lastDroppedDigit is for calculating 123, 12, 1
-            const lastDigitDroppedInt = Math.floor(nextInteger / 10);
-            //positionedPositionalInt is for calculating 300, 20, 1 from 3, 2, 1
-            const positionedPositionalInt = (nextInteger - (lastDigitDroppedInt * 10)) * Math.pow(10, integerLength - i - 1);
-            positionalIntegers.push(positionedPositionalInt);
-            nextInteger = lastDigitDroppedInt;
-        }
-
+        let quotient = integer;
         let sum = 0;
-        for (let i = 0; i < positionalIntegers.length; i++) {
-            sum = sum + positionalIntegers[i];
+
+        while (quotient !== 0) {
+            const remainder = quotient%10;
+            sum = sum*10 + remainder;
+            quotient = quotient/10;
         }
 
         return sum;
