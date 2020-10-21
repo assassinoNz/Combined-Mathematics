@@ -321,6 +321,6 @@ client.on("message", message => {
     }
 });
 
-client.login("NzY4NDc2OTcwOTk1ODEwMzE0.X5BB8w.l48N-1yw72yIGHa2VcAJyLHuevU").catch((error) => {
+client.login(process.env.discordToken).catch((error) => {
     console.log(error);
 });
