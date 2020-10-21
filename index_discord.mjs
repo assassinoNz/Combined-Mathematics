@@ -188,6 +188,12 @@ client.on("message", message => {
 
             case "do": {
                 switch (method) {
+                    case "help": {
+                        output = "get factors <Z>\nget commonFactors <Z> <Z>\nget factorial <Z>\nget gcd <Z> <Z>\nget primes <lower> <upper>\nget collatz <Z>\nget fibonacci <Z>\nget name <Z>\nget min-edit <String> <String>\nget postfix <Expression>\n\ndo help\ndo factorize <Z>\ndo permute <String>\ndo permuteUnique <String>\ndo solve <> <>\n\nis square-free <Z>\nis prime <Z>\nis square <Z>\nis triangular <Z>\nis pythagorean-triplet <Z> <Z> <Z>";
+
+                        break;
+                    }
+
                     case "factorize": {
                         //Parse all arguments to integers
                         userArguments[3] = Math.abs(parseInt(userArguments[3]));
