@@ -2,7 +2,7 @@
     "name": "combined-mathematics",
     "version": "1.0.0",
     "description": "A set of classes for math related functionality",
-    "main": "index_discord.mjs",
+    "main": "index.mjs",
     "scripts": {
         "start": "node .",
         "test": "mocha"
