@@ -2,6 +2,10 @@
 import { MatrixMath } from "./MatrixMath.mjs"
 
 export class Matrix {
+    /**
+     * Transposes the current matrix
+     * @param {Number[][]} multiArray The initial multi array to build the matrix
+     */
     constructor(multiArray = [[1]]) {
         this.multiArray = multiArray;
         this.rowCount = multiArray.length;
@@ -17,22 +21,34 @@ export class Matrix {
         }
     }
 
-    //Transposes the current matrix
+    /**
+     * Returns a new matrix which is the transpose matrix of the current one
+     * @return {Matrix} The transpose matrix of the matrix
+     */
     transpose() {
         return new Matrix(MatrixMath.getTransposeMatrix(this.multiArray));
     }
 
-    //Minorizes the current matrix
+    /**
+     * Returns a new matrix which is the minor matrix of the current one
+     * @return {Matrix} The minor matrix of the matrix
+     */
     minorize() {
         return new Matrix(MatrixMath.getMinorMatrix(this.multiArray));
     }
 
-    //Multiplies each element of the current matrix with relevant element of the sign matrix
+    /**
+     * Returns a new matrix which is the sign matrix of the current one
+     * @return {Matrix} The transpose sign of the matrix
+     */
     signify() {
         return new Matrix(MatrixMath.getSignedMatrix(this.multiArray));
     }
 
-    //Inverts the current matrix
+    /**
+     * Returns a new matrix which is the inverse matrix of the current one
+     * @return {Matrix} The inverse matrix of the matrix
+     */
     invert() {
         if (this.isInvertible === true) {
             return new Matrix(MatrixMath.getInverseMatrix(this.multiArray));
@@ -43,7 +59,11 @@ export class Matrix {
         }
     }
 
-    //Add the specified matrix to the current matrix
+    /**
+     * Returns a new matrix which is the resultant matrix after the addition of the given matrix
+     * @param {Matrix} matrixToAdd Another matrix of the same order
+     * @return {Matrix} The transpose matrix of the matrix
+     */
     addMatrix(matrixToAdd) {
         if (matrixToAdd instanceof Matrix) {
             if (matrixToAdd.rowCount === this.rowCount && matrixToAdd.columnCount === this.columnCount) {
@@ -56,7 +76,11 @@ export class Matrix {
         }
     }
 
-    //Multiplies current matrix with the specified scalar
+    /**
+     * Returns a new matrix which is the product of the current matrix and the given scalar
+     * @param {Number} scalar Another matrix of the same order
+     * @return {Matrix} The product of the current matrix and the given scalar
+     */
     multiplyByScalar(scalar) {
         if (typeof scalar === "number") {
             return new Matrix(MatrixMath.multiplyByScalar(this.multiArray, scalar));
@@ -65,7 +89,11 @@ export class Matrix {
         }
     }
 
-    //Multiplies the current matrix with the specified matrix
+    /**
+     * Returns a new matrix which is the product of the current matrix and the given matrix
+     * @param {Number} matrixToMultiply Another matrix of the same row count as the column count of the current matrix
+     * @return {Matrix} The product of the current matrix and the given matrix
+     */
     multiplyByMatrix(matrixToMultiply) {
         if (matrixToMultiply instanceof Matrix) {
             if (this.columnCount === matrixToMultiply.rowCount) {
