@@ -4,306 +4,344 @@ import { PrimeMath } from "./src/PrimeMath.mjs";
 import { SequenceMath } from "./src/SequenceMath.mjs";
 import { CustomMath } from "./src/CustomMath.mjs";
 import { ExpressionMath } from "./src/ExpressionMath.mjs";
+import * as Discord from "discord.js";
 
-const module = process.argv[2];
-const method = process.argv[3];
+const client = new Discord.Client();
 
-let output = "No operation found that matches your arguments";
+client.on("ready", () => {
+    console.log("Connected as " + client.user.tag);
+});
 
-switch (module) {
-    case "get": {
-        switch (method) {
-            case "factors": {
-                //Parse all arguments to integers
-                process.argv[4] = Math.abs(parseInt(process.argv[4]));
+client.on("message", message => {
+    if (message.content.startsWith("Matto")) {
+        const userArguments = message.content.split(" ");
 
-                if (isNaN(process.argv[4])) {
-                    output = `TypeError: Cannot parse argument "${process.argv[4]}" as Integer`;
-                } else {
-                    output = BasicMath.getIntFactors(process.argv[4]);
-                }
+        const module = userArguments[1];
+        const method = userArguments[2];
 
-                break;
-            }
+        let output = `
+        Hello there! I'm Matta.\n
+        MAThematical Task Automator.\n
+        
+        Make sure to call me "Matto" before any command.\n
+        Just type "Matto do help" to find out what I can do.`;
 
-            case "commonFactors": {
-                //Parse all arguments to integers
-                process.argv[4] = Math.abs(parseInt(process.argv[4]));
-                process.argv[5] = Math.abs(parseInt(process.argv[5]));
+        switch (module) {
+            case "get": {
+                switch (method) {
+                    case "factors": {
+                        //Parse all arguments to integers
+                        userArguments[3] = Math.abs(parseInt(userArguments[3]));
 
-                if (isNaN(process.argv[4])) {
-                    output = `TypeError: Cannot parse argument "${process.argv[4]}" as Integer`;
-                } if (isNaN(process.argv[5])) {
-                    output = `TypeError: Cannot parse argument "${process.argv[5]}" as Integer`;
-                } else {
-                    output = BasicMath.getCommonIntFactors(process.argv[4], process.argv[5]);
-                }
+                        if (isNaN(userArguments[3])) {
+                            output = `TypeError: Cannot parse argument "${userArguments[3]}" as Integer`;
+                        } else {
+                            output = BasicMath.getIntFactors(userArguments[3]);
+                        }
 
-                break;
-            }
-
-            case "factorial": {
-                //Parse all arguments to integers
-                process.argv[4] = Math.abs(parseInt(process.argv[4]));
-
-                if (isNaN(process.argv[4])) {
-                    output = `TypeError: Cannot parse argument "${process.argv[4]}" as Integer`;
-                } else {
-                    output = BasicMath.getFactorial(process.argv[4]);
-                }
-
-                break;
-            }
-
-            case "gcd": {
-                //Parse all arguments to integers
-                process.argv[4] = Math.abs(parseInt(process.argv[4]));
-                process.argv[5] = Math.abs(parseInt(process.argv[5]));
-
-                if (isNaN(process.argv[4])) {
-                    output = `TypeError: Cannot parse argument "${process.argv[4]}" as Integer`;
-                } if (isNaN(process.argv[5])) {
-                    output = `TypeError: Cannot parse argument "${process.argv[5]}" as Integer`;
-                } else {
-                    output = BasicMath.getGCD(process.argv[4], process.argv[5]);
-                }
-
-                break;
-            }
-
-            case "primes": {
-                if (process.argv[4] && process.argv[5]) {
-                    //CASE: Two limits are specified
-                    //Assume that it is for getPrimesWithin()
-
-                    //Parse all arguments to integers
-                    process.argv[4] = Math.abs(parseInt(process.argv[4]));
-                    process.argv[5] = Math.abs(parseInt(process.argv[5]));
-
-                    if (isNaN(process.argv[4])) {
-                        output = `TypeError: Cannot parse argument "${process.argv[4]}" as Integer`;
-                    } else if (isNaN(process.argv[5])) {
-                        output = `TypeError: Cannot parse argument "${process.argv[5]}" as Integer`;
-                    } else if (process.argv[4] < 3) {
-                        output = `RangeError: First argument "${process.argv[4]}" should be greater than or equal to 3`;
-                    } else {
-                        output = PrimeMath.getPrimesWithin(process.argv[4], process.argv[5]);
+                        break;
                     }
-                } else {
-                    //CASE: Only one limit is specified
-                    //Assume that it is for getPrimesUpTo()
 
-                    //Parse all arguments to integers
-                    process.argv[4] = Math.abs(parseInt(process.argv[4]));
+                    case "common-factors": {
+                        //Parse all arguments to integers
+                        userArguments[3] = Math.abs(parseInt(userArguments[3]));
+                        userArguments[4] = Math.abs(parseInt(userArguments[4]));
 
-                    if (isNaN(process.argv[4])) {
-                        output = `TypeError: Cannot parse argument "${process.argv[4]}" as Integer`;
-                    } else {
-                        output = PrimeMath.getPrimesUpTo(process.argv[4]);
+                        if (isNaN(userArguments[3])) {
+                            output = `TypeError: Cannot parse argument "${userArguments[3]}" as Integer`;
+                        } if (isNaN(userArguments[4])) {
+                            output = `TypeError: Cannot parse argument "${userArguments[4]}" as Integer`;
+                        } else {
+                            output = BasicMath.getCommonIntFactors(userArguments[3], userArguments[4]);
+                        }
+
+                        break;
+                    }
+
+                    case "factorial": {
+                        //Parse all arguments to integers
+                        userArguments[3] = Math.abs(parseInt(userArguments[3]));
+
+                        if (isNaN(userArguments[3])) {
+                            output = `TypeError: Cannot parse argument "${userArguments[3]}" as Integer`;
+                        } else {
+                            output = BasicMath.getFactorial(userArguments[3]);
+                        }
+
+                        break;
+                    }
+
+                    case "gcd": {
+                        //Parse all arguments to integers
+                        userArguments[3] = Math.abs(parseInt(userArguments[3]));
+                        userArguments[4] = Math.abs(parseInt(userArguments[4]));
+
+                        if (isNaN(userArguments[3])) {
+                            output = `TypeError: Cannot parse argument "${userArguments[3]}" as Integer`;
+                        } if (isNaN(userArguments[4])) {
+                            output = `TypeError: Cannot parse argument "${userArguments[4]}" as Integer`;
+                        } else {
+                            output = BasicMath.getGCD(userArguments[3], userArguments[4]);
+                        }
+
+                        break;
+                    }
+
+                    case "primes": {
+                        if (userArguments[3] && userArguments[4]) {
+                            //CASE: Two limits are specified
+                            //Assume that it is for getPrimesWithin()
+
+                            //Parse all arguments to integers
+                            userArguments[3] = Math.abs(parseInt(userArguments[3]));
+                            userArguments[4] = Math.abs(parseInt(userArguments[4]));
+
+                            if (isNaN(userArguments[3])) {
+                                output = `TypeError: Cannot parse argument "${userArguments[3]}" as Integer`;
+                            } else if (isNaN(userArguments[4])) {
+                                output = `TypeError: Cannot parse argument "${userArguments[4]}" as Integer`;
+                            } else if (userArguments[3] < 3) {
+                                output = `RangeError: First argument "${userArguments[3]}" should be greater than or equal to 3`;
+                            } else {
+                                output = PrimeMath.getPrimesWithin(userArguments[3], userArguments[4]);
+                            }
+                        } else {
+                            //CASE: Only one limit is specified
+                            //Assume that it is for getPrimesUpTo()
+
+                            //Parse all arguments to integers
+                            userArguments[3] = Math.abs(parseInt(userArguments[3]));
+
+                            if (isNaN(userArguments[3])) {
+                                output = `TypeError: Cannot parse argument "${userArguments[3]}" as Integer`;
+                            } else {
+                                output = PrimeMath.getPrimesUpTo(userArguments[3]);
+                            }
+                        }
+
+                        break;
+                    }
+
+                    case "collatz": {
+                        //Parse all arguments to integers
+                        userArguments[3] = Math.abs(parseInt(userArguments[3]));
+
+                        if (isNaN(userArguments[3])) {
+                            output = `TypeError: Cannot parse argument "${userArguments[3]}" as Integer`;
+                        } else {
+                            output = SequenceMath.getCollatzSequence(userArguments[3]);
+                        }
+
+                        break;
+                    }
+
+                    case "fibonacci": {
+                        //Parse all arguments to integers
+                        userArguments[3] = Math.abs(parseInt(userArguments[3]));
+
+                        if (isNaN(userArguments[3])) {
+                            output = `TypeError: Cannot parse argument "${userArguments[3]}" as Integer`;
+                        } else {
+                            output = SequenceMath.getFibonacciSequence(userArguments[3]);
+                        }
+
+                        break;
+                    }
+
+                    case "name": {
+                        //Parse all arguments to integers
+                        userArguments[3] = parseInt(userArguments[3]);
+
+                        if (isNaN(userArguments[3])) {
+                            output = `TypeError: Cannot parse argument "${userArguments[3]}" as Integer`;
+                        } else if (userArguments[3] < 0 || userArguments[3] > 9999) {
+                            output = `RangeError: Argument "${userArguments[3]}" should be between 0 and 9999 (inclusive)`;
+                        } else {
+                            output = CustomMath.getNumberName(userArguments[3]);
+                        }
+
+                        break;
+                    }
+
+                    case "min-edit": {
+                        if (userArguments[3] && userArguments[4]) {
+                            output = CustomMath.getMinEditDistance(userArguments[3], userArguments[4]);
+                        } else if (userArguments[3]) {
+                            output = `InvalidArgumentsError: Argument "${userArguments[4]}" isn't valid`;
+                        } else if (userArguments[4]) {
+                            output = `InvalidArgumentsError: Argument "${userArguments[3]}" isn't valid`;
+                        } else {
+                            output = `InvalidArgumentsError: Arguments "${userArguments[3]}" and "${userArguments[4]}" isn't valid`;
+                        }
+
+                        break;
+                    }
+
+                    case "postfix": {
+                        if (userArguments[3]) {
+                            output = ExpressionMath.toPostfix(userArguments[3]);
+                        } else {
+                            output = `InvalidArgumentsError: Argument "${userArguments[3]}" isn't valid`;
+                        }
+
+                        break;
+                    }
+
+                    case "nic-details": {
+                        if (userArguments[3]) {
+                            output = CustomMath.getNICDetails(userArguments[3]);
+                        } else {
+                            output = `InvalidArgumentsError: Argument "${userArguments[3]}" isn't valid`;
+                        }
+
+                        break;
                     }
                 }
 
                 break;
             }
 
-            case "collatz": {
-                //Parse all arguments to integers
-                process.argv[4] = Math.abs(parseInt(process.argv[4]));
+            case "do": {
+                switch (method) {
+                    case "help": {
+                        output = "get factors <Z>\nget common-factors <Z> <Z>\nget factorial <Z>\nget gcd <Z> <Z>\nget primes <lower> <upper>\nget collatz <Z>\nget fibonacci <Z>\nget name <Z>\nget min-edit <String> <String>\nget postfix <Expression>\n\ndo help\ndo factorize <Z>\ndo permute <String>\ndo permuteUnique <String>\ndo solve <> <>\n\nis square-free <Z>\nis prime <Z>\nis square <Z>\nis triangular <Z>\nis pythagorean-triplet <Z> <Z> <Z>";
 
-                if (isNaN(process.argv[4])) {
-                    output = `TypeError: Cannot parse argument "${process.argv[4]}" as Integer`;
-                } else {
-                    output = SequenceMath.getCollatzSequence(process.argv[4]);
+                        break;
+                    }
+
+                    case "factorize": {
+                        //Parse all arguments to integers
+                        userArguments[3] = Math.abs(parseInt(userArguments[3]));
+
+                        if (isNaN(userArguments[3])) {
+                            output = `TypeError: Cannot parse argument "${userArguments[3]}" as Integer`;
+                        } else {
+                            output = PrimeMath.getPrimeFactorization(userArguments[3]);
+                        }
+
+                        break;
+                    }
+
+                    case "permute": {
+                        if (userArguments[3]) {
+                            output = CustomMath.getAllPermutations(userArguments[3]);
+                        } else {
+                            output = `InvalidArgumentsError: Argument "${userArguments[3]}" isn't valid`;
+                        }
+
+                        break;
+                    }
+
+                    case "permute-unique": {
+                        if (userArguments[3]) {
+                            output = CustomMath.getUniquePermutations(userArguments[3]);
+                        } else {
+                            output = `InvalidArgumentsError: Argument "${userArguments[3]}" isn't valid`;
+                        }
+
+                        break;
+                    }
+
+                    case "solve": {
+                        if (userArguments[3] && userArguments[4]) {
+                            output = ExpressionMath.getSolution(userArguments[3], userArguments[4]);
+                        } else if (userArguments[3]) {
+                            output = `InvalidArgumentsError: Argument "${userArguments[4]}" isn't valid`;
+                        } else if (userArguments[4]) {
+                            output = `InvalidArgumentsError: Argument "${userArguments[3]}" isn't valid`;
+                        } else {
+                            output = `InvalidArgumentsError: Arguments "${userArguments[3]}" and "${userArguments[4]}" isn't valid`;
+                        }
+
+                        break;
+                    }
                 }
 
                 break;
             }
 
-            case "fibonacci": {
-                //Parse all arguments to integers
-                process.argv[4] = Math.abs(parseInt(process.argv[4]));
+            case "is": {
+                switch (method) {
+                    case "square-free": {
+                        //Parse all arguments to integers
+                        userArguments[3] = Math.abs(parseInt(userArguments[3]));
 
-                if (isNaN(process.argv[4])) {
-                    output = `TypeError: Cannot parse argument "${process.argv[4]}" as Integer`;
-                } else {
-                    output = SequenceMath.getFibonacciSequence(process.argv[4]);
-                }
+                        if (isNaN(userArguments[3])) {
+                            output = `TypeError: Cannot parse argument "${userArguments[3]}" as Integer`;
+                        } else {
+                            output = BasicMath.isSquareFree(userArguments[3]);
+                        }
 
-                break;
-            }
+                        break;
+                    }
 
-            case "name": {
-                //Parse all arguments to integers
-                process.argv[4] = parseInt(process.argv[4]);
+                    case "prime": {
+                        //Parse all arguments to integers
+                        userArguments[3] = Math.abs(parseInt(userArguments[3]));
 
-                if (isNaN(process.argv[4])) {
-                    output = `TypeError: Cannot parse argument "${process.argv[4]}" as Integer`;
-                } else if (process.argv[4] < 0 || process.argv[4] > 9999) {
-                    output = `RangeError: Argument "${process.argv[4]}" should be between 0 and 9999 (inclusive)`;
-                } else {
-                    output = CustomMath.getNumberName(process.argv[4]);
-                }
+                        if (isNaN(userArguments[3])) {
+                            output = `TypeError: Cannot parse argument "${userArguments[3]}" as Integer`;
+                        } else {
+                            output = PrimeMath.isPrime(userArguments[3]);
+                        }
 
-                break;
-            }
+                        break;
+                    }
 
-            case "min-edit": {
-                if (process.argv[4] && process.argv[5]) {
-                    output = CustomMath.getMinEditDistance(process.argv[4], process.argv[5]);
-                } else if (process.argv[4]) {
-                    output = `InvalidArgumentsError: Argument "${process.argv[5]}" isn't valid`;
-                } else if (process.argv[5]) {
-                    output = `InvalidArgumentsError: Argument "${process.argv[4]}" isn't valid`;
-                } else {
-                    output = `InvalidArgumentsError: Arguments "${process.argv[4]}" and "${process.argv[5]}" isn't valid`;
-                }
+                    case "square": {
+                        //Parse all arguments to integers
+                        userArguments[3] = Math.abs(parseInt(userArguments[3]));
 
-                break;
-            }
+                        if (isNaN(userArguments[3])) {
+                            output = `TypeError: Cannot parse argument "${userArguments[3]}" as Integer`;
+                        } else {
+                            output = SequenceMath.isSquare(userArguments[3]);
+                        }
 
-            case "postfix": {
-                if (process.argv[4]) {
-                    output = ExpressionMath.toPostfix(process.argv[4]);
-                } else {
-                    output = `InvalidArgumentsError: Argument "${process.argv[4]}" isn't valid`;
-                }
+                        break;
+                    }
 
-                break;
-            }
-        }
+                    case "triangular": {
+                        //Parse all arguments to integers
+                        userArguments[3] = Math.abs(parseInt(userArguments[3]));
 
-        break;
-    }
+                        if (isNaN(userArguments[3])) {
+                            output = `TypeError: Cannot parse argument "${userArguments[3]}" as Integer`;
+                        } else {
+                            output = SequenceMath.isTriangular(userArguments[3]);
+                        }
 
-    case "do": {
-        switch (method) {
-            case "factorize": {
-                //Parse all arguments to integers
-                process.argv[4] = Math.abs(parseInt(process.argv[4]));
+                        break;
+                    }
 
-                if (isNaN(process.argv[4])) {
-                    output = `TypeError: Cannot parse argument "${process.argv[4]}" as Integer`;
-                } else {
-                    output = PrimeMath.getPrimeFactorization(process.argv[4]);
-                }
+                    case "pythagorean-triplet": {
+                        //Parse all arguments to integers
+                        userArguments[3] = Math.abs(parseInt(userArguments[3]));
+                        userArguments[4] = Math.abs(parseInt(userArguments[4]));
+                        process.argv[6] = Math.abs(parseInt(process.argv[6]));
 
-                break;
-            }
+                        if (isNaN(userArguments[3])) {
+                            output = `TypeError: Cannot parse argument "${userArguments[3]}" as Integer`;
+                        } if (isNaN(userArguments[4])) {
+                            output = `TypeError: Cannot parse argument "${userArguments[4]}" as Integer`;
+                        } if (isNaN(process.argv[6])) {
+                            output = `TypeError: Cannot parse argument "${process.argv[6]}" as Integer`;
+                        } else {
+                            output = SequenceMath.isPythagoreanTriplet([userArguments[3], userArguments[4], process.argv[6]]);
+                        }
 
-            case "permute": {
-                if (process.argv[4]) {
-                    output = CustomMath.getAllPermutations(process.argv[4]);
-                } else {
-                    output = `InvalidArgumentsError: Argument "${process.argv[4]}" isn't valid`;
-                }
-
-                break;
-            }
-
-            case "permute-unique": {
-                if (process.argv[4]) {
-                    output = CustomMath.getUniquePermutations(process.argv[4]);
-                } else {
-                    output = `InvalidArgumentsError: Argument "${process.argv[4]}" isn't valid`;
-                }
-
-                break;
-            }
-
-            case "solve": {
-                if (process.argv[4] && process.argv[5]) {
-                    output = ExpressionMath.getSolution(process.argv[4], process.argv[5]);
-                } else if (process.argv[4]) {
-                    output = `InvalidArgumentsError: Argument "${process.argv[5]}" isn't valid`;
-                } else if (process.argv[5]) {
-                    output = `InvalidArgumentsError: Argument "${process.argv[4]}" isn't valid`;
-                } else {
-                    output = `InvalidArgumentsError: Arguments "${process.argv[4]}" and "${process.argv[5]}" isn't valid`;
-                }
-
-                break;
-            }
-        }
-
-        break;
-    }
-
-    case "is": {
-        switch (method) {
-            case "square-free": {
-                //Parse all arguments to integers
-                process.argv[4] = Math.abs(parseInt(process.argv[4]));
-
-                if (isNaN(process.argv[4])) {
-                    output = `TypeError: Cannot parse argument "${process.argv[4]}" as Integer`;
-                } else {
-                    output = BasicMath.isSquareFree(process.argv[4]);
-                }
-
-                break;
-            }
-
-            case "prime": {
-                //Parse all arguments to integers
-                process.argv[4] = Math.abs(parseInt(process.argv[4]));
-
-                if (isNaN(process.argv[4])) {
-                    output = `TypeError: Cannot parse argument "${process.argv[4]}" as Integer`;
-                } else {
-                    output = PrimeMath.isPrime(process.argv[4]);
-                }
-
-                break;
-            }
-
-            case "square": {
-                //Parse all arguments to integers
-                process.argv[4] = Math.abs(parseInt(process.argv[4]));
-
-                if (isNaN(process.argv[4])) {
-                    output = `TypeError: Cannot parse argument "${process.argv[4]}" as Integer`;
-                } else {
-                    output = SequenceMath.isSquare(process.argv[4]);
-                }
-
-                break;
-            }
-
-            case "triangular": {
-                //Parse all arguments to integers
-                process.argv[4] = Math.abs(parseInt(process.argv[4]));
-
-                if (isNaN(process.argv[4])) {
-                    output = `TypeError: Cannot parse argument "${process.argv[4]}" as Integer`;
-                } else {
-                    output = SequenceMath.isTriangular(process.argv[4]);
-                }
-
-                break;
-            }
-
-            case "pythagorean-triplet": {
-                //Parse all arguments to integers
-                process.argv[4] = Math.abs(parseInt(process.argv[4]));
-                process.argv[5] = Math.abs(parseInt(process.argv[5]));
-                process.argv[6] = Math.abs(parseInt(process.argv[6]));
-
-                if (isNaN(process.argv[4])) {
-                    output = `TypeError: Cannot parse argument "${process.argv[4]}" as Integer`;
-                } if (isNaN(process.argv[5])) {
-                    output = `TypeError: Cannot parse argument "${process.argv[5]}" as Integer`;
-                } if (isNaN(process.argv[6])) {
-                    output = `TypeError: Cannot parse argument "${process.argv[6]}" as Integer`;
-                } else {
-                    output = SequenceMath.isPythagoreanTriplet([process.argv[4], process.argv[5], process.argv[6]]);
+                        break;
+                    }
                 }
 
                 break;
             }
         }
 
-        break;
+        message.channel.send(output);
     }
-}
+});
 
-console.log(output);
+client.login(process.env.discordToken).catch((error) => {
+    console.log(error);
+});
