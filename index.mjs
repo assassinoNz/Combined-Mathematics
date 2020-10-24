@@ -8,6 +8,8 @@ import * as Discord from "discord.js";
 
 const client = new Discord.Client();
 
+console.log(CustomMath.getNICDetails("971190663V"));
+
 client.on("ready", () => {
     console.log("Connected as " + client.user.tag);
 });
@@ -19,12 +21,7 @@ client.on("message", message => {
         const module = userArguments[1];
         const method = userArguments[2];
 
-        let output = `
-        Hello there! I'm Matta.\n
-        MAThematical Task Automator.\n
-        
-        Make sure to call me "Matto" before any command.\n
-        Just type "Matto do help" to find out what I can do.`;
+        let output = `Hello there! I'm Matta.\nMAThematical Task Automator.\nMake sure to call me "Matto" before any command.\nJust type "Matto do help" to find out what I can do.`;
 
         switch (module) {
             case "get": {

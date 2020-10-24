@@ -442,11 +442,9 @@ export class CustomMath {
 
             const now = new Date();
 
-            return `
-            Gender    : ${Gender}\n
-            Birth Date: ${birthDate.toISOString().slice(0, 10)}\n
-            Age:      : ${now.getFullYear() - birthDate.getFullYear()}
-            `;
+            return `Gender    : ${gender}\nBirth Date: ${birthDate.toISOString().slice(0, 10)}\nAge:      : ${now.getFullYear()-birthDate.getFullYear()}`;
+        } else {
+            return `InvalidArgumentsError: Argument "${nicNumber}" isn't valid`;
         }
     }
 }
