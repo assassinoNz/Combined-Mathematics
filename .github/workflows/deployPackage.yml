@@ -17,7 +17,7 @@ jobs:
     - uses: appleboy/ssh-action@master
       with:
         host: 152.67.6.16
-        username: ubuntu
+        username: assassino
         key: ${{ secrets.ID_RSA_COMMON }}
         passphrase: ${{ secrets.ID_RSA_COMMON_PASSPHRASE }}
         script: sh Archives/Combined-Mathematics/etc/deploy.sh
