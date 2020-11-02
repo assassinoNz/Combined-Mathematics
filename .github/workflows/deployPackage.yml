@@ -18,6 +18,6 @@ jobs:
       with:
         host: 152.67.6.16
         username: ubuntu
-        key: ${{ secrets.ID_RSA_RIGELANTARES }}
-        passphrase: ${{ secrets.ID_RSA_RIGELANTARES_PASSPHRASE }}
+        key: ${{ secrets.ID_RSA_COMMON }}
+        passphrase: ${{ secrets.ID_RSA_COMMON_PASSPHRASE }}
         script: sh Archives/Combined-Mathematics/etc/deploy.sh
