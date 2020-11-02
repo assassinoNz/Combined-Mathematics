@@ -166,7 +166,7 @@ client.on("message", message => {
                         } else if (userArguments[4]) {
                             output = `InvalidArgumentsError: Argument "${userArguments[3]}" isn't valid`;
                         } else {
-                            output = `InvalidArgumentsError: Arguments "${userArguments[3]}" and "${userArguments[4]}" isn't valid`;
+                            output = `InvalidArgumentsError: Arguments "${userArguments[3]}" and "${userArguments[4]}" aren't valid`;
                         }
 
                         break;
@@ -199,7 +199,7 @@ client.on("message", message => {
             case "do": {
                 switch (method) {
                     case "help": {
-                        output = "get factors <Integer>\nget common-factors <Integer> <Integer>\nget factorial <Integer>\nget gcd <Integer> <Integer>\nget primes <lower> <upper>\nget collatz <Integer>\nget fibonacci <Integer>\nget name <Integer>\nget min-edit <String> <String>\nget postfix <Expression>\n\ndo help\ndo factorize <Integer>\ndo permute <String>\ndo permuteUnique <String>\ndo solve <> <>\n\nis square-free <Integer>\nis prime <Integer>\nis square <Integer>\nis triangular <Integer>\nis pythagorean-triplet <Integer> <Integer> <Integer>";
+                        output = "get factors <Integer>\nget common-factors <Integer> <Integer>\nget factorial <Integer>\nget gcd <Integer> <Integer>\nget primes <lower> <upper>\nget collatz <Integer>\nget fibonacci <Integer>\nget name <Integer>\nget min-edit <String> <String>\nget postfix <Expression>\nget nic-details <NICString>\n\ndo help\ndo prime-factorize <Integer>\ndo permute <String>\ndo permuteUnique <String>\ndo solve <> <>\n\nis square-free <Integer>\nis prime <Integer>\nis square <Integer>\nis triangular <Integer>\nis pythagorean-triplet <Integer> <Integer> <Integer>";
 
                         break;
                     }
@@ -245,7 +245,7 @@ client.on("message", message => {
                         } else if (userArguments[4]) {
                             output = `InvalidArgumentsError: Argument "${userArguments[3]}" isn't valid`;
                         } else {
-                            output = `InvalidArgumentsError: Arguments "${userArguments[3]}" and "${userArguments[4]}" isn't valid`;
+                            output = `InvalidArgumentsError: Arguments "${userArguments[3]}" and "${userArguments[4]}" aren't valid`;
                         }
 
                         break;
