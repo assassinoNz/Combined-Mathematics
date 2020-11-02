@@ -14,10 +14,6 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [13.x, 14.x]
-
     steps:
     - uses: appleboy/ssh-action@master
       with:
