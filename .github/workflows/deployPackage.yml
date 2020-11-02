@@ -21,4 +21,4 @@ jobs:
         username: ubuntu
         key: ${{ secrets.ID_RSA_RIGELANTARES }}
         passphrase: ${{ secrets.ID_RSA_RIGELANTARES_PASSPHRASE }}
-        script: mkdir hello
+        script: sh Archives/Combined-Mathematics/etc/deploy.sh
