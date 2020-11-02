@@ -8,8 +8,6 @@ import * as Discord from "discord.js";
 
 const client = new Discord.Client();
 
-console.log(CustomMath.getNICDetails("971190663V"));
-
 client.on("ready", () => {
     console.log("Connected as " + client.user.tag);
 });
@@ -339,6 +337,6 @@ client.on("message", message => {
     }
 });
 
-client.login(process.env.discordToken).catch((error) => {
+client.login(process.env.BOT_TOKEN).catch((error) => {
     console.log(error);
 });
