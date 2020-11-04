@@ -1,5 +1,5 @@
 //@ts-check
-import { Matrix } from "./Matrix.mjs"
+import { Matrix } from "./Matrix.mjs";
 
 export class ExpressionMath {
     static getPrecedence(operator) {
@@ -139,7 +139,7 @@ export class ExpressionMath {
     }
 
     //Returns the solution of object for a given set of equations (number of equations must match with the number of variables)
-    static getSolution(...equations) {
+    static getSolution(equations) {
         const coefficientsMultiArray = [];
         const constantsMultiArray = [];
         const variablesMultiArray = [];
