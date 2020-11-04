@@ -218,7 +218,7 @@ client.on("message", message => {
 
                     case "permute": {
                         if (restArgs[0]) {
-                            output = CustomMath.getUniquePermutations(restArgs[0]);
+                            output = CustomMath.getUniquePermutations(restArgs[0]).toString();
                         } else {
                             output = `InvalidArgumentsError: Argument "${restArgs[0]}" isn't valid`;
                         }
@@ -227,17 +227,11 @@ client.on("message", message => {
                     }
 
                     case "solve": {
-                        if (restArgs[0]) {
+                        if (restArgs.length > 1) {
                             //Modify user arguments
-                            let equations;
-                            [module, method, ...equations] = restArgs;
-                            output = ExpressionMath.getSolution(equations);
-                        } else if (restArgs[0]) {
-                            output = `InvalidArgumentsError: Argument "${restArgs[1]}" isn't valid`;
-                        } else if (restArgs[1]) {
-                            output = `InvalidArgumentsError: Argument "${restArgs[0]}" isn't valid`;
-                        } else {
-                            output = `InvalidArgumentsError: Arguments "${restArgs[0]}" and "${restArgs[1]}" aren't valid`;
+                            output = ExpressionMath.getSolution(restArgs);
+                        }  else {
+                            output = `InvalidArgumentsError: Arguments "${restArgs}" doesn't form a valid set of linear equations`;
                         }
 
                         break;
@@ -325,7 +319,7 @@ client.on("message", message => {
             }
         }
 
-        message.channel.send(output);
+        message.channel.send(JSON.stringify(output));
     }
 });
 
