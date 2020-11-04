@@ -4,6 +4,7 @@ import { PrimeMath } from "./src/PrimeMath.mjs";
 import { SequenceMath } from "./src/SequenceMath.mjs";
 import { CustomMath } from "./src/CustomMath.mjs";
 import { ExpressionMath } from "./src/ExpressionMath.mjs";
+import { UtilityMath } from "./src/UtilityMath.mjs";
 import * as Discord from "discord.js";
 
 const client = new Discord.Client();
@@ -319,7 +320,7 @@ client.on("message", message => {
             }
         }
 
-        message.channel.send(JSON.stringify(output));
+        message.channel.send(UtilityMath.formatOutput(output));
     }
 });
 
