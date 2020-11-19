@@ -55,12 +55,56 @@ export class BasicMath {
      * @param {number} integer2
      * @return {number} The greatest common divisor of integer1 and integer2
      */
-    static getGCD(integer1, integer2) {
+    static calculateGCD(integer1, integer2) {
         if (integer2 === 0) {
             return integer1;
         } else {
-            return BasicMath.getGCD(integer2, integer1 % integer2);
+            return BasicMath.calculateGCD(integer2, integer1 % integer2);
         }
+    }
+
+    /**
+     * Returns the greatest common divisor of an array of integers
+     * @param {number[]} integers
+     * @return {number} The greatest common divisor of the integers
+     */
+    static getGCD(integers) {
+        let gcd = integers[0];
+
+        for (let i = 0; i < integers.length; i++) {
+            if (gcd === 1) {
+                break;
+            } else {
+                gcd = BasicMath.calculateGCD(gcd, integers[i]);
+            }
+        }
+        
+        return gcd;
+    }
+
+    /**
+     * Returns the least common multiple of 2 integers
+     * @param {number} integer1
+     * @param {number} integer2
+     * @return {number} The least common multiple of integer1 and integer2
+     */
+    static calculateLCM(integer1, integer2) {
+        return (integer1*integer2)/this.calculateGCD(integer1, integer2);
+    }
+
+    /**
+     * Returns the least common multiple of an array of integers
+     * @param {number[]} integers
+     * @return {number} The least common multiple of the integers
+     */
+    static getLCM(integers) {
+        let lcm = integers[0];
+
+        for (let i = 0; i < integers.length; i++) {
+            lcm = BasicMath.calculateLCM(lcm, integers[i]);
+        }
+        
+        return lcm;
     }
 
     /**
