@@ -89,21 +89,11 @@ export class UtilityMath {
             return "Yep";
         } else if (value === false) {
             return "Nope";
-        } else if (Array.isArray(value) && typeof value[0] === "number") {
-            value.sort((element1, element2) => element1 - element2);
-            let stringifiedArray = "";
-
-            for (let i = 0; i < value.length; i++) {
-                stringifiedArray += value[i] + "  ";
-            }
-
-            return stringifiedArray;
         } else if (Array.isArray(value)) {
-            value.sort();
             let stringifiedArray = "";
 
             for (let i = 0; i < value.length; i++) {
-                stringifiedArray += value[i] + "  ";
+                stringifiedArray += value[i] + "   ";
             }
 
             return stringifiedArray;
@@ -118,5 +108,23 @@ export class UtilityMath {
         } else {
             return value;
         }
+    }
+
+    static sortIntArray(intArray) {
+        intArray.sort((element1, element2) => element1 - element2);
+    }
+
+    static parseArgsAsInt(args) {
+        const parsedArgs = [];
+        //Parse all arguments to integers
+        for (let i = 0; i < args.length; i++) {
+            parsedArgs[i] = parseInt(args[i]);
+
+            if (isNaN(parsedArgs[i])) {
+                throw TypeError(`Cannot parse argument "${args[i]}" as Integer`);
+            }
+        }
+        
+        return parsedArgs;
     }
 }
