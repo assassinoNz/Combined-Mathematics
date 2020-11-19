@@ -2,7 +2,10 @@
 import { StringMath } from "./StringMath.mjs";
 
 export class BigNumber {
-    constructor(valueString = "0") {
+    /** Constructs a BigNumber
+     * @param {string} valueString
+    */
+    constructor(valueString) {
         valueString = valueString.toString();
 
         if (/^[+-]{0,1}[0-9]{1,}[.]{1}0{1}$/g.test(valueString)) {
@@ -29,7 +32,10 @@ export class BigNumber {
         }
     }
 
-    //Adds the operand value to the current value
+    /** Returns a new big number with the operand added to this
+     * @param {BigNumber} operand
+     * @return {BigNumber} A new big number with the sum of this and operand
+    */
     add(operand) {
         if (operand instanceof BigNumber) {
             if (this.type === "decimal" && operand.type === "decimal") {
@@ -62,8 +68,10 @@ export class BigNumber {
         }
     }
 
-    //Multiplies the current value by the operand value
-    //Using the multiplyByNumber method is more efficient if the operand is less than ((Number.MAX_SAFE_INTEGER - 9) / 9) (Infinite precision will be compromised)
+    /** Returns a new big number wth this multiplied by the operand
+     * @param {BigNumber} operand
+     * @return {BigNumber} A new big number with the product of this and operand
+    */
     multiply(operand) {
         if (operand instanceof BigNumber) {
             if (this.type === "decimal" || operand.type === "decimal") {
@@ -84,9 +92,11 @@ export class BigNumber {
         }
     }
 
-    //Multiplies the current value by the operand value
-    //Operand must be of type Number
-    //Using the multiply method is recommended if the operand is greater than ((Number.MAX_SAFE_INTEGER - 9) / 9)
+    /** Returns a new big number wth this multiplied by the operand
+     * NOTE: Using the multiply method is recommended if the operand is greater than ((Number.MAX_SAFE_INTEGER - 9) / 9)
+     * @param {number} operand
+     * @return {BigNumber} A new big number with the product of this and operand
+    */
     multiplyByNumber(operand) {
         if (typeof operand === "number") {
             if (operand > (Number.MAX_SAFE_INTEGER - 9) / 9) {
