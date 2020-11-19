@@ -21,302 +21,284 @@ client.on("message", message => {
 
         let output = `Hello there! I'm Matta.\nMAThematical Task Automator.\nMake sure to call me "Matto" before any command.\nJust type "Matto do help" to find out what I can do.`;
 
-        switch (module) {
-            case "get": {
-                switch (method) {
-                    case "factors": {
-                        //Parse all arguments to integers
-                        restArgs[0] = Math.abs(parseInt(restArgs[0]));
-
-                        if (isNaN(restArgs[0])) {
-                            output = `TypeError: Cannot parse argument "${restArgs[0]}" as Integer`;
-                        } else {
-                            output = BasicMath.getIntFactors(restArgs[0]).sort();
-                        }
-
-                        break;
-                    }
-
-                    case "common-factors": {
-                        //Parse all arguments to integers
-                        restArgs[0] = Math.abs(parseInt(restArgs[0]));
-                        restArgs[1] = Math.abs(parseInt(restArgs[1]));
-
-                        if (isNaN(restArgs[0])) {
-                            output = `TypeError: Cannot parse argument "${restArgs[0]}" as Integer`;
-                        } if (isNaN(restArgs[1])) {
-                            output = `TypeError: Cannot parse argument "${restArgs[1]}" as Integer`;
-                        } else {
-                            output = BasicMath.getCommonIntFactors(restArgs[0], restArgs[1]);
-                        }
-
-                        break;
-                    }
-
-                    case "factorial": {
-                        //Parse all arguments to integers
-                        restArgs[0] = Math.abs(parseInt(restArgs[0]));
-
-                        if (isNaN(restArgs[0])) {
-                            output = `TypeError: Cannot parse argument "${restArgs[0]}" as Integer`;
-                        } else {
-                            output = BasicMath.getFactorial(restArgs[0]);
-                        }
-
-                        break;
-                    }
-
-                    case "gcd": {
-                        //Parse all arguments to integers
-                        restArgs[0] = Math.abs(parseInt(restArgs[0]));
-                        restArgs[1] = Math.abs(parseInt(restArgs[1]));
-
-                        if (isNaN(restArgs[0])) {
-                            output = `TypeError: Cannot parse argument "${restArgs[0]}" as Integer`;
-                        } if (isNaN(restArgs[1])) {
-                            output = `TypeError: Cannot parse argument "${restArgs[1]}" as Integer`;
-                        } else {
-                            output = BasicMath.getGCD(restArgs[0], restArgs[1]);
-                        }
-
-                        break;
-                    }
-
-                    case "primes": {
-                        if (restArgs[0] && restArgs[1]) {
-                            //CASE: Two limits are specified
-                            //Assume that it is for getPrimesWithin()
-
-                            //Parse all arguments to integers
-                            restArgs[0] = Math.abs(parseInt(restArgs[0]));
-                            restArgs[1] = Math.abs(parseInt(restArgs[1]));
-
-                            if (isNaN(restArgs[0])) {
-                                output = `TypeError: Cannot parse argument "${restArgs[0]}" as Integer`;
-                            } else if (isNaN(restArgs[1])) {
-                                output = `TypeError: Cannot parse argument "${restArgs[1]}" as Integer`;
-                            } else if (restArgs[0] < 3) {
-                                output = `RangeError: First argument "${restArgs[0]}" should be greater than or equal to 3`;
-                            } else {
-                                output = PrimeMath.getPrimesWithin(restArgs[0], restArgs[1]);
+        if (module && method && restArgs.length === 0) {
+            output = "Error: No arguments found";
+        } else {
+            switch (module) {
+                case "get": {
+                    switch (method) {
+                        case "factors": {
+                            try {
+                                const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                output = BasicMath.getIntFactors(parsedArgs);
+                                UtilityMath.sortIntArray(output);
+                            } catch (error) {
+                                output = error.toString();
                             }
-                        } else {
-                            //CASE: Only one limit is specified
-                            //Assume that it is for getPrimesUpTo()
-
-                            //Parse all arguments to integers
-                            restArgs[0] = Math.abs(parseInt(restArgs[0]));
-
-                            if (isNaN(restArgs[0])) {
-                                output = `TypeError: Cannot parse argument "${restArgs[0]}" as Integer`;
-                            } else {
-                                output = PrimeMath.getPrimesUpTo(restArgs[0]);
+    
+                            break;
+                        }
+    
+                        case "common-factors": {
+                            try {
+                                if (restArgs.length < 2) {
+                                    throw Error("2 Arguments must be provided");
+                                } else {
+                                    const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                    output = BasicMath.getCommonIntFactors(parsedArgs[0], parsedArgs[1]);
+                                    UtilityMath.sortIntArray(output);
+                                }
+                            } catch (error) {
+                                output = error.toString();
                             }
+    
+                            break;
                         }
-
-                        break;
-                    }
-
-                    case "collatz": {
-                        //Parse all arguments to integers
-                        restArgs[0] = Math.abs(parseInt(restArgs[0]));
-
-                        if (isNaN(restArgs[0])) {
-                            output = `TypeError: Cannot parse argument "${restArgs[0]}" as Integer`;
-                        } else {
-                            output = SequenceMath.getCollatzSequence(restArgs[0]);
+    
+                        case "factorial": {
+                            try {
+                                const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                output = BasicMath.getFactorial(parsedArgs[0]);
+                            } catch (error) {
+                                output = error.toString();
+                            }
+    
+                            break;
                         }
-
-                        break;
-                    }
-
-                    case "fibonacci": {
-                        //Parse all arguments to integers
-                        restArgs[0] = Math.abs(parseInt(restArgs[0]));
-
-                        if (isNaN(restArgs[0])) {
-                            output = `TypeError: Cannot parse argument "${restArgs[0]}" as Integer`;
-                        } else {
-                            output = SequenceMath.getFibonacciSequence(restArgs[0]);
+    
+                        case "gcd": {
+                            try {
+                                const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                output = BasicMath.getGCD(parsedArgs);
+                            } catch (error) {
+                                output = error.toString();
+                            }
+    
+                            break;
                         }
-
-                        break;
-                    }
-
-                    case "name": {
-                        //Parse all arguments to integers
-                        restArgs[0] = parseInt(restArgs[0]);
-
-                        if (isNaN(restArgs[0])) {
-                            output = `TypeError: Cannot parse argument "${restArgs[0]}" as Integer`;
-                        } else if (restArgs[0] < 0 || restArgs[0] > 9999) {
-                            output = `RangeError: Argument "${restArgs[0]}" should be between 0 and 9999 (inclusive)`;
-                        } else {
-                            output = CustomMath.getNumberName(restArgs[0]);
+    
+                        case "lcm": {
+                            try {
+                                const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                output = BasicMath.getLCM(parsedArgs);
+                            } catch (error) {
+                                output = error.toString();
+                            }
+    
+                            break;
                         }
-
-                        break;
-                    }
-
-                    case "min-edit": {
-                        if (restArgs[0] && restArgs[1]) {
-                            output = CustomMath.getMinEditDistance(restArgs[0], restArgs[1]);
-                        } else if (restArgs[0]) {
-                            output = `InvalidArgumentsError: Argument "${restArgs[1]}" isn't valid`;
-                        } else if (restArgs[1]) {
-                            output = `InvalidArgumentsError: Argument "${restArgs[0]}" isn't valid`;
-                        } else {
-                            output = `InvalidArgumentsError: Arguments "${restArgs[0]}" and "${restArgs[1]}" aren't valid`;
+    
+                        case "primes": {
+                            try {
+                                const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                if (parsedArgs.length > 1) {
+                                    //CASE: Two limits are specified
+                                    //Assume that it is for getPrimesWithin()
+                                    if (parsedArgs[0] < 3) {
+                                        throw RangeError("Lower bound should be greater than or equal to 3");
+                                    } else {
+                                        output = PrimeMath.getPrimesWithin(parsedArgs[0], parsedArgs[1]);
+                                        UtilityMath.sortIntArray(output);
+                                    }
+                                } else {
+                                    //CASE: Only one limit is specified
+                                    //Assume that it is for getPrimesUpTo()
+                                    output = PrimeMath.getPrimesUpTo(parsedArgs[0]);
+                                    UtilityMath.sortIntArray(output);
+                                }
+                            } catch (error) {
+                                output = error.toString();
+                            }
+    
+                            break;
                         }
-
-                        break;
-                    }
-
-                    case "postfix": {
-                        if (restArgs[0]) {
-                            output = ExpressionMath.toPostfix(restArgs[0]);
-                        } else {
-                            output = `InvalidArgumentsError: Argument "${restArgs[0]}" isn't valid`;
+    
+                        case "collatz": {
+                            try {
+                                const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                output = SequenceMath.getCollatzSequence(parsedArgs[0]);
+                            } catch (error) {
+                                output = error.toString();
+                            }
+    
+                            break;
                         }
-
-                        break;
-                    }
-
-                    case "nic-details": {
-                        if (restArgs[0]) {
-                            output = CustomMath.getNICDetails(restArgs[0]);
-                        } else {
-                            output = `InvalidArgumentsError: Argument "${restArgs[0]}" isn't valid`;
+    
+                        case "fibonacci": {
+                            try {
+                                const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                output = SequenceMath.getFibonacciSequence(parsedArgs[0]);
+                            } catch (error) {
+                                output = error.toString();
+                            }
+    
+                            break;
                         }
-
-                        break;
+    
+                        case "name": {
+                            try {
+                                const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                if (parsedArgs[0] < 0 || parsedArgs[0] > 9999) {
+                                    throw RangeError("Argument should be in the range from 0 to 9999");
+                                } else {
+                                    output = CustomMath.getNumberName(parsedArgs[0]);
+                                }
+                            } catch (error) {
+                                output = error.toString();
+                            }
+    
+                            break;
+                        }
+    
+                        case "min-edit": {
+                            try {
+                                if (restArgs.length < 2) {
+                                    throw Error("At least 2 arguments are required");
+                                } else {
+                                    output = CustomMath.getMinEditDistance(restArgs[0], restArgs[1]);
+                                }
+                            } catch (error) {
+                                output = error.toString();
+                            }
+    
+                            break;
+                        }
+    
+                        case "postfix": {
+                            try {
+                                output = ExpressionMath.toPostfix(restArgs[0]);
+                            } catch (error) {
+                                output = error.toString();
+                            }
+    
+                            break;
+                        }
+    
+                        case "nic-details": {
+                            try {
+                                output = CustomMath.getNICDetails(restArgs[0]);
+                            } catch (error) {
+                                output = error.toString();
+                            }
+    
+                            break;
+                        }
                     }
+    
+                    break;
                 }
-
-                break;
-            }
-
-            case "do": {
-                switch (method) {
-                    case "help": {
-                        output = "get factors <Integer>\nget common-factors <Integer> <Integer>\nget factorial <Integer>\nget gcd <Integer> <Integer>\nget primes <lower> <upper>\nget collatz <Integer>\nget fibonacci <Integer>\nget name <Integer>\nget min-edit <String> <String>\nget postfix <ExpressionString>\nget nic-details <NICString>\n\ndo help\ndo prime-factorize <Integer>\ndo permute <String>\ndo solve ...<ExpressionString>\n\nis square-free <Integer>\nis prime <Integer>\nis square <Integer>\nis triangular <Integer>\nis pythagorean-triplet <Integer> <Integer> <Integer>";
-
-                        break;
-                    }
-
-                    case "prime-factorize": {
-                        //Parse all arguments to integers
-                        restArgs[0] = Math.abs(parseInt(restArgs[0]));
-
-                        if (isNaN(restArgs[0])) {
-                            output = `TypeError: Cannot parse argument "${restArgs[0]}" as Integer`;
-                        } else {
-                            output = PrimeMath.getPrimeFactorization(restArgs[0]);
+    
+                case "do": {
+                    switch (method) {
+                        case "help": {
+                            output = "get factors <int:num>\nget common-factors <int:num1> <int:num2>\nget factorial <int:num>\nget gcd <int...:nums>\nget lcm <int...:nums>\nget primes <int:lowerBound> <int:upperBound>\nget primes <int:upperBound>\nget collatz <int:num>\nget fibonacci <int:limit>\nget name <int:num>\nget min-edit <String:str2> <String:str2>\nget postfix <String:infixExpression>\nget nic-details <String:nicCode>\n\ndo help\ndo prime-factorize <int:num>\ndo permute <String:str>\ndo solve <String...:Expressions>\n\nis square-free <int:num>\nis prime <int:num>\nis square <int:num>\nis triangular <int:num>\nis pythagorean-triplet <int:num1> <int:num2> <int:num3>";
+    
+                            break;
                         }
-
-                        break;
-                    }
-
-                    case "permute": {
-                        if (restArgs[0]) {
-                            output = CustomMath.getUniquePermutations(restArgs[0]).toString();
-                        } else {
-                            output = `InvalidArgumentsError: Argument "${restArgs[0]}" isn't valid`;
+    
+                        case "prime-factorize": {
+                            try {
+                                const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                output = PrimeMath.getPrimeFactorization(parsedArgs[0]);
+                            } catch (error) {
+                                output = error.toString();
+                            }
+    
+                            break;
                         }
-
-                        break;
-                    }
-
-                    case "solve": {
-                        if (restArgs.length > 1) {
-                            //Modify user arguments
-                            output = ExpressionMath.getSolution(restArgs);
-                        }  else {
-                            output = `InvalidArgumentsError: Arguments "${restArgs}" doesn't form a valid set of linear equations`;
+    
+                        case "permute": {
+                            try {
+                                output = CustomMath.getUniquePermutations(restArgs[0]);
+                            } catch (error) {
+                                output = error.toString();
+                            }
+    
+                            break;
                         }
-
-                        break;
+    
+                        case "solve": {
+                            try {
+                                if (restArgs.length > 1) {
+                                    output = ExpressionMath.getSolution(restArgs);
+                                } else {
+                                    throw Error("Arguments doesn't form a valid system of linear equations");
+                                }
+                            } catch (error) {
+                                output = error.toString();
+                            }
+    
+                            break;
+                        }
                     }
+    
+                    break;
                 }
-
-                break;
-            }
-
-            case "is": {
-                switch (method) {
-                    case "square-free": {
-                        //Parse all arguments to integers
-                        restArgs[0] = Math.abs(parseInt(restArgs[0]));
-
-                        if (isNaN(restArgs[0])) {
-                            output = `TypeError: Cannot parse argument "${restArgs[0]}" as Integer`;
-                        } else {
-                            output = BasicMath.isSquareFree(restArgs[0]);
+    
+                case "is": {
+                    switch (method) {
+                        case "square-free": {
+                            try {
+                                const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                output = BasicMath.isSquareFree(parsedArgs[0]);
+                            } catch (error) {
+                                output = error.toString();
+                            }
+    
+                            break;
                         }
-
-                        break;
-                    }
-
-                    case "prime": {
-                        //Parse all arguments to integers
-                        restArgs[0] = Math.abs(parseInt(restArgs[0]));
-
-                        if (isNaN(restArgs[0])) {
-                            output = `TypeError: Cannot parse argument "${restArgs[0]}" as Integer`;
-                        } else {
-                            output = PrimeMath.isPrime(restArgs[0]);
+    
+                        case "prime": {
+                            try {
+                                const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                output = PrimeMath.isPrime(parsedArgs[0]);
+                            } catch (error) {
+                                output = error.toString();
+                            }
+    
+                            break;
                         }
-
-                        break;
-                    }
-
-                    case "square": {
-                        //Parse all arguments to integers
-                        restArgs[0] = Math.abs(parseInt(restArgs[0]));
-
-                        if (isNaN(restArgs[0])) {
-                            output = `TypeError: Cannot parse argument "${restArgs[0]}" as Integer`;
-                        } else {
-                            output = SequenceMath.isSquare(restArgs[0]);
+    
+                        case "square": {
+                            try {
+                                const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                output = SequenceMath.isSquare(parsedArgs[0]);
+                            } catch (error) {
+                                output = error.toString();
+                            }
+    
+                            break;
                         }
-
-                        break;
-                    }
-
-                    case "triangular": {
-                        //Parse all arguments to integers
-                        restArgs[0] = Math.abs(parseInt(restArgs[0]));
-
-                        if (isNaN(restArgs[0])) {
-                            output = `TypeError: Cannot parse argument "${restArgs[0]}" as Integer`;
-                        } else {
-                            output = SequenceMath.isTriangular(restArgs[0]);
+    
+                        case "triangular": {
+                            try {
+                                const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                output = SequenceMath.isTriangular(parsedArgs[0]);
+                            } catch (error) {
+                                output = error.toString();
+                            }
+    
+                            break;
                         }
-
-                        break;
-                    }
-
-                    case "pythagorean-triplet": {
-                        //Parse all arguments to integers
-                        restArgs[0] = Math.abs(parseInt(restArgs[0]));
-                        restArgs[1] = Math.abs(parseInt(restArgs[1]));
-                        restArgs[2] = Math.abs(parseInt(restArgs[2]));
-
-                        if (isNaN(restArgs[0])) {
-                            output = `TypeError: Cannot parse argument "${restArgs[0]}" as Integer`;
-                        } if (isNaN(restArgs[1])) {
-                            output = `TypeError: Cannot parse argument "${restArgs[1]}" as Integer`;
-                        } if (isNaN(restArgs[2])) {
-                            output = `TypeError: Cannot parse argument "${restArgs[2]}" as Integer`;
-                        } else {
-                            output = SequenceMath.isPythagoreanTriplet([restArgs[0], restArgs[1], restArgs[2]]);
+    
+                        case "pythagorean-triplet": {
+                            try {
+                                if (restArgs.length < 3) {
+                                    throw Error("At least 3 arguments should be provided");
+                                } else {
+                                    const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                    output = SequenceMath.isPythagoreanTriplet(parsedArgs);
+                                }
+                            } catch (error) {
+                                output = error.toString();
+                            }
+    
+                            break;
                         }
-
-                        break;
                     }
+    
+                    break;
                 }
-
-                break;
             }
         }
 
