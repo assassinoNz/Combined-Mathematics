@@ -338,14 +338,10 @@ export class CustomMath {
     /**
      * Returns the minimum edit distance between two strings
      * NOTE: All the editing methods (insertion, deletion, substitution) have a distance of +1, unlike Levenshtein Distance where substitution has +2 distance
-     * @param {string} string1 
-     * @param {string} string2 
+     * @param {string} columnString 
+     * @param {string} rowString 
      */
-    static getMinEditDistance(string1, string2) {
-        //Convert all the strings into same case (in this case, lowercase)
-        const columnString = string1.toLowerCase();
-        const rowString = string2.toLowerCase();
-
+    static getMinEditDistance(columnString, rowString) {
         //Generate Dynamic Programming table
         const dpTable = [];
         for (let i = 0; i < rowString.length + 1; i++) {
