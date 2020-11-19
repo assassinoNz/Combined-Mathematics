@@ -31,15 +31,7 @@ export class PrimeMath {
 
         const primes = [];
         for (let i = lowerBound; i <= upperBound; i = i + 2) {
-            let isPrime = true;
-            let factorRange = Math.ceil(Math.sqrt(i));
-            for (let j = 2; j <= factorRange; j++) {
-                if (i % j === 0) {
-                    isPrime = false;
-                    break;
-                }
-            }
-            if (isPrime === true) {
+            if (this.isPrime(i)) {
                 primes.push(i);
             }
         }
@@ -47,9 +39,9 @@ export class PrimeMath {
     }
 
     /** Returns all primes up to a given limit(inclusive)
-         * @param {number} limit
-         * @return {number[]} All primes starting from 2 up to the limit(inclusive)
-        */
+     * @param {number} limit
+     * @return {number[]} All primes starting from 2 up to the limit(inclusive)
+    */
     static getPrimesUpTo(limit) {
         const oddNumbers = [];
         //Get all odd natural numbers starting from 3 (because only even prime is 2, and 1 is not a prime)
