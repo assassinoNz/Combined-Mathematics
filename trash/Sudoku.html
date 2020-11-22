@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script>
+        //@ts-check
+        const puzzle = [
+            [5,3,0,0,7,0,0,0,0],
+            [6,0,0,1,9,5,0,0,0],
+            [0,9,8,0,0,0,0,6,0],
+            [8,0,0,0,6,0,0,0,3],
+            [4,0,0,8,0,3,0,0,1],
+            [7,0,0,0,2,0,0,0,6],
+            [0,6,0,0,0,0,2,8,0],
+            [0,0,0,4,1,9,0,0,5],
+            [0,0,0,0,8,0,0,7,9]
+        ];
+
+        function isCandidate(puzzle, rowIndex, colIndex, value) {
+            //Check along the column
+            for (let r = 0; r < puzzle.length; r++) {
+                if (puzzle[r][colIndex] === value) {
+                    return false;
+                }
+            }
+
+            //Check along the row
+            for (let c = 0; c < puzzle[rowIndex].length; c++) {
+                if (puzzle[rowIndex][c] === value) {
+                    return false;
+                }
+            }
+
+            //Check inside the neighboring square
+            let neighSqRowStart = Math.floor(rowIndex / 3) * 3;
+            let neighSqColStart = Math.floor(colIndex / 3) * 3;
+            for (let r = 0; r < 3; r++) {
+                for (let c = 0; c < 3; c++) {
+                    if (puzzle[neighSqRowStart + r][neighSqColStart + c] === value) {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        function solveSudoku(puzzle) {
+            for (let r = 0; r < puzzle.length; r++) {
+                for (let c = 0; c < puzzle[r].length; c++) {
+                    if (puzzle[r][c] === 0) {
+                        //CASE: Cell is empty
+                        for (let i = 1; i < 10; i++) {
+                            if (isCandidate(puzzle, r, c, i)) {
+                                //CASE: Value is possible
+                                //Place the value
+                                puzzle[r][c] = i;
+                                solveSudoku(puzzle);
+                                puzzle[r][c] = 0;
+                            }
+                        }
+                        return;
+                    }
+                }
+            }
+            console.log(JSON.stringify(puzzle));
+        }
+
+        function solveSudokuCell(puzzle, rowIndex, colIndex) {
+            if (puzzle[rowIndex][colIndex] === 0) {
+                //CASE: Cell is empty
+                //Iterate over possible values
+                for (let i = 1; i < 10; i++) {
+                    if (isCandidate(puzzle, rowIndex, colIndex, i)) {
+                        //CASE: Value is possible
+                        //Place the value
+                        puzzle[rowIndex][colIndex] = i;
+
+                        if (rowIndex === 9 && colIndex === 9) {
+                            //CASE: Last cell reached
+                        } else if (colIndex < 9) {
+                            //CASE: There exists further cells in the current row
+                            solveSudokuCell(puzzle, rowIndex, colIndex + 1);
+                        } else if (rowIndex < 9) {
+                            //CASE: There exists no further cells in the current row
+                            solveSudokuCell(puzzle, rowIndex + 1, 0);
+                        }
+                    } else if (i === 9) {
+                        //CASE: All values checked but no candidate found
+                        // //Reset the previous value
+                        // puzzle[rowIndex][colIndex] = 0;
+                        // if (rowIndex === 0 && colIndex === 0) {
+                        //     //CASE: Last cell reached
+                        // } else if (colIndex < 9) {
+                        //     //CASE: There exists further cells in the current row
+                        //     solveSudokuCell(puzzle, rowIndex, colIndex + 1);
+                        // } else if (rowIndex < 9) {
+                        //     //CASE: There exists no further cells in the current row
+                        //     solveSudokuCell(puzzle, rowIndex + 1, 0);
+                        // }
+                    }
+                }
+            } else {
+                //CASE: Cell is fixed
+                if (rowIndex === 9 && colIndex === 9) {
+                    console.log("last cell reached");
+                    //CASE: Last cell reached
+                } else if (colIndex < 9) {
+                    //CASE: There exists further cells in the current row
+                    solveSudokuCell(puzzle, rowIndex, colIndex + 1);
+                } else if (rowIndex < 9) {
+                    //CASE: There exists no further cells in the current row
+                    solveSudokuCell(puzzle, rowIndex + 1, 0);
+                }
+            }
+        }
+
+        solveSudoku(puzzle);
+    </script>
+</head>
+
+<body>
+
+</body>
+
+</html>
