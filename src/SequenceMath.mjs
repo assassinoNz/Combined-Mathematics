@@ -1,6 +1,4 @@
 //@ts-check
-import { StringMath } from "./StringMath.mjs";
-
 export class SequenceMath {
     /**
      * Returns the Collatz sequence of an integer
@@ -21,23 +19,33 @@ export class SequenceMath {
         return collatzSequence;
     }
 
-    //TODO:Change return type
     /**
      * Returns the fibonacci sequence with the specified number of terms
      * @param {number} numOfTerms
-     * @return {string[]} An array with the terms of the Fibonacci sequence
+     * @return {BigInt[]} An array with the terms of the Fibonacci sequence
      */
     static getFibonacciSequence(numOfTerms) {
         //Fibonacci sequence
         //1 1 2 3 5 8 13 21 34 55 89 144 ...
+
         //Fibonacci sequence formula
         //T(n)=4T(n-3)+T(n-6)
-        const fibonacciSequence = ["1", "1", "2", "3", "5", "8"];
-        for (let i = 6; i < numOfTerms; i++) {
-            fibonacciSequence[i] = StringMath.multiplyUnsignedInt(fibonacciSequence[i - 3], 4);
-            fibonacciSequence[i] = StringMath.addUnsignedInt(fibonacciSequence[i], fibonacciSequence[i - 6]);
+
+        function* fibonacci () {
+            let current = 0n;
+            let next = 1n;
+        
+            while (true) {
+                yield current;
+                [current, next] = [next, current + next];
+            }
         }
-        return fibonacciSequence;
+        const sequence = fibonacci();
+        const terms = [];
+        for (let i = 0; i < numOfTerms; i++) {
+            terms[i] = sequence.next().value;
+        }
+        return terms;
     }
 
     /**
