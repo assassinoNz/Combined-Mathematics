@@ -102,7 +102,7 @@ export class SudokuPuzzle {
             }
         }
         //By now the puzzle is solved. Deep copy it
-        JSON.parse(JSON.stringify(this.tempPuzzle));
+        this.solvedPuzzle = JSON.parse(JSON.stringify(this.tempPuzzle));
     }
 
     getStringifiedPuzzle() {
