@@ -193,7 +193,7 @@ client.on("message", message => {
                 case "do": {
                     switch (method) {
                         case "help": {
-                            output = "get factors <int:num>\nget common-factors <int:num1> <int:num2>\nget factorial <int:num>\nget gcd <int...:nums>\nget lcm <int...:nums>\nget primes <int:lowerBound> <int:upperBound>\nget primes <int:upperBound>\nget collatz <int:num>\nget fibonacci <int:limit>\nget name <int:num>\nget min-edit <String:str2> <String:str2>\nget postfix <String:infixExpression>\nget nic-details <String:nicCode>\n\ndo help\ndo prime-factorize <int:num>\ndo permute <String:str>\n\nsolve sle <String...:expressions>\nsolve sudoku <String:puzzle>\n\nis square-free <int:num>\nis prime <int:num>\nis square <int:num>\nis triangular <int:num>\nis pythagorean-triplet <int:num1> <int:num2> <int:num3>";
+                            output = "get factors <int:num>\nget common-factors <int:num1> <int:num2>\nget factorial <int:num>\nget gcd <int...:nums>\nget lcm <int...:nums>\nget primes <int:lowerBound> <int:upperBound>\nget primes <int:upperBound>\nget collatz <int:num>\nget fibonacci <int:limit>\nget name <int:num>\nget min-edit <String:str1> <String:str2>\nget postfix <String:infixExpression>\nget nic-details <String:nicCode>\n\ndo help\ndo prime-factorize <int:num>\ndo permute <String:str>\n\nsolve sle <String...:expressions>\nsolve sudoku <String:puzzle>\n\nis square-free <int:num>\nis prime <int:num>\nis square <int:num>\nis triangular <int:num>\nis pythagorean-triplet <int:num1> <int:num2> <int:num3>";
     
                             break;
                         }
