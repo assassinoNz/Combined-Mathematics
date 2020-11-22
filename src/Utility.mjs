@@ -1,5 +1,5 @@
 //@ts-check
-export class UtilityMath {
+export class Utility {
     //Clones a multiArray
     //NOTE: This won't be necessary if ECMAScript specification includes a method for deep copying of objects
     static cloneMultiArray(multiArray = [[1]]) {

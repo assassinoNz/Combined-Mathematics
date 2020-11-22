@@ -4,7 +4,7 @@ import { PrimeMath } from "./src/PrimeMath.mjs";
 import { SequenceMath } from "./src/SequenceMath.mjs";
 import { CustomMath } from "./src/CustomMath.mjs";
 import { ExpressionMath } from "./src/ExpressionMath.mjs";
-import { UtilityMath } from "./src/UtilityMath.mjs";
+import { Utility } from "./src/Utility.mjs";
 import { SudokuPuzzle } from "./src/SudokuPuzzle.mjs";
 
 import * as Discord from "discord.js";
@@ -31,9 +31,9 @@ client.on("message", message => {
                     switch (method) {
                         case "factors": {
                             try {
-                                const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                const parsedArgs = Utility.parseArgsAsInt(restArgs);
                                 output = BasicMath.getIntFactors(parsedArgs);
-                                UtilityMath.sortIntArray(output);
+                                Utility.sortIntArray(output);
                             } catch (error) {
                                 output = error.toString();
                             }
@@ -46,9 +46,9 @@ client.on("message", message => {
                                 if (restArgs.length < 2) {
                                     throw Error("2 Arguments must be provided");
                                 } else {
-                                    const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                    const parsedArgs = Utility.parseArgsAsInt(restArgs);
                                     output = BasicMath.getCommonIntFactors(parsedArgs[0], parsedArgs[1]);
-                                    UtilityMath.sortIntArray(output);
+                                    Utility.sortIntArray(output);
                                 }
                             } catch (error) {
                                 output = error.toString();
@@ -59,7 +59,7 @@ client.on("message", message => {
     
                         case "factorial": {
                             try {
-                                const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                const parsedArgs = Utility.parseArgsAsInt(restArgs);
                                 output = BasicMath.getFactorial(parsedArgs[0]);
                             } catch (error) {
                                 output = error.toString();
@@ -70,7 +70,7 @@ client.on("message", message => {
     
                         case "gcd": {
                             try {
-                                const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                const parsedArgs = Utility.parseArgsAsInt(restArgs);
                                 output = BasicMath.getGCD(parsedArgs);
                             } catch (error) {
                                 output = error.toString();
@@ -81,7 +81,7 @@ client.on("message", message => {
     
                         case "lcm": {
                             try {
-                                const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                const parsedArgs = Utility.parseArgsAsInt(restArgs);
                                 output = BasicMath.getLCM(parsedArgs);
                             } catch (error) {
                                 output = error.toString();
@@ -92,7 +92,7 @@ client.on("message", message => {
     
                         case "primes": {
                             try {
-                                const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                const parsedArgs = Utility.parseArgsAsInt(restArgs);
                                 if (parsedArgs.length > 1) {
                                     //CASE: Two limits are specified
                                     //Assume that it is for getPrimesWithin()
@@ -100,13 +100,13 @@ client.on("message", message => {
                                         throw RangeError("Lower bound should be greater than or equal to 3");
                                     } else {
                                         output = PrimeMath.getPrimesWithin(parsedArgs[0], parsedArgs[1]);
-                                        UtilityMath.sortIntArray(output);
+                                        Utility.sortIntArray(output);
                                     }
                                 } else {
                                     //CASE: Only one limit is specified
                                     //Assume that it is for getPrimesUpTo()
                                     output = PrimeMath.getPrimesUpTo(parsedArgs[0]);
-                                    UtilityMath.sortIntArray(output);
+                                    Utility.sortIntArray(output);
                                 }
                             } catch (error) {
                                 output = error.toString();
@@ -117,7 +117,7 @@ client.on("message", message => {
     
                         case "collatz": {
                             try {
-                                const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                const parsedArgs = Utility.parseArgsAsInt(restArgs);
                                 output = SequenceMath.getCollatzSequence(parsedArgs[0]);
                             } catch (error) {
                                 output = error.toString();
@@ -128,7 +128,7 @@ client.on("message", message => {
     
                         case "fibonacci": {
                             try {
-                                const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                const parsedArgs = Utility.parseArgsAsInt(restArgs);
                                 output = SequenceMath.getFibonacciSequence(parsedArgs[0]);
                             } catch (error) {
                                 output = error.toString();
@@ -139,7 +139,7 @@ client.on("message", message => {
     
                         case "name": {
                             try {
-                                const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                const parsedArgs = Utility.parseArgsAsInt(restArgs);
                                 if (parsedArgs[0] < 0 || parsedArgs[0] > 9999) {
                                     throw RangeError("Argument should be in the range from 0 to 9999");
                                 } else {
@@ -200,7 +200,7 @@ client.on("message", message => {
     
                         case "prime-factorize": {
                             try {
-                                const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                const parsedArgs = Utility.parseArgsAsInt(restArgs);
                                 output = PrimeMath.getPrimeFactorization(parsedArgs[0]);
                             } catch (error) {
                                 output = error.toString();
@@ -257,7 +257,7 @@ client.on("message", message => {
                     switch (method) {
                         case "square-free": {
                             try {
-                                const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                const parsedArgs = Utility.parseArgsAsInt(restArgs);
                                 output = BasicMath.isSquareFree(parsedArgs[0]);
                             } catch (error) {
                                 output = error.toString();
@@ -268,7 +268,7 @@ client.on("message", message => {
     
                         case "prime": {
                             try {
-                                const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                const parsedArgs = Utility.parseArgsAsInt(restArgs);
                                 output = PrimeMath.isPrime(parsedArgs[0]);
                             } catch (error) {
                                 output = error.toString();
@@ -279,7 +279,7 @@ client.on("message", message => {
     
                         case "square": {
                             try {
-                                const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                const parsedArgs = Utility.parseArgsAsInt(restArgs);
                                 output = SequenceMath.isSquare(parsedArgs[0]);
                             } catch (error) {
                                 output = error.toString();
@@ -290,7 +290,7 @@ client.on("message", message => {
     
                         case "triangular": {
                             try {
-                                const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                const parsedArgs = Utility.parseArgsAsInt(restArgs);
                                 output = SequenceMath.isTriangular(parsedArgs[0]);
                             } catch (error) {
                                 output = error.toString();
@@ -304,7 +304,7 @@ client.on("message", message => {
                                 if (restArgs.length < 3) {
                                     throw Error("At least 3 arguments should be provided");
                                 } else {
-                                    const parsedArgs = UtilityMath.parseArgsAsInt(restArgs);
+                                    const parsedArgs = Utility.parseArgsAsInt(restArgs);
                                     output = SequenceMath.isPythagoreanTriplet(parsedArgs);
                                 }
                             } catch (error) {
@@ -320,7 +320,7 @@ client.on("message", message => {
             }
         }
 
-        message.channel.send(UtilityMath.formatOutput(output));
+        message.channel.send(Utility.formatOutput(output));
     }
 });
 

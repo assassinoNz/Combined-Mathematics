@@ -1,5 +1,5 @@
 //@ts-check
-import { UtilityMath } from "./UtilityMath.mjs"
+import { Utility } from "./Utility.mjs";
 
 export class MatrixMath {
     /**
@@ -17,7 +17,7 @@ export class MatrixMath {
             let columnCount = matrix[0].length;
             for (let i = 0; i < columnCount; i++) {
                 //Clone the matrix to make sure the matrix is not a reference
-                let clonedMatrix = UtilityMath.cloneMultiArray(matrix);
+                let clonedMatrix = Utility.cloneMultiArray(matrix);
                 //Sign determinant according to the sign matrix
                 if (i % 2 === 0) {
                     determinant = determinant + matrix[0][i] * this.getDeterminant(this.getSplicedMatrix(clonedMatrix, 0, i));
@@ -57,7 +57,7 @@ export class MatrixMath {
      * @return {number[][]} The transposition matrix of the matrix
      */
     static getSplicedMatrix(matrix, rowIndexToRemove, columnIndexToRemove) {
-        const splicedMatrix = UtilityMath.cloneMultiArray(matrix);
+        const splicedMatrix = Utility.cloneMultiArray(matrix);
         //Remove rowToRemove
         splicedMatrix.splice(rowIndexToRemove, 1);
         //Remove column elements of columnToRemove recursively
@@ -75,7 +75,7 @@ export class MatrixMath {
      * @return {number[][]} The sign matrix of the matrix
      */
     static getSignedMatrix(matrix) {
-        const signedMatrix = UtilityMath.cloneMultiArray(matrix);
+        const signedMatrix = Utility.cloneMultiArray(matrix);
         const rowCount = signedMatrix.length;
         const columnCount = signedMatrix[0].length;
         for (let i = 0; i < rowCount; i++) {
@@ -210,7 +210,7 @@ export class MatrixMath {
 
     //NOTE: NOT IMPLEMENTED
     static getRowEcholenMatrix(matrix = [[1]]) {
-        matrix = UtilityMath.cloneMultiArray(matrix);
+        matrix = Utility.cloneMultiArray(matrix);
         //In here i acts as the row selector as well as column selector
         for (let i = 0; i < matrix.length - 1; i++) {
             for (let j = i + 1; j < matrix.length; j++) {
