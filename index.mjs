@@ -5,6 +5,8 @@ import { SequenceMath } from "./src/SequenceMath.mjs";
 import { CustomMath } from "./src/CustomMath.mjs";
 import { ExpressionMath } from "./src/ExpressionMath.mjs";
 import { UtilityMath } from "./src/UtilityMath.mjs";
+import { SudokuPuzzle } from "./src/SudokuPuzzle.mjs";
+
 import * as Discord from "discord.js";
 
 const client = new Discord.Client();
@@ -191,7 +193,7 @@ client.on("message", message => {
                 case "do": {
                     switch (method) {
                         case "help": {
-                            output = "get factors <int:num>\nget common-factors <int:num1> <int:num2>\nget factorial <int:num>\nget gcd <int...:nums>\nget lcm <int...:nums>\nget primes <int:lowerBound> <int:upperBound>\nget primes <int:upperBound>\nget collatz <int:num>\nget fibonacci <int:limit>\nget name <int:num>\nget min-edit <String:str2> <String:str2>\nget postfix <String:infixExpression>\nget nic-details <String:nicCode>\n\ndo help\ndo prime-factorize <int:num>\ndo permute <String:str>\ndo solve <String...:Expressions>\n\nis square-free <int:num>\nis prime <int:num>\nis square <int:num>\nis triangular <int:num>\nis pythagorean-triplet <int:num1> <int:num2> <int:num3>";
+                            output = "get factors <int:num>\nget common-factors <int:num1> <int:num2>\nget factorial <int:num>\nget gcd <int...:nums>\nget lcm <int...:nums>\nget primes <int:lowerBound> <int:upperBound>\nget primes <int:upperBound>\nget collatz <int:num>\nget fibonacci <int:limit>\nget name <int:num>\nget min-edit <String:str2> <String:str2>\nget postfix <String:infixExpression>\nget nic-details <String:nicCode>\n\ndo help\ndo prime-factorize <int:num>\ndo permute <String:str>\n\nsolve sle <String...:expressions>\nsolve sudoku <String:puzzle>\n\nis square-free <int:num>\nis prime <int:num>\nis square <int:num>\nis triangular <int:num>\nis pythagorean-triplet <int:num1> <int:num2> <int:num3>";
     
                             break;
                         }
@@ -216,8 +218,14 @@ client.on("message", message => {
     
                             break;
                         }
+                    }
     
-                        case "solve": {
+                    break;
+                }
+
+                case "solve": {
+                    switch (method) {
+                        case "sle": {
                             try {
                                 if (restArgs.length > 1) {
                                     output = ExpressionMath.getSolution(restArgs);
@@ -230,9 +238,19 @@ client.on("message", message => {
     
                             break;
                         }
-                    }
+
+                        case "sudoku": {
+                            try {
+                                const sudokuPuzzle = new SudokuPuzzle(restArgs[0]);
+                                sudokuPuzzle.solve();
+                                output = sudokuPuzzle.getStringifiedPuzzle();
+                            } catch (error) {
+                                output = error.toString();
+                            }
     
-                    break;
+                            break;
+                        }
+                    }
                 }
     
                 case "is": {
