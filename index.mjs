@@ -23,7 +23,7 @@ client.on("message", message => {
 
         let output = `Hello there! I'm Matta.\nMAThematical Task Automator.\nMake sure to call me "Matto" before any command.\nJust type "Matto do help" to find out what I can do.`;
 
-        if (module && method && restArgs.length === 0) {
+        if (module && method && restArgs.length === 0 && method !== "help") {
             output = "Error: No arguments found";
         } else {
             switch (module) {
