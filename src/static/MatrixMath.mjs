@@ -1,6 +1,4 @@
 //@ts-check
-import { Utility } from "./Utility.mjs";
-
 export class MatrixMath {
     /**
      * Calculates the determinant of a square matrix
@@ -17,7 +15,7 @@ export class MatrixMath {
             let columnCount = matrix[0].length;
             for (let i = 0; i < columnCount; i++) {
                 //Clone the matrix to make sure the matrix is not a reference
-                let clonedMatrix = Utility.cloneMultiArray(matrix);
+                let clonedMatrix = JSON.parse(JSON.stringify(matrix));
                 //Sign determinant according to the sign matrix
                 if (i % 2 === 0) {
                     determinant = determinant + matrix[0][i] * this.getDeterminant(this.getSplicedMatrix(clonedMatrix, 0, i));
@@ -57,7 +55,7 @@ export class MatrixMath {
      * @return {number[][]} The transposition matrix of the matrix
      */
     static getSplicedMatrix(matrix, rowIndexToRemove, columnIndexToRemove) {
-        const splicedMatrix = Utility.cloneMultiArray(matrix);
+        const splicedMatrix = JSON.parse(JSON.stringify(matrix));
         //Remove rowToRemove
         splicedMatrix.splice(rowIndexToRemove, 1);
         //Remove column elements of columnToRemove recursively
@@ -75,7 +73,7 @@ export class MatrixMath {
      * @return {number[][]} The sign matrix of the matrix
      */
     static getSignedMatrix(matrix) {
-        const signedMatrix = Utility.cloneMultiArray(matrix);
+        const signedMatrix = JSON.parse(JSON.stringify(matrix));
         const rowCount = signedMatrix.length;
         const columnCount = signedMatrix[0].length;
         for (let i = 0; i < rowCount; i++) {
@@ -191,7 +189,7 @@ export class MatrixMath {
      * @param {number[][]} matrix Must be a square matrix
      * @return {number[][]} The inverse matrix of the matrix
      */
-    static getInverseMatrix(matrix ) {
+    static getInverseMatrix(matrix) {
         const determinant = this.getDeterminant(matrix);
         if (determinant === 0) {
             return null;
@@ -210,7 +208,7 @@ export class MatrixMath {
 
     //NOTE: NOT IMPLEMENTED
     static getRowEcholenMatrix(matrix = [[1]]) {
-        matrix = Utility.cloneMultiArray(matrix);
+        matrix = JSON.parse(JSON.stringify(matrix));
         //In here i acts as the row selector as well as column selector
         for (let i = 0; i < matrix.length - 1; i++) {
             for (let j = i + 1; j < matrix.length; j++) {

@@ -1,7 +1,7 @@
 import "mocha";
 import * as assert from "assert";
 
-import {PrimeMath} from "../src/PrimeMath.mjs";
+import { PrimeMath } from "../src/static/PrimeMath.mjs";
 
 describe("PrimeMath", () => {
     describe("#isPrime()", () => {

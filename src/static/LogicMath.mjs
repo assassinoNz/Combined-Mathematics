@@ -17,9 +17,9 @@ export class LogicMath {
                 //CASE: Char has the highest precedence. Therefore greater than or equal to stack.top
                 //Just push the char
                 stack.push(char);
-            } else if (/[\^]/.test(char)) {
+            } else if (/[^]/.test(char)) {
                 //CASE: Char has a medium precedence. Stack.top can have higher precedence
-                //Append all higher/same precedence chars until "(" is encountered
+                //Append all higher/same precedence chars, but stop when "(" is encountered
                 while (stack.length > 0 && /[(~\^]/.test(stack[stack.length - 1])) {
                     if (stack[stack.length - 1] === "(") {
                         stack.pop();
@@ -30,7 +30,20 @@ export class LogicMath {
                 }
                 //Finally push the char
                 stack.push(char);
-            } else if (/[+-]/.test(char)) {
+            } else if (/[V]/.test(char)) {
+                //CASE: Char has a medium precedence. Stack.top can have higher precedence
+                //Append all higher/same precedence chars, but stop when "(" is encountered
+                while (stack.length > 0 && /[(~\^V]/.test(stack[stack.length - 1])) {
+                    if (stack[stack.length - 1] === "(") {
+                        stack.pop();
+                        break;
+                    } else {
+                        postfixExpression += stack.pop();
+                    }
+                }
+                //Finally push the char
+                stack.push(char);
+            }else if (/[+-]/.test(char)) {
                 //CASE: Char has the lowest precedence. Stack.top can have higher precedence
                 //Append all higher/same precedence chars until "(" is encountered
                 while (stack.length > 0 && /[(\^\*\/+-]/.test(stack[stack.length - 1])) {

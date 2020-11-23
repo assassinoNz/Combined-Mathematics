@@ -1,5 +1,5 @@
 //@ts-check
-import { Matrix } from "./Matrix.mjs";
+import { MatrixMath } from "./MatrixMath.mjs";
 
 export class ExpressionMath {
     static getPrecedence(operator) {
@@ -166,10 +166,9 @@ export class ExpressionMath {
             }
         }
 
-        const coefficientsMatrixInverted = new Matrix(coefficientsMultiArray).invert();
-        const constantsMatrix = new Matrix(constantsMultiArray);
+        const coefficientsMatrixInverted = MatrixMath.getInverseMatrix(coefficientsMultiArray);
 
-        const resultMatrix = coefficientsMatrixInverted.multiplyByMatrix(constantsMatrix);
+        const resultMatrix = MatrixMath.multiplyByMatrix(coefficientsMatrixInverted, constantsMatrix);
 
         const solution = {};
         for (let i = 0; i < variables.length; i++) {

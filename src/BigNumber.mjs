@@ -1,5 +1,5 @@
 //@ts-check
-import { StringMath } from "./StringMath.mjs";
+import { StringMath } from "./static/StringMath.mjs";
 
 export class BigNumber {
     /** Constructs a BigNumber

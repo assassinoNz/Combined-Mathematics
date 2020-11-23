@@ -1,7 +1,7 @@
 import "mocha";
 import * as assert from "assert";
 
-import {BasicMath} from "../src/BasicMath.mjs";
+import { BasicMath } from "../src/static/BasicMath.mjs";
 
 describe("BasicMath", () => {
     describe("#getIntFactors()", () => {

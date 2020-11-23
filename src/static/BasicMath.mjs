@@ -1,6 +1,5 @@
 //@ts-check
 import { PrimeMath } from "./PrimeMath.mjs";
-import { SequenceMath } from "./SequenceMath.mjs";
 
 export class BasicMath {
     /** Returns all the integer factors of an integer

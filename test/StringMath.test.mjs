@@ -1,7 +1,7 @@
 import "mocha";
 import * as assert from "assert";
 
-import { StringMath } from "../src/StringMath.mjs";
+import { StringMath } from "../src/static/StringMath.mjs";
 
 //NOTE: Methods in this class aren't error handled. Therefore no use of testing for errors
 describe("StringMath", () => {
