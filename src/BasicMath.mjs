@@ -45,9 +45,9 @@ export class BasicMath {
     static getCommonIntFactors(integer1, integer2) {
         if (integer1 === 0) {
             return BasicMath.getIntFactors(integer2);
+        } else if (integer2 === 0) {
+            return BasicMath.getIntFactors(integer1);
         } else {
-            // const largerInt = Math.max(integer1, integer2);
-            // const smallerInt = Math.min(integer1, integer2);
             return BasicMath.getCommonIntFactors(integer2, integer1 % integer2);
         }
     }

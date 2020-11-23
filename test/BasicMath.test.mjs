@@ -22,21 +22,20 @@ describe("BasicMath", () => {
         });
     });
 
-    //TODO:Test fails unexpectedly
-    // describe("#getCommonIntFactors()", () => {
-    //     it("should return the factors of the non zero integer when one of the integers is 0", () => {
-    //         assert.deepStrictEqual(BasicMath.getCommonIntFactors(0, 10), [1, 10, 2, 5]);
-    //     });
-    //     it("should return the factors of the non zero integer when one of the integers is 0", () => {
-    //         assert.deepStrictEqual(BasicMath.getCommonIntFactors(10, 0), [1, 10, 2, 5]);
-    //     });
-    //     it("should return the correct common factors when integer1 > integer2", () => {
-    //         assert.deepStrictEqual(BasicMath.getCommonIntFactors(15, 10), [1, 5]);
-    //     });
-    //     it("should return the correct common factors when integer1 < integer2", () => {
-    //         assert.deepStrictEqual(BasicMath.getCommonIntFactors(10, 15), [1, 5]);
-    //     });
-    // });
+    describe("#getCommonIntFactors()", () => {
+        it("should return the factors of the non zero integer when one of the integers is 0", () => {
+            assert.deepStrictEqual(BasicMath.getCommonIntFactors(0, 10), [1, 10, 2, 5]);
+        });
+        it("should return the factors of the non zero integer when one of the integers is 0", () => {
+            assert.deepStrictEqual(BasicMath.getCommonIntFactors(10, 0), [1, 10, 2, 5]);
+        });
+        it("should return the correct common factors when integer1 > integer2", () => {
+            assert.deepStrictEqual(BasicMath.getCommonIntFactors(15, 10), [1, 5]);
+        });
+        it("should return the correct common factors when integer1 < integer2", () => {
+            assert.deepStrictEqual(BasicMath.getCommonIntFactors(10, 15), [1, 5]);
+        });
+    });
 
     describe("#GCD()", () => {
         it("should return the non zero integer when one of the integers is 0", () => {
