@@ -166,13 +166,11 @@ export class ExpressionMath {
             }
         }
 
-        const coefficientsMatrixInverted = MatrixMath.getInverseMatrix(coefficientsMultiArray);
-
-        const resultMatrix = MatrixMath.multiplyByMatrix(coefficientsMatrixInverted, constantsMatrix);
+        const resultMatrix = MatrixMath.multiplyByMatrix(MatrixMath.getInverseMatrix(coefficientsMultiArray), constantsMultiArray);
 
         const solution = {};
         for (let i = 0; i < variables.length; i++) {
-            solution[variables[i]] = resultMatrix.multiArray[i][0];
+            solution[variables[i]] = resultMatrix[i][0];
         }
         return solution;
     }
