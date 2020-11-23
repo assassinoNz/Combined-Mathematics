@@ -24,17 +24,26 @@ export class PrimeMath {
      * @return {number[]} All primes between lowerBound(inclusive) and upperBound(inclusive)
     */
     static getPrimesWithin(lowerBound, upperBound) {
-        //Make the lowerBound an odd number if it is even
+        const primes = [];
+        //NOTE: Since we make the lowerBound even lowerBound=2 becomes lowerBound=3
+        //So, 2 is not calculated as a prime
+        //Add 2 as a prime
+        if (lowerBound <= 2) {
+            primes.push(2);
+        }
+
+        //NOTE: The only even prime is 2
+        //So make the lowerBound an odd number if it is even to reduce calculation
         if (lowerBound % 2 === 0) {
             lowerBound++;
         }
 
-        const primes = [];
         for (let i = lowerBound; i <= upperBound; i = i + 2) {
             if (this.isPrime(i)) {
                 primes.push(i);
             }
         }
+
         return primes;
     }
 

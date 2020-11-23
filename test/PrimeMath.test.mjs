@@ -5,6 +5,9 @@ import {PrimeMath} from "../src/PrimeMath.mjs";
 
 describe("PrimeMath", () => {
     describe("#isPrime()", () => {
+        it("should return false for 0", () => {
+            assert.strictEqual(PrimeMath.isPrime(0), false);
+        });
         it("should return false for 1", () => {
             assert.strictEqual(PrimeMath.isPrime(1), false);
         });
@@ -32,11 +35,11 @@ describe("PrimeMath", () => {
         it("should return all primes within lowerBound and upperBound when non of the bounds are primes", () => {
             assert.deepStrictEqual(PrimeMath.getPrimesWithin(4, 25), [5, 7, 11, 13, 17, 19, 23]);
         });
-        it("should not return 2 when loweBound=2", () => {
-            assert.deepStrictEqual(PrimeMath.getPrimesWithin(2, 10), [3, 5, 7]);
+        it("should return 2 when loweBound=2", () => {
+            assert.deepStrictEqual(PrimeMath.getPrimesWithin(2, 10), [2, 3, 5, 7]);
         });
-        it("should not return 2 when loweBound<2", () => {
-            assert.deepStrictEqual(PrimeMath.getPrimesWithin(2, 10), [3, 5, 7]);
+        it("should return 2 when loweBound<2", () => {
+            assert.deepStrictEqual(PrimeMath.getPrimesWithin(1, 10), [2, 3, 5, 7]);
         });
     });
 
@@ -44,7 +47,7 @@ describe("PrimeMath", () => {
         it("should return all primes up to limit(inclusive) when limit is a prime", () => {
             assert.deepStrictEqual(PrimeMath.getPrimesUpTo(13), [2, 3, 5, 7, 11, 13]);
         });
-        it("should return all primes up to limit when limit is a composite", () => {
+        it("should return all primes up to limit(exclusive) when limit is a composite", () => {
             assert.deepStrictEqual(PrimeMath.getPrimesUpTo(14), [2, 3, 5, 7, 11, 13]);
         });
         it("should return 2 when limit is 2", () => {
@@ -55,6 +58,9 @@ describe("PrimeMath", () => {
     describe("#getPrimeFactorization()", () => {
         it("should return the correct prime factorization for a composite", () => {
             assert.deepStrictEqual(PrimeMath.getPrimeFactorization(1111), [11, 101]);
+        });
+        it("should return the number itself as the prime factorization for a prime", () => {
+            assert.deepStrictEqual(PrimeMath.getPrimeFactorization(7), [7]);
         });
     });
 });
