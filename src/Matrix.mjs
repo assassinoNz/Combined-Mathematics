@@ -64,7 +64,7 @@ export class Matrix {
      * @param {Matrix} matrixToAdd Another matrix of the same order
      * @return {Matrix} The transpose matrix of the matrix
      */
-    addMatrix(matrixToAdd) {
+    addTo(matrixToAdd) {
         if (matrixToAdd instanceof Matrix) {
             if (matrixToAdd.rowCount === this.rowCount && matrixToAdd.columnCount === this.columnCount) {
                 return new Matrix(MatrixMath.add(this.multiArray, matrixToAdd.multiArray));
@@ -91,7 +91,7 @@ export class Matrix {
 
     /**
      * Returns a new matrix which is the product of the current matrix and the given matrix
-     * @param {Number} matrixToMultiply Another matrix of the same row count as the column count of the current matrix
+     * @param {Matrix} matrixToMultiply Another matrix of the same row count as the column count of the current matrix
      * @return {Matrix} The product of the current matrix and the given matrix
      */
     multiplyByMatrix(matrixToMultiply) {
