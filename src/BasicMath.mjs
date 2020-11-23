@@ -1,5 +1,6 @@
 //@ts-check
 import { PrimeMath } from "./PrimeMath.mjs";
+import { SequenceMath } from "./SequenceMath.mjs";
 
 export class BasicMath {
     /** Returns all the integer factors of an integer
@@ -9,11 +10,15 @@ export class BasicMath {
     static getIntFactors(integer) {
         const factors = [];
         let factorRange = Math.sqrt(integer);
-        for (let i = 1; i <= factorRange; i++) {
+        for (let i = 1; i < factorRange; i++) {
             if (integer % i === 0) {
                 factors.push(i);
                 factors.push(integer / i);
             }
+        }
+        if (Math.trunc(factorRange) === factorRange) {
+            //CASE: Integer is a perfect square
+            factors.push(factorRange);
         }
         return factors;
     }
@@ -39,13 +44,11 @@ export class BasicMath {
      */
     static getCommonIntFactors(integer1, integer2) {
         if (integer1 === 0) {
-            return this.getIntFactors(integer2);
-        } else if (integer2 === 0) {
-            return this.getIntFactors(integer1);
+            return BasicMath.getIntFactors(integer2);
         } else {
-            const largerInt = Math.max(integer1, integer2);
-            const smallerInt = Math.min(integer1, integer2);
-            return this.getCommonIntFactors(smallerInt, largerInt % smallerInt);
+            // const largerInt = Math.max(integer1, integer2);
+            // const smallerInt = Math.min(integer1, integer2);
+            return BasicMath.getCommonIntFactors(integer2, integer1 % integer2);
         }
     }
 
@@ -55,11 +58,11 @@ export class BasicMath {
      * @param {number} integer2
      * @return {number} The greatest common divisor of integer1 and integer2
      */
-    static calculateGCD(integer1, integer2) {
+    static GCD(integer1, integer2) {
         if (integer2 === 0) {
             return integer1;
         } else {
-            return BasicMath.calculateGCD(integer2, integer1 % integer2);
+            return BasicMath.GCD(integer2, integer1 % integer2);
         }
     }
 
@@ -75,7 +78,7 @@ export class BasicMath {
             if (gcd === 1) {
                 break;
             } else {
-                gcd = BasicMath.calculateGCD(gcd, integers[i]);
+                gcd = BasicMath.GCD(gcd, integers[i]);
             }
         }
         
@@ -88,8 +91,8 @@ export class BasicMath {
      * @param {number} integer2
      * @return {number} The least common multiple of integer1 and integer2
      */
-    static calculateLCM(integer1, integer2) {
-        return (integer1*integer2)/this.calculateGCD(integer1, integer2);
+    static LCM(integer1, integer2) {
+        return (integer1*integer2)/BasicMath.GCD(integer1, integer2);
     }
 
     /**
@@ -101,7 +104,7 @@ export class BasicMath {
         let lcm = integers[0];
 
         for (let i = 0; i < integers.length; i++) {
-            lcm = BasicMath.calculateLCM(lcm, integers[i]);
+            lcm = BasicMath.LCM(lcm, integers[i]);
         }
         
         return lcm;
@@ -113,8 +116,12 @@ export class BasicMath {
      * @return {boolean}
      */
     static isSquareFree(integer) {
-        const intPrimeFactorization = PrimeMath.getPrimeFactorization(integer);
-        const uniquePrimeFactors = new Set(intPrimeFactorization);
-        return intPrimeFactorization.length === uniquePrimeFactors.size;
+        if (integer === 1) {
+            return false;
+        } else {
+            const intPrimeFactorization = PrimeMath.getPrimeFactorization(integer);
+            const uniquePrimeFactors = new Set(intPrimeFactorization);
+            return intPrimeFactorization.length === uniquePrimeFactors.size;
+        }
     }
 }
