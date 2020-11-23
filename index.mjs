@@ -1,10 +1,10 @@
 //@ts-check
-import { BasicMath } from "./src/BasicMath.mjs";
-import { PrimeMath } from "./src/PrimeMath.mjs";
-import { SequenceMath } from "./src/SequenceMath.mjs";
-import { CustomMath } from "./src/CustomMath.mjs";
-import { ExpressionMath } from "./src/ExpressionMath.mjs";
-import { Utility } from "./src/Utility.mjs";
+import { BasicMath } from "./src/static/BasicMath.mjs";
+import { PrimeMath } from "./src/static/PrimeMath.mjs";
+import { SequenceMath } from "./src/static/SequenceMath.mjs";
+import { CustomMath } from "./src/static/CustomMath.mjs";
+import { ExpressionMath } from "./src/static/ExpressionMath.mjs";
+import { Utility } from "./src/static/Utility.mjs";
 import { SudokuPuzzle } from "./src/SudokuPuzzle.mjs";
 
 import * as Discord from "discord.js";
