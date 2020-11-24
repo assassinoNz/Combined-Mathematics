@@ -19,6 +19,17 @@ export class SequenceMath {
         return collatzSequence;
     }
 
+    /**Generates the fibonacci sequence on demand */
+    static* fibonacci () {
+        let current = 0n;
+        let next = 1n;
+    
+        while (true) {
+            yield current;
+            [current, next] = [next, current + next];
+        }
+    }
+
     /**
      * Returns the fibonacci sequence with the specified number of terms
      * @param {number} numOfTerms
@@ -31,16 +42,7 @@ export class SequenceMath {
         //Fibonacci sequence formula
         //T(n)=4T(n-3)+T(n-6)
 
-        function* fibonacci () {
-            let current = 0n;
-            let next = 1n;
-        
-            while (true) {
-                yield current;
-                [current, next] = [next, current + next];
-            }
-        }
-        const sequence = fibonacci();
+        const sequence = SequenceMath.fibonacci();
         const terms = [];
         for (let i = 0; i < numOfTerms; i++) {
             terms[i] = sequence.next().value;
