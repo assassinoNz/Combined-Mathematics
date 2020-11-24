@@ -90,7 +90,7 @@ export class MatrixMath {
      * Multiplies the first matrix by the second matrix only where column count of the first matrix equals to the row count of the second matrix
      * @param {number[][]} matrix1 Must be a square matrix
      * @param {number[][]} matrix2 Must be a square matrix
-     * @return {number[][]} The product of the two matricesmatrix
+     * @return {number[][]} The product of the two matrices
      */
     static multiplyByMatrix(matrix1, matrix2) {
         const resultMatrix = [[]];
@@ -207,7 +207,7 @@ export class MatrixMath {
     }
 
     //NOTE: NOT IMPLEMENTED
-    static getRowEcholenMatrix(matrix = [[1]]) {
+    static getRowEchelonMatrix(matrix = [[1]]) {
         matrix = JSON.parse(JSON.stringify(matrix));
         //In here i acts as the row selector as well as column selector
         for (let i = 0; i < matrix.length - 1; i++) {
