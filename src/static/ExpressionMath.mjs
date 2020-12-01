@@ -75,7 +75,11 @@ export class ExpressionMath {
             "↔": 2,
             "→": 3,
             "∨": 4,
+            "↓": 4,
+            "⊕": 4,
             "∧": 5,
+            ".": 5,
+            "↑": 5,
             "¬": 6,
         }
 
@@ -154,7 +158,7 @@ export class ExpressionMath {
                     tokens.push("*");
                 }
                 tokens.push(expression[c]);
-            } else if (/[,.↔∨→¬∧/+*^()=-]/.test(expression[c])) {
+            } else if (/[,.↓⊕↑↔∨→¬∧/+*^()=-]/.test(expression[c])) {
                 //CASE: Character is a single token
                 tokens.push(expression[c]);
             } else if (/[a-z]/.test(expression[c])) {
@@ -205,7 +209,7 @@ export class ExpressionMath {
             } else if (/[a-z]/.test(infixTokens[c])) {
                 //CASE: Token is a function name
                 operatorStack.push(infixTokens[c]);
-            } else if (/[↔∨→¬∧/+*-]/.test(infixTokens[c])) {
+            } else if (/[.↓⊕↑↔∨→¬∧/+*-]/.test(infixTokens[c])) {
                 //CASE: Token is a left associative operator
                 while ((operatorStack.length > 0) && (ExpressionMath.getPrecedence(operatorStack[operatorStack.length - 1]) >= ExpressionMath.getPrecedence(infixTokens[c])) && (operatorStack[operatorStack.length - 1] !== "(")) {
                     postfixTokens.push(operatorStack.pop());
@@ -253,6 +257,7 @@ export class ExpressionMath {
      */
     static solveBinaryExpression(operator, operand1, operand2) {
         switch (operator) {
+            //Algebraic Operators
             case "+":
                 return `${parseFloat(operand1) + parseFloat(operand2)}`;
             case "-":
@@ -263,8 +268,14 @@ export class ExpressionMath {
                 return `${parseFloat(operand2) / parseFloat(operand1)}`;
             case "^":
                 return `${parseFloat(operand2) ** parseFloat(operand1)}`;
-            case "↔":
-                return `${Number(operand1 === operand2)}`;
+            //Logical Operators
+            case "↔": {
+                if (operand1 === operand2) {
+                    return "1";
+                } else {
+                    return "0";
+                }
+            }
             case "→": {
                 if (operand2 === "1" && operand1 === "0") {
                     return "0";
@@ -272,10 +283,48 @@ export class ExpressionMath {
                     return "1";
                 }
             }
-            case "∧":
-                return `${Number(parseInt(operand1) & parseInt(operand2))}`;
-            case "∨":
-                return `${Number(parseInt(operand1) | parseInt(operand2))}`;
+            case ".": {
+                if (operand1 === "1" && operand2 === "1") {
+                    return "1";
+                } else {
+                    return "0";
+                }
+            }
+            case "∧": {
+                if (operand1 === "1" && operand2 === "1") {
+                    return "1";
+                } else {
+                    return "0";
+                }
+            }
+            case "↑": {
+                if (operand1 === "1" && operand2 === "1") {
+                    return "0";
+                } else {
+                    return "1";
+                }
+            }
+            case "∨": {
+                if (operand1 === "1" || operand2 === "1") {
+                    return "1";
+                } else {
+                    return "0";
+                }
+            }
+            case "⊕": {
+                if (operand1 === operand2) {
+                    return "0";
+                } else {
+                    return "1";
+                }
+            }
+            case "↓": {
+                if (operand1 === "0" && operand2 === "0") {
+                    return "1";
+                } else {
+                    return "0";
+                }
+            }
             default:
                 throw SyntaxError(`No such operator "${operator}"`);
         }
@@ -304,14 +353,14 @@ export class ExpressionMath {
      * Solves an expression with only numeric operands to a single value
      * @param postfixExpressionTokens Must be an expression with only numeric operands
      */
-    static solveExpressionToValue(postfixExpressionTokens) {
+    static evaluateExpression(postfixExpressionTokens) {
         const stack = [];
 
         for (let t = 0; t < postfixExpressionTokens.length; t++) {
             if (/-\d|\d/.test(postfixExpressionTokens[t])) {
                 //CASE: Token is a numeric operand
                 stack.push(postfixExpressionTokens[t]);
-            } else if (/[↔∨→∧+*/^-]/.test(postfixExpressionTokens[t])) {
+            } else if (/[.↓⊕↑↔∨→∧+*/^-]/.test(postfixExpressionTokens[t])) {
                 //CASE: Token is a binary operator
                 stack.push(ExpressionMath.solveBinaryExpression(postfixExpressionTokens[t], stack.pop(), stack.pop()));
             } else if (/¬/.test(postfixExpressionTokens[t])) {
@@ -332,7 +381,7 @@ export class ExpressionMath {
                 const node = new BinaryExpressionNode();
                 node.data = postfixTokens[t];
                 nodeStack.push(node);
-            } else if (/[a-z↔∨→∧+^*/-]/.test(postfixTokens[t])) {
+            } else if (/[a-z.↓⊕↑↔∨→∧+^*/-]/.test(postfixTokens[t])) {
                 //CASE: Token is a function name or a binary operator
                 const node = new BinaryExpressionNode();
                 node.data = postfixTokens[t];
@@ -349,5 +398,41 @@ export class ExpressionMath {
         }
 
         return nodeStack.pop();
+    }
+}
+
+export class BooleanMath {
+    static generateTruthTable(valueDictionary, tokenizedInfixExpressions) {
+        const variables = Object.keys(valueDictionary);
+        const truthTable = {
+            // "P": [],
+            // "Q": [],
+            // "P→Q": []
+        }
+
+        for (const tokenizedInfixExpression of tokenizedInfixExpressions) {
+            truthTable[tokenizedInfixExpression.join(" ")] = [];
+        }
+
+        for (let i = 0; i < 2**variables.length; i++) {
+            //Generate a new set of variable values
+            const binaryString = i.toString(2);
+            const generatedValues = ("0".repeat(variables.length-binaryString.length) + binaryString).split("");
+
+            //Update valueDictionary
+            for (let v = 0; v < variables.length; v++) {
+                valueDictionary[variables[v]] = generatedValues[v]; 
+            }
+
+            //Evaluate each expression using the updated valueDictionary
+            for (let e = 0; e < tokenizedInfixExpressions.length; e++) {
+                const replacedInfix = ExpressionMath.replaceVariablesByValues(tokenizedInfixExpressions[e], valueDictionary);
+                const replacedPostFix = ExpressionMath.infixToPostfix(replacedInfix);
+                const value = ExpressionMath.evaluateExpression(replacedPostFix);
+                truthTable[tokenizedInfixExpressions[e].join(" ")][i] = value;
+            }
+        }
+
+        return truthTable;
     }
 }
