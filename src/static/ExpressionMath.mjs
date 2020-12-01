@@ -402,12 +402,19 @@ export class ExpressionMath {
 }
 
 export class BooleanMath {
+    /**
+     * Generates a truth table where the tokenizedInfixExpressions are represented by its columns
+     * @param valueDictionary Must contain entries for the variables used in infixExpressions
+     * @param {string[][]} tokenizedInfixExpressions Must be tokenized properly
+     */
     static generateTruthTable(valueDictionary, tokenizedInfixExpressions) {
         const variables = Object.keys(valueDictionary);
         const truthTable = {
             // "P": [],
             // "Q": [],
-            // "P→Q": []
+            // "P→Q": [],
+            //"¬P∨Q": [],
+            //"¬Q→¬P": []
         }
 
         for (const tokenizedInfixExpression of tokenizedInfixExpressions) {
