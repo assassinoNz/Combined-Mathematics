@@ -1,177 +1,225 @@
 //@ts-check
-import { MatrixMath } from "./MatrixMath.mjs";
+export class CommonExpressionMath {
+    /**
+     * Generates an empty value dictionary for a given expression
+     * @param expressionTokens 
+     */
+    static generateEmptyValueDictionary(expressionTokens) {
+        const valueDictionary = {};
 
-export class ExpressionMath {
-    static getPrecedence(operator) {
-        const opPrecedence = {
-            "+": 1,
-            "-": 1,
-            "*": 2,
-            "/": 2,
-            "^": 3,
-            "(": 3
+        for (let t = 0; t < expressionTokens.length; t++) {
+            if (/^[A-Z]/.test(expressionTokens[t])) {
+                //CASE: Token is a variable operand
+                valueDictionary[expressionTokens[t]] = null;
+            } else if (/^[-A-Z]/.test(expressionTokens[t])) {
+                valueDictionary[expressionTokens[t].replace("-", "")] = null;
+            }
         }
 
-        return opPrecedence[operator];
+        return valueDictionary;
     }
 
-    /**Converts an infix expression into a postfix expression
-     * @param {string} infixExpression
-    */
-    static toPostfix(infixExpression) {
-        let postfixExpression = "";
+    /**
+     * Replaces all the matching variable operands in an expression with their values
+     * @param {string[]} expressionTokens 
+     * @param valueDictionary A dictionary that maps a variable to it's value
+     */
+    static replaceVariablesByValues(expressionTokens, valueDictionary) {
+        const replacedExpression = JSON.parse(JSON.stringify(expressionTokens));
+
+        for (let t = 0; t < expressionTokens.length; t++) {
+            if (/[A-Z]|[-A-Z]/.test(expressionTokens[t])) {
+                //CASE: Token is a variable operand
+                //NOTE: The token may have "-" prefixed to it. Therefore only the english letter must be replaced
+                replacedExpression[t] = expressionTokens[t].replace(/[A-Z]/, valueDictionary[expressionTokens[t].replace("-", "")]);
+
+                if (replacedExpression[t].startsWith("--")) {
+                    //CASE: Variable operand is negated and the english letter also has a negative value
+                    //NOTE: This causes the english letter to be prefixed with "--". We can safely remove that "--"
+                    replacedExpression[t] = replacedExpression[t].replace("--", "");
+                }
+            }
+        }
+
+        return replacedExpression;
+    }
+
+    /**
+     * Solves an expression with only numeric operands to a single value
+     * @param postfixExpressionTokens Must be an expression with only numeric operands
+     */
+    static solveExpressionToValue(postfixExpressionTokens) {
         const stack = [];
 
-        for (let i = 0; i < infixExpression.length; i++) {
-            const char = infixExpression[i];
-            if (/[a-zA-Z0-9]/.test(char)) {
-                //CASE: Char is an alphanumeric character
-                //Append the char directly
-                postfixExpression += char;
-            } else if (/[(\^]/.test(char)) {
-                //CASE: Char has the highest precedence. Therefore greater than or equal to stack.top
-                //Just push the char
-                stack.push(char);
-            } else if (/[\*\/]/.test(char)) {
-                //CASE: Char has a medium precedence. Stack.top can have higher precedence
-                //Append all higher/same precedence chars until "(" is encountered
-                while (stack.length > 0 && /[(\^\*\/]/.test(stack[stack.length - 1])) {
-                    if (stack[stack.length - 1] === "(") {
-                        stack.pop();
-                        break;
-                    } else {
-                        postfixExpression += stack.pop();
-                    }
-                }
-                //Finally push the char
-                stack.push(char);
-            } else if (/[+-]/.test(char)) {
-                //CASE: Char has the lowest precedence. Stack.top can have higher precedence
-                //Append all higher/same precedence chars until "(" is encountered
-                while (stack.length > 0 && /[(\^\*\/+-]/.test(stack[stack.length - 1])) {
-                    if (stack[stack.length - 1] === "(") {
-                        stack.pop();
-                        break;
-                    } else {
-                        postfixExpression += stack.pop();
-                    }
-                }
-                //Finally push the char
-                stack.push(char);
-            } else if (char === ")") {
-                //CASE: char is ")"
-                //Append everything in stack until "(" is encountered
-                while (stack.length > 0 && (stack[stack.length - 1] !== "(")) {
-                    postfixExpression += stack.pop();
-                }
+        for (let t = 0; t < postfixExpressionTokens.length; t++) {
+            if (/^[-\d]|^\d/.test(postfixExpressionTokens[t])) {
+                //CASE: Token is a numeric operand
+                stack.push(postfixExpressionTokens[t]);
+            } else if (/[+*/^-]/.test(postfixExpressionTokens[t])) {
+                //CASE: Token is an operator
+                stack.push(AlgebraicExpressionMath.solveBinaryExpression(postfixExpressionTokens[t], stack.pop(), stack.pop()));
             }
         }
 
-        //Append everything else in stack
-        while (stack.length > 0) {
-            postfixExpression += stack.pop();
+        return stack[0];
+    }
+}
+
+export class AlgebraicExpressionMath {
+    /**
+     * Returns the precedence index of the operator
+     * @param {string} operator 
+     * @return {number}
+     */
+    static getPrecedence(operator) {
+        const opPrecedence = {
+            "+": 2,
+            "-": 2,
+            "*": 3,
+            "/": 3,
+            "^": 4
         }
 
-        return postfixExpression;
+        if (/^[a-z]{1,}$/.test(operator)) {
+            //CASE: Operator is a function
+            //Functions has the highest precedence
+            return 5;
+        } else {
+            return opPrecedence[operator];
+        }
     }
 
-    //Simplifies the given equation to the default polynomial notation (ax + by + c = 0) and returns all terms isolated
-    //All the variables must have their coefficient explicitly given (x - y = 3 isn't valid. It must be 1x - 1y = 3)
-    //NOTE: Variables abc, acb, cab in the same set of equations are considered equivalent
-    //NOTE: Variables abc, ab, a, b in the same set of equations are considered distinct
-    static simplifyToLHSByAddition(equation) {
-        //Remove all spaces
-        equation = equation.replace(/\s/g, "");
-        // equation = equation.replace(/[a-z]{1,})/g, "1" + "$1");
-        //Split equation into two sides by "="
-        const equationSides = equation.split("=");
-        //Split left hand side into terms
-        const equationLHSTerms = equationSides[0].match(/[+-]{0,1}[0-9]{1,}[a-z]{0,}/gi);
-        //Split right hand side into terms
-        const equationRHSTerms = equationSides[1].match(/[+-]{0,1}[0-9]{1,}[a-z]{0,}/gi);
-        //Get all the right hand side terms into left hand side negating the sign
-        for (let i = 0; i < equationRHSTerms.length; i++) {
-            if (equationRHSTerms[i].startsWith("-")) {
-                equationLHSTerms.push(equationRHSTerms[i].replace("-", "+"));
-            } else if (equationRHSTerms[i].startsWith("+")) {
-                equationLHSTerms.push(equationRHSTerms[i].replace("+", "-"));
+    /**
+     * Return the value after applying the specified operator on operand1 and operand2
+     * @param {string} operator 
+     * @param {string} operand1 
+     * @param {string} operand2 
+     */
+    static solveBinaryExpression(operator, operand1, operand2) {
+        switch (operator) {
+            case "+":
+                return `${parseFloat(operand1) + parseFloat(operand2)}`;
+            case "-":
+                return `${parseFloat(operand1) - parseFloat(operand2)}`;
+            case "*":
+                return `${parseFloat(operand1) * parseFloat(operand2)}`;
+            case "/":
+                return `${parseFloat(operand2) / parseFloat(operand1)}`;
+            case "^":
+                return `${parseFloat(operand2) ** parseFloat(operand1)}`;
+            default:
+                throw SyntaxError(`No such operator "${operator}"`);
+        }
+    }
+
+    /**Separates any expression into a its fundamental tokens.
+     * WARNING: Negative numeric operands are not supported
+     * @param {string} expression
+     * @return {string[]} The expression separated into tokens
+    */
+    static separateToTokens(expression) {
+        //Remove all empty spaces before starting
+        expression = expression.replace(/\s/g, "");
+
+        let tokens = [];
+
+        for (let c = 0; c < expression.length; c++) {
+            if (/[A-Z]/.test(expression[c])) {
+                //CASE: Character is a variable operand
+                if (/[A-Z]|^\d/.test(tokens[tokens.length - 1])) {
+                    //CASE: Previous token is a numeric operand or a variable operand
+                    //Since this character is a variable operand, there must be a multiplication between them
+                    tokens.push("*");
+                }
+                tokens.push(expression[c]);
+            } else if (/[,/+*^()=-]/.test(expression[c])) {
+                //CASE: Character is a single token
+                tokens.push(expression[c]);
+            } else if (/[a-z]/.test(expression[c])) {
+                //CASE: Character is function name starting character
+                //Read ahead to capture the full function name
+                let functionName = "";
+                let c2 = c;
+                while (/[a-z]/.test(expression[c2])) {
+                    functionName += expression[c2];
+                    c2++;
+                }
+                c = c2 - 1;
+                tokens.push(functionName);
+            } else if (/\d/.test(expression[c])) {
+                //CASE: Character is digit
+                //Read ahead to capture the full number
+                let number = "";
+                let c2 = c;
+                while (/\d/.test(expression[c2])) {
+                    number += expression[c2];
+                    c2++;
+                }
+                c = c2 - 1;
+                tokens.push(number);
             } else {
-                equationLHSTerms.push("-" + equationRHSTerms[i]);
-            }
-        }
-        //Sort out each multiplied term's character order ([+-][0-9][a-z])
-        for (let i = 0; i < equationLHSTerms.length; i++) {
-            let variablePart = equationLHSTerms[i].match(/[a-z]{1,}/gi);
-            if (variablePart !== null) {
-                equationLHSTerms[i] = equationLHSTerms[i].replace(variablePart[0], "");
-                equationLHSTerms[i] = equationLHSTerms[i] + variablePart[0].split("").sort().join("");
+                throw SyntaxError(`Unknown token "${expression[c]}"`);
             }
         }
 
-        return equationLHSTerms;
+        return tokens;
     }
 
-    //Parses and categorizes the equation into variables, coefficients, and the simplified constant
-    static getCategorizedEquationData(equation) {
-        const equationLHSTerms = this.simplifyToLHSByAddition(equation);
-        const equationData = {};
-        //Extract variables used in the equation (The equation must be recreated with the sorted terms)
-        equationData.variables = Array.from(new Set(equationLHSTerms.join("").match(/[a-z]{1,}/gi))).sort();
-        //Get simplified coefficient for each variable
-        equationData.coefficients = [];
-        for (let i = 0; i < equationData.variables.length; i++) {
-            let simplifiedCoefficient = 0;
-            for (let j = 0; j < equationLHSTerms.length; j++) {
-                if (equationLHSTerms[j].includes(equationData.variables[i])) {
-                    simplifiedCoefficient = simplifiedCoefficient + parseInt(equationLHSTerms.splice(j, 1)[0].replace(equationData.variables[i], ""));
-                    j = -1;
+    /**Converts a tokenized infix expression into a postfix expression using the Shunting Yard algorithm
+     * @param {string} infixTokens
+     * @return {string[]} The postfix tokens of the given infix tokens
+    */
+    static infixToPostfix(infixTokens) {
+        let postfixTokens = [];
+        let operatorStack = [];
+
+        for (let c = 0; c < infixTokens.length; c++) {
+            if (/[,\s]/.test(infixTokens[c])) {
+                //CASE: Token is a non-significant character
+                //Do nothing
+            } else if (/[A-Z]|[-A-Z]/.test(infixTokens[c]) || /^\d/.test(infixTokens[c])) {
+                //CASE: Token is an operand
+                postfixTokens.push(infixTokens[c]);
+            } else if (/^[a-z]{1,}$/.test(infixTokens[c])) {
+                //CASE: Token is a function name
+                operatorStack.push(infixTokens[c]);
+            } else if (/[/+*-]/.test(infixTokens[c])) {
+                //CASE: Token is a left associative operator
+                while ((operatorStack.length > 0) && (AlgebraicExpressionMath.getPrecedence(operatorStack[operatorStack.length - 1]) >= AlgebraicExpressionMath.getPrecedence(infixTokens[c])) && (operatorStack[operatorStack.length - 1] !== "(")) {
+                    postfixTokens.push(operatorStack.pop());
                 }
-            }
-            equationData.coefficients.push(simplifiedCoefficient);
-        }
-        //Get simplified constant
-        equationData.simplifiedConstant = [0];
-        for (let i = 0; i < equationLHSTerms.length; i++) {
-            equationData.simplifiedConstant[0] = equationData.simplifiedConstant[0] + parseInt(equationLHSTerms[i]);
-        }
-        equationData.simplifiedConstant[0] = equationData.simplifiedConstant[0] * -1;
-        return equationData;
-    }
-
-    //Returns the solution of object for a given set of equations (number of equations must match with the number of variables)
-    static getSolution(equations) {
-        const coefficientsMultiArray = [];
-        const constantsMultiArray = [];
-        const variablesMultiArray = [];
-
-        for (let i = 0; i < equations.length; i++) {
-            const equationData = this.getCategorizedEquationData(equations[i]);
-            coefficientsMultiArray.push(equationData.coefficients);
-            constantsMultiArray.push(equationData.simplifiedConstant);
-            variablesMultiArray.push(equationData.variables);
-        }
-
-        let variables = [];
-        for (let i = 0; i < variablesMultiArray.length; i++) {
-            if (variablesMultiArray[i].length > variables.length) {
-                variables = variablesMultiArray[i];
-            }
-        }
-
-        for (let i = 0; i < equations.length; i++) {
-            for (let j = 0; j < variables.length; j++) {
-                if (coefficientsMultiArray[i][j] === undefined) {
-                    coefficientsMultiArray[i][j] = 0;
+                operatorStack.push(infixTokens[c]);
+            } else if (/\^/.test(infixTokens[c])) {
+                //CASE: Token is a right associative operator
+                while ((operatorStack.length > 0) && (AlgebraicExpressionMath.getPrecedence(operatorStack[operatorStack.length - 1]) > AlgebraicExpressionMath.getPrecedence(infixTokens[c])) && (operatorStack[operatorStack.length - 1] !== "(")) {
+                    postfixTokens.push(operatorStack.pop());
                 }
+                operatorStack.push(infixTokens[c]);
+            } else if (infixTokens[c] === "(") {
+                //CASE: Token is a left parenthesis
+                operatorStack.push(infixTokens[c]);
+            } else if (infixTokens[c] === ")") {
+                //CASE: Token is a right parenthesis
+
+                //Unload the stack until "(" becomes the top of the stack or stack is empty
+                while ((operatorStack.length > 0) && (operatorStack[operatorStack.length - 1] !== "(")) {
+                    postfixTokens.push(operatorStack.pop());
+                }
+
+                if (operatorStack[operatorStack.length - 1] === "(") {
+                    //CASE: Top of the stack has a left parenthesis
+                    //Discard it
+                    operatorStack.pop();
+                }
+            } else {
+                throw SyntaxError(`Invalid token "${infixTokens[c]}"`);
             }
         }
 
-        const resultMatrix = MatrixMath.multiplyByMatrix(MatrixMath.getInverseMatrix(coefficientsMultiArray), constantsMultiArray);
-
-        const solution = {};
-        for (let i = 0; i < variables.length; i++) {
-            solution[variables[i]] = resultMatrix[i][0];
+        while (operatorStack.length > 0) {
+            postfixTokens.push(operatorStack.pop());
         }
-        return solution;
+
+        return postfixTokens;
     }
 }
