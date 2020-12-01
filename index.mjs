@@ -168,7 +168,7 @@ client.on("message", message => {
     
                         case "postfix": {
                             try {
-                                output = ExpressionMath.toPostfix(restArgs[0]);
+                                output = ExpressionMath.infixToPostfix(ExpressionMath.separateToTokens(restArgs[0])).join("");
                             } catch (error) {
                                 output = error.toString();
                             }
@@ -243,7 +243,7 @@ client.on("message", message => {
                             try {
                                 const sudokuPuzzle = new SudokuPuzzle(restArgs[0]);
                                 sudokuPuzzle.solve();
-                                output = sudokuPuzzle.getStringifiedPuzzle();
+                                output = sudokuPuzzle.toString();
                             } catch (error) {
                                 output = error.toString();
                             }

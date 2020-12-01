@@ -105,7 +105,7 @@ export class SudokuPuzzle {
         this.solvedPuzzle = JSON.parse(JSON.stringify(this.tempPuzzle));
     }
 
-    getStringifiedPuzzle() {
+    toString() {
         let stringifiedPuzzle = "";
 
         for (let r = 0; r < this.solvedPuzzle.length; r++) {
