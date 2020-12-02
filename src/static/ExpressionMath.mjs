@@ -156,33 +156,6 @@ export class ExpressionMath {
         return valueDictionary;
     }
 
-    /**
-     * Replaces all the matching variable operands in an expression with their values
-     * @param {string[]} expressionTokens 
-     * @param valueDictionary A dictionary that maps a variable to it's value
-     * @return {string[]} The tokens of the expression whose variables are replaced by values
-     */
-    static replaceVariablesByValues(expressionTokens, valueDictionary) {
-        const replacedExpression = JSON.parse(JSON.stringify(expressionTokens));
-
-        for (let t = 0; t < expressionTokens.length; t++) {
-            if (/[A-Z]|-[A-Z]/.test(expressionTokens[t])) {
-                //CASE: Token is a variable operand
-                //NOTE: The token may have "-" prefixed to it. Therefore only the english letter must be replaced
-                const englishLetter = expressionTokens[t].match(/[A-Z]/)[0];
-                replacedExpression[t] = expressionTokens[t].replace(englishLetter, valueDictionary[englishLetter]);
-
-                if (replacedExpression[t].startsWith("--")) {
-                    //CASE: Variable operand is negated and the english letter also has a negative value
-                    //NOTE: This causes the english letter to be prefixed with "--". We can safely remove that "--"
-                    replacedExpression[t] = replacedExpression[t].replace("--", "");
-                }
-            }
-        }
-
-        return replacedExpression;
-    }
-
     /**Separates any expression into a its fundamental tokens.
      * WARNING: Negative numeric operands are not supported.
      * WARNING: Decimal numeric operands are not supported.
@@ -438,27 +411,72 @@ export class ExpressionMath {
     }
 
     /**
+     * Negates an operand
+     * @param {string} value
+     * @param {number} context
+     * @return {string} The value after negating it according to the context
+     */
+    static negateOperandValue(value, context) {
+        switch (context) {
+            case ExpressionContext.ALGEBRA: {
+                if (value.startsWith("-")) {
+                    return value.replace("-", "");
+                } else {
+                    return "-" + value;
+                }
+            }
+            case ExpressionContext.BOOLEAN:
+            case ExpressionContext.LOGIC: {
+                if (value === "0") {
+                    return "1";
+                } else {
+                    return "0";
+                }
+            }
+            default: {
+                throw SyntaxError(`No such context "${context}"`);
+            }
+        }
+    }
+
+    /**
      * Solves an expression with only numeric operands to a single value
      * @param {string[]} postfixTokens Must be an expression with only numeric operands
+     * @param valueDictionary A dictionary that maps a variable to it's value
+     * @param {number} context
      * @return {string} The value after evaluating the complex expression
      */
-    static evaluateExpression(postfixTokens, context) {
-        const stack = [];
+    static evaluateExpression(postfixTokens, valueDictionary, context) {
+        const valueStack = [];
 
         for (let t = 0; t < postfixTokens.length; t++) {
-            if (ExpressionRegExp.tokens.numericOperand.test(postfixTokens[t])) {
+            if (ExpressionRegExp.tokens.variableOperand.test(postfixTokens[t])) {
+                //CASE: Token is a variable operand
+                let operandValue;
+
+                if (postfixTokens[t].startsWith("-")) {
+                    //CASE: Operand is negated
+                    //Lookup its value in the valueDictionary and assign the negated value
+                    operandValue = ExpressionMath.negateOperandValue(valueDictionary[postfixTokens[t].replace("-", "")], context);
+                } else {
+                    //Lookup its value in the valueDictionary and assign the value
+                    operandValue = valueDictionary[postfixTokens[t]];
+                }
+
+                valueStack.push(operandValue);
+            } if (ExpressionRegExp.tokens.numericOperand.test(postfixTokens[t])) {
                 //CASE: Token is a numeric operand
-                stack.push(postfixTokens[t]);
+                valueStack.push(postfixTokens[t]);
             } else if (ExpressionRegExp.tokens.binaryOperators.test(postfixTokens[t])) {
                 //CASE: Token is a binary operator
-                stack.push(ExpressionMath.solveBinaryExpression(postfixTokens[t], stack.pop(), stack.pop(), context));
+                valueStack.push(ExpressionMath.solveBinaryExpression(postfixTokens[t], valueStack.pop(), valueStack.pop(), context));
             } else if (ExpressionRegExp.tokens.unaryOperators.test(postfixTokens[t])) {
                 //CASE: Token is a unary operator
-                stack.push(ExpressionMath.solveUnaryExpression(postfixTokens[t], stack.pop(), context));
+                valueStack.push(ExpressionMath.solveUnaryExpression(postfixTokens[t], valueStack.pop(), context));
             }
         }
 
-        return stack[0];
+        return valueStack[0];
     }
 
     /**
@@ -529,7 +547,7 @@ export class BooleanMath {
             for (let e = 0; e < tokenizedInfixExpressions.length; e++) {
                 const replacedInfix = ExpressionMath.replaceVariablesByValues(tokenizedInfixExpressions[e], valueDictionary);
                 const replacedPostFix = ExpressionMath.infixToPostfix(replacedInfix);
-                const value = ExpressionMath.evaluateExpression(replacedPostFix, ExpressionContext.BOOLEAN);
+                const value = ExpressionMath.evaluateExpression(replacedPostFix, valueDictionary, ExpressionContext.BOOLEAN);
                 truthTable[tokenizedInfixExpressions[e].join(" ")][i] = value;
             }
         }
