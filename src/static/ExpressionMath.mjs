@@ -187,11 +187,11 @@ export class ExpressionMath {
         let tokens = [];
 
         for (let c = 0; c < expression.length; c++) {
-            if (ExpressionRegExp.tokens.variableOperand.test(expression[c])) {
-                //CASE: Character is a variable operand token
+            if (ExpressionRegExp.tokens.variableOperand.test(expression[c]) || ExpressionRegExp.tokens.unaryOperators.test(expression[c])) {
+                //CASE: Character is a variable operand or a unary operator token
                 if (ExpressionRegExp.tokens.operands.test(tokens[tokens.length - 1])) {
-                    //CASE: Previous token is also an operand
-                    //Since this character is a variable operand token, there must be a multiplication between them
+                    //CASE: Previous token is an operand
+                    //Since this character is a variable operand or a unary operator token, there must be a multiplication between them
                     switch (context) {
                         case ExpressionContext.ALGEBRA: {
                             tokens.push("*");
