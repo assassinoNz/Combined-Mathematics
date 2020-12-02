@@ -4,20 +4,28 @@ export class BinaryExpressionNode {
     left = null;
     right = null;
 
-    tokenize(notation = "INFIX") {
+    /**
+     * @param {number} notation
+     * @return {string[]}
+     */
+    tokenize(notation = ExpressionNotation.INFIX) {
         switch (notation) {
-            case "PREFIX":
-                return this.tokenizeToPrefix();
-            case "INFIX":
-                return this.tokenizeToInfix();
-            case "POSTFIX":
-                return this.tokenizeToPostfix();
+            case ExpressionNotation.PREFIX:
+                return this.tokenizeToPrefix(this);
+            case ExpressionNotation.INFIX:
+                return this.tokenizeToInfix(this);
+            case ExpressionNotation.POSTFIX:
+                return this.tokenizeToPostfix(this);
             default:
                 throw new Error("InvalidArgument: No such notation");
         }
     }
 
-    tokenizeToPrefix(node = this) {
+    /**
+     * @param {BinaryExpressionNode} node
+     * @return {string[]}
+     */
+    tokenizeToPrefix(node) {
         if (node.left === null && node.right === null) {
             //CASE: Node is a leaf
             return [node.data];
@@ -30,7 +38,11 @@ export class BinaryExpressionNode {
         }
     }
 
-    tokenizeToInfix(node = this) {
+    /**
+     * @param {BinaryExpressionNode} node
+     * @return {string[]}
+     */
+    tokenizeToInfix(node) {
         if (node.left === null && node.right === null) {
             //CASE: Node is a leaf
             return [node.data];
@@ -43,7 +55,11 @@ export class BinaryExpressionNode {
         }
     }
 
-    tokenizeToPostfix(node = this) {
+    /**
+     * @param {BinaryExpressionNode} node
+     * @return {string[]}
+     */
+    tokenizeToPostfix(node) {
         if (node.left === null && node.right === null) {
             //CASE: Node is a leaf
             return [node.data];
@@ -55,6 +71,12 @@ export class BinaryExpressionNode {
             return [...this.tokenizeToPostfix(node.left), ...this.tokenizeToPostfix(node.right), node.data];
         }
     }
+}
+
+export class ExpressionNotation {
+    static PREFIX = 0;
+    static INFIX = 1;
+    static POSTFIX = 2;
 }
 
 export class ExpressionContext {
