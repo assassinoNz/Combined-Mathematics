@@ -65,9 +65,9 @@ export class ExpressionContext {
 
 export class ExpressionRegExp {
     static tokens = {
-        variableOperand: /^[A-Z]{1}$|^-[A-Z]{1}$/,
-        numericOperand: /^\d{1,}$/,
-        operands: /^-[A-Z]{1}$|^[A-Z]{1}$|^-\d{1,}$|^\d{1,}$/,
+        variableOperand: /^-{0,1}[A-Z]{1}$/,
+        numericOperand: /^-{0,1}\d{1,}$/,
+        operands: /^-{0,1}[A-Z]{1}$|^-{0,1}\d{1,}$/,
         leftAssociativeOperators: /^[*/.&→>∧↑¬~!↓↔⊕∨|+-]{1}$/,
         rightAssociativeOperators: /^\^{1}$/,
         binaryOperators: /^[*/.&→>∧↑^↓↔⊕∨|+-]{1}$/,
@@ -309,7 +309,7 @@ export class ExpressionMath {
      * @param {number} context
      * @return {string} The value after evaluating the single binary expression
      */
-    static solveBinaryExpression(operator, operand1, operand2, context) {
+    static evaluateBinaryExpression(operator, operand1, operand2, context) {
         //WARNING: This code heavily relies on the switch statement's fall-through feature
 
         switch (context) {
@@ -404,7 +404,7 @@ export class ExpressionMath {
      * @param {number} context
      * @return {string} The value after evaluating the single unary expression
      */
-    static solveUnaryExpression(operator, operand, context) {
+    static evaluateUnaryExpression(operator, operand, context) {
         switch (context) {
             case ExpressionContext.BOOLEAN:
             case ExpressionContext.LOGIC: {
@@ -429,7 +429,7 @@ export class ExpressionMath {
     }
 
     /**
-     * Negates an operand
+     * Negates an operand value
      * @param {string} value
      * @param {number} context
      * @return {string} The value after negating it according to the context
@@ -487,10 +487,10 @@ export class ExpressionMath {
                 valueStack.push(postfixTokens[t]);
             } else if (ExpressionRegExp.tokens.binaryOperators.test(postfixTokens[t])) {
                 //CASE: Token is a binary operator
-                valueStack.push(ExpressionMath.solveBinaryExpression(postfixTokens[t], valueStack.pop(), valueStack.pop(), context));
+                valueStack.push(ExpressionMath.evaluateBinaryExpression(postfixTokens[t], valueStack.pop(), valueStack.pop(), context));
             } else if (ExpressionRegExp.tokens.unaryOperators.test(postfixTokens[t])) {
                 //CASE: Token is a unary operator
-                valueStack.push(ExpressionMath.solveUnaryExpression(postfixTokens[t], valueStack.pop(), context));
+                valueStack.push(ExpressionMath.evaluateUnaryExpression(postfixTokens[t], valueStack.pop(), context));
             }
         }
 
