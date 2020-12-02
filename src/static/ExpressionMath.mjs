@@ -82,7 +82,7 @@ export class ExpressionRegExp {
     static characters = {
         //WARNING: Tokenizer can only recognize positive integers as numerical operands
         singleTokens: /^[,)(\][}{*/.&→>∧↑¬~!^↓↔⊕∨|+-]{1}$/,
-        numericOperandCandidate: /^\d{1}$/, 
+        numericOperandCandidate: /^\d{1}$/,
         functionNameCandidate: /^[a-z]{1}$/
     };
 
@@ -96,45 +96,63 @@ export class ExpressionRegExp {
 export class ExpressionMath {
     /**
      * Returns the precedence index of the operator. Higher the index, the greater the precedence
-     * @param {string} operator 
+     * @param {string} operator
+     * @param {number} context
      * @return {number}
      */
-    static getPrecedence(operator) {
+    static getPrecedence(operator, context) {
         if (/[a-z]/.test(operator)) {
             //CASE: Operator is a function
             //Functions has the highest precedence
             return 4;
         } else {
             //WARNING: This code heavily relies on the switch statement's fall-through feature
-            //WARNING: "^" operator as the XOR is not supported because it conflicts with the power operator
-            switch (operator) {
-                case "+":
-                case "-":
-                case "|":
-                case "∨":
-                case "⊕":
-                case "↔":
-                case "↓": //NOR
-                    return 1;
-                case "*":
-                case "/":
-                case ".":
-                case "&":
-                case "→": //IMPLY
-                case ">": //IMPLY
-                case "∧":
-                case "↑": //NAND
-                    return 2;
-                case "^": //POWER (See warning)
-                case "¬":
-                case "!":
-                case "~":
-                    return 3;
+            switch (context) {
+                case ExpressionContext.ALGEBRA: {
+                    switch (operator) {
+                        case "+":
+                        case "-":
+                            return 1;
+                        case "*":
+                        case "/":
+                        case ".":
+                            return 2;
+                        case "^":
+                            return 3;
+                        default:
+                            throw SyntaxError(`No such operator "${operator}"`);
+                    }
+                }
+                case ExpressionContext.BOOLEAN:
+                case ExpressionContext.LOGIC: {
+                    switch (operator) {
+                        case "+":
+                        case "|":
+                        case "∨":
+                        case "⊕":
+                        case "^": //XOR
+                        case "↔":
+                        case "↓": //NOR
+                            return 1;
+                        case ".":
+                        case "&":
+                        case "→": //IMPLY
+                        case ">": //IMPLY
+                        case "∧":
+                        case "↑": //NAND
+                            return 2;
+                        case "¬":
+                        case "!":
+                        case "~":
+                            return 3;
+                        default:
+                            throw SyntaxError(`No such operator "${operator}"`);
+                    }
+                }
                 default:
-                    throw SyntaxError(`No such operator "${operator}"`);
+                    throw SyntaxError(`No such context "${context}"`);
             }
         }
-
     }
 
     /**
@@ -145,10 +163,9 @@ export class ExpressionMath {
         const valueDictionary = {};
 
         for (let t = 0; t < expressionTokens.length; t++) {
-            if (/^[A-Z]/.test(expressionTokens[t])) {
+            if (ExpressionRegExp.tokens.variableOperand.test(expressionTokens[t])) {
                 //CASE: Token is a variable operand
-                valueDictionary[expressionTokens[t]] = null;
-            } else if (/^[-A-Z]/.test(expressionTokens[t])) {
+                //NOTE: Variable operands may contain a "-" prefix
                 valueDictionary[expressionTokens[t].replace("-", "")] = null;
             }
         }
@@ -160,6 +177,7 @@ export class ExpressionMath {
      * WARNING: Negative numeric operands are not supported.
      * WARNING: Decimal numeric operands are not supported.
      * @param {string} expression
+     * @param {number} context
      * @return {string[]} The expression separated into its fundamental tokens
     */
     static separateToTokens(expression, context) {
@@ -228,9 +246,10 @@ export class ExpressionMath {
 
     /**Converts a tokenized infix expression into a postfix expression using the Shunting Yard algorithm
      * @param {string[]} infixTokens
+     * @param {number} context
      * @return {string[]} The infix tokens rearranged in postfix notation
     */
-    static infixToPostfix(infixTokens) {
+    static infixToPostfix(infixTokens, context) {
         let postfixTokens = [];
         let operatorStack = [];
 
@@ -247,13 +266,13 @@ export class ExpressionMath {
                 operatorStack.push(infixTokens[c]);
             } else if (ExpressionRegExp.tokens.leftAssociativeOperators.test(infixTokens[c])) {
                 //CASE: Token is a left associative operator
-                while ((operatorStack.length > 0) && (!ExpressionRegExp.tokens.openingBrackets.test(operatorStack[operatorStack.length - 1])) && (ExpressionMath.getPrecedence(operatorStack[operatorStack.length - 1]) >= ExpressionMath.getPrecedence(infixTokens[c]))) {
+                while ((operatorStack.length > 0) && (!ExpressionRegExp.tokens.openingBrackets.test(operatorStack[operatorStack.length - 1])) && (ExpressionMath.getPrecedence(operatorStack[operatorStack.length - 1], context) >= ExpressionMath.getPrecedence(infixTokens[c], context))) {
                     postfixTokens.push(operatorStack.pop());
                 }
                 operatorStack.push(infixTokens[c]);
             } else if (ExpressionRegExp.tokens.rightAssociativeOperators.test(infixTokens[c])) {
                 //CASE: Token is a right associative operator
-                while ((operatorStack.length > 0)&& (!ExpressionRegExp.tokens.openingBrackets.test(operatorStack[operatorStack.length - 1])) && (ExpressionMath.getPrecedence(operatorStack[operatorStack.length - 1]) > ExpressionMath.getPrecedence(infixTokens[c]))) {
+                while ((operatorStack.length > 0) && (!ExpressionRegExp.tokens.openingBrackets.test(operatorStack[operatorStack.length - 1])) && (ExpressionMath.getPrecedence(operatorStack[operatorStack.length - 1], context) > ExpressionMath.getPrecedence(infixTokens[c], context))) {
                     postfixTokens.push(operatorStack.pop());
                 }
                 operatorStack.push(infixTokens[c]);
@@ -377,7 +396,6 @@ export class ExpressionMath {
             }
         }
     }
-
 
     /**
      * Returns the value after applying the specified operator on operand1 and operand2
