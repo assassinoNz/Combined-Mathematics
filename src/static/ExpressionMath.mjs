@@ -563,9 +563,8 @@ export class BooleanMath {
 
             //Evaluate each expression using the updated valueDictionary
             for (let e = 0; e < tokenizedInfixExpressions.length; e++) {
-                const replacedInfix = ExpressionMath.replaceVariablesByValues(tokenizedInfixExpressions[e], valueDictionary);
-                const replacedPostFix = ExpressionMath.infixToPostfix(replacedInfix);
-                const value = ExpressionMath.evaluateExpression(replacedPostFix, valueDictionary, ExpressionContext.BOOLEAN);
+                const tokenizedPostfixExpression = ExpressionMath.infixToPostfix(tokenizedInfixExpressions[e], ExpressionContext.BOOLEAN);
+                const value = ExpressionMath.evaluateExpression(tokenizedPostfixExpression, valueDictionary, ExpressionContext.BOOLEAN);
                 truthTable[tokenizedInfixExpressions[e].join(" ")][i] = value;
             }
         }
