@@ -1,3 +1,5 @@
+import { MatrixMath } from "./MatrixMath.mjs";
+
 //@ts-check
 export class BinaryExpressionNode {
     data = null;
@@ -82,7 +84,9 @@ export class ExpressionNotation {
 export class ExpressionContext {
     static ALGEBRA = 0;
     static LOGIC = 1;
-    static BOOLEAN = 2;
+    static SET = 2;
+    static BOOLEAN = 3;
+    static MATRIX = 4;
 }
 
 export class ExpressionRegExp {
@@ -90,8 +94,8 @@ export class ExpressionRegExp {
         variableOperand: /^-{0,1}[A-Z]{1}$/,
         numericOperand: /^-{0,1}\d{1,}$/,
         operands: /^-{0,1}[A-Z]{1}$|^-{0,1}\d{1,}$/,
-        leftAssociativeOperators: /^[*/.&→>∧↑¬~!↓↔⊕∨|+-]{1}$/,
-        rightAssociativeOperators: /^\^{1}$/,
+        leftAssociativeOperators: /^[*/.&→>∧↑↓↔⊕∨|+-]{1}$/,
+        rightAssociativeOperators: /^[¬~!^]{1}$/,
         binaryOperators: /^[*/.&→>∧↑^↓↔⊕∨|+-]{1}$/,
         unaryOperators: /^[¬~!]{1}$/,
         operators: /^[*/.&→>∧↑¬~!^↓↔⊕∨|+-]{1}$/,
@@ -123,10 +127,10 @@ export class ExpressionMath {
      * @return {number}
      */
     static getPrecedence(operator, context) {
-        if (/[a-z]/.test(operator)) {
+        if (ExpressionRegExp.tokens.functionName.test(operator)) {
             //CASE: Operator is a function
             //Functions has the highest precedence
-            return 4;
+            return 10;
         } else {
             //WARNING: This code heavily relies on the switch statement's fall-through feature
             switch (context) {
@@ -139,10 +143,27 @@ export class ExpressionMath {
                         case "/":
                         case ".":
                             return 2;
-                        case "^":
+                        case "^": //POWER
                             return 3;
                         default:
-                            throw SyntaxError(`No such operator "${operator}"`);
+                            throw SyntaxError(`No such operator "${operator}" for the context ${context}`);
+                    }
+                }
+                case ExpressionContext.MATRIX: {
+                    switch (operator) {
+                        case "+":
+                        case "-":
+                            return 1;
+                        case "*":
+                        case ".":
+                            return 2;
+                        case "^": //POWER
+                        case "!": //INVERSE
+                        case "~": //INVERSE
+                        case "¬": //INVERSE
+                            return 3;
+                        default:
+                            throw SyntaxError(`No such operator "${operator}" for the context ${context}`);
                     }
                 }
                 case ExpressionContext.BOOLEAN:
@@ -168,7 +189,7 @@ export class ExpressionMath {
                         case "~":
                             return 3;
                         default:
-                            throw SyntaxError(`No such operator "${operator}"`);
+                            throw SyntaxError(`No such operator "${operator}" for the context ${context}`);
                     }
                 }
                 default:
@@ -219,6 +240,7 @@ export class ExpressionMath {
                             tokens.push("*");
                             break;
                         }
+                        case ExpressionContext.MATRIX:
                         case ExpressionContext.BOOLEAN: {
                             tokens.push(".");
                             break;
@@ -338,77 +360,73 @@ export class ExpressionMath {
             case ExpressionContext.ALGEBRA: {
                 switch (operator) {
                     case "+":
-                        return `${parseFloat(operand1) + parseFloat(operand2)}`;
+                        return operand1 + operand2;
                     case "-":
-                        return `${parseFloat(operand2) - parseFloat(operand1)}`;
+                        return operand2 - operand1;
                     case ".":
                     case "*":
-                        return `${parseFloat(operand1) * parseFloat(operand2)}`;
+                        return operand1 * operand2;
                     case "/":
-                        return `${parseFloat(operand2) / parseFloat(operand1)}`;
+                        return operand2 / operand1;
                     case "^":
-                        return `${parseFloat(operand2) ** parseFloat(operand1)}`;
+                        return operand2 ** operand1;
                     default:
                         throw SyntaxError(`No such operator "${operator}" for the given context "${context}"`);
                 }
             }
             case ExpressionContext.BOOLEAN:
             case ExpressionContext.LOGIC: {
+                let value;
+
                 switch (operator) {
                     case "+":
                     case "|":
-                    case "∨": {
-                        if (operand1 === "1" || operand2 === "1") {
-                            return "1";
-                        } else {
-                            return "0";
-                        }
-                    }
+                    case "∨":
+                        value = operand1 || operand2;
+                        break;
                     case ".":
                     case "&":
-                    case "∧": {
-                        if (operand1 === "1" && operand2 === "1") {
-                            return "1";
-                        } else {
-                            return "0";
-                        }
-                    }
+                    case "∧":
+                        value = operand1 && operand2;
+                        break;
                     case ">":
-                    case "→": {
-                        if (operand2 === "1" && operand1 === "0") {
-                            return "0";
-                        } else {
-                            return "1";
-                        }
-                    }
-                    case "↔": {
-                        if (operand1 === operand2) {
-                            return "1";
-                        } else {
-                            return "0";
-                        }
-                    }
-                    case "⊕": {
-                        if (operand1 === operand2) {
-                            return "0";
-                        } else {
-                            return "1";
-                        }
-                    }
-                    case "↑": {
-                        if (operand1 === "1" && operand2 === "1") {
-                            return "0";
-                        } else {
-                            return "1";
-                        }
-                    }
-                    case "↓": {
-                        if (operand1 === "0" && operand2 === "0") {
-                            return "1";
-                        } else {
-                            return "0";
-                        }
-                    }
+                    case "→":
+                        value = !operand2 || operand1;
+                        break;
+                    case "↔":
+                        value = (!operand2 || operand1) && (!operand1 || operand2);
+                        break;
+                    case "^":
+                    case "⊕":
+                        value = (!operand1 && operand2) || (operand1 && !operand2);
+                        break;
+                    case "↑":
+                        value = !(operand1 && operand2);
+                        break;
+                    case "↓":
+                        value = !(operand1 || operand2);
+                        break;
+                    default:
+                        throw SyntaxError(`No such operator "${operator}" for the given context "${context}"`);
+                }
+
+                if (context === ExpressionContext.BOOLEAN) {
+                    return Number(value);
+                } else {
+                    return value;
+                }
+            }
+            case ExpressionContext.MATRIX: {
+                switch (operator) {
+                    case "+":
+                        return MatrixMath.add(operand1, operand2);
+                    case "-":
+                        return MatrixMath.add(operand2, MatrixMath.multiplyByScalar(operand1, -1));
+                    case ".":
+                    case "*":
+                        return MatrixMath.multiplyByMatrix(operand2, operand1);
+                    case "^":
+                        return MatrixMath.pow(operand2, operand1);
                     default:
                         throw SyntaxError(`No such operator "${operator}" for the given context "${context}"`);
                 }
@@ -444,6 +462,16 @@ export class ExpressionMath {
                         throw SyntaxError(`No such operator "${operator}" for the given context "${context}"`);
                 }
             }
+            case ExpressionContext.MATRIX: {
+                switch (operator) {
+                    case "~":
+                    case "!":
+                    case "¬":
+                        return MatrixMath.getInverseMatrix(operand);
+                    default:
+                        throw SyntaxError(`No such operator "${operator}" for the given context "${context}"`);
+                }
+            }
             default: {
                 throw SyntaxError(`No such context "${context}"`);
             }
@@ -458,21 +486,13 @@ export class ExpressionMath {
      */
     static negateOperandValue(value, context) {
         switch (context) {
-            case ExpressionContext.ALGEBRA: {
-                if (value.startsWith("-")) {
-                    return value.replace("-", "");
-                } else {
-                    return "-" + value;
-                }
-            }
+            case ExpressionContext.ALGEBRA:
+                return -value;
             case ExpressionContext.BOOLEAN:
-            case ExpressionContext.LOGIC: {
-                if (value === "0") {
-                    return "1";
-                } else {
-                    return "0";
-                }
-            }
+            case ExpressionContext.LOGIC:
+                return !value;
+            case ExpressionContext.MATRIX:
+                return MatrixMath.multiplyByScalar(value, -1);
             default: {
                 throw SyntaxError(`No such context "${context}"`);
             }
@@ -580,7 +600,7 @@ export class BooleanMath {
 
             //Update valueDictionary
             for (let v = 0; v < variables.length; v++) {
-                valueDictionary[variables[v]] = generatedValues[v];
+                valueDictionary[variables[v]] = parseInt(generatedValues[v]);
             }
 
             //Evaluate each expression using the updated valueDictionary
