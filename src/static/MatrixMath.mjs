@@ -111,6 +111,22 @@ export class MatrixMath {
     }
 
     /**
+     * Raises a matrix to to a power
+     * @param {number[][]} matrix Must be a square matrix
+     * @param {number} power
+     * @return {number[][]} The given power of the matrix
+     */
+    static pow(matrix, power) {
+        let resultMatrix = matrix;
+
+        for (let i = 1; i < power; i++) {
+            resultMatrix = MatrixMath.multiplyByMatrix(resultMatrix, matrix);
+        }
+
+        return resultMatrix;
+    }
+
+    /**
      * Multiplies each element of a matrix by the given scalar
      * @param {number[][]} matrix Must be a square matrix
      * @param {number} scalar Must be a square matrix
