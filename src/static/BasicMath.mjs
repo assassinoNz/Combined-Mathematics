@@ -80,7 +80,7 @@ export class BasicMath {
                 gcd = BasicMath.GCD(gcd, integers[i]);
             }
         }
-        
+
         return gcd;
     }
 
@@ -91,7 +91,7 @@ export class BasicMath {
      * @return {number} The least common multiple of integer1 and integer2
      */
     static LCM(integer1, integer2) {
-        return (integer1*integer2)/BasicMath.GCD(integer1, integer2);
+        return (integer1 * integer2) / BasicMath.GCD(integer1, integer2);
     }
 
     /**
@@ -105,7 +105,7 @@ export class BasicMath {
         for (let i = 0; i < integers.length; i++) {
             lcm = BasicMath.LCM(lcm, integers[i]);
         }
-        
+
         return lcm;
     }
 
