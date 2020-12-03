@@ -1,4 +1,5 @@
 import { MatrixMath } from "./MatrixMath.mjs";
+import { BasicMath } from "./BasicMath.mjs";
 
 //@ts-check
 export class BinaryExpressionNode {
@@ -102,6 +103,8 @@ export class ExpressionRegExp {
         openingBrackets: /^[([{]{1}$/,
         closingBrackets: /^[)\]}]{1}$/,
         ignorables: /^,{1}$/,
+        binaryFunctions: /^log|max|min|gcd|lcm$/,
+        unaryFunctions: /^abs|sin|cos|tan|floor|ceil$/,
         functionName: /^[a-z]{1,}$/
     };
 
@@ -193,7 +196,7 @@ export class ExpressionMath {
                     }
                 }
                 default:
-                    throw SyntaxError(`No such context "${context}"`);
+                    throw TypeError(`No such context "${context}"`);
             }
         }
     }
@@ -250,7 +253,7 @@ export class ExpressionMath {
                             break;
                         }
                         default:
-                            throw SyntaxError(`No such context "${context}"`);
+                            throw TypeError(`No such context "${context}"`);
                     }
                 }
                 tokens.push(expression[c]);
@@ -432,7 +435,7 @@ export class ExpressionMath {
                 }
             }
             default: {
-                throw SyntaxError(`No such context "${context}"`);
+                throw TypeError(`No such context "${context}"`);
             }
         }
     }
@@ -473,7 +476,74 @@ export class ExpressionMath {
                 }
             }
             default: {
-                throw SyntaxError(`No such context "${context}"`);
+                throw TypeError(`No such context "${context}"`);
+            }
+        }
+    }
+
+    /**
+     * Returns the value after applying passing the specified arguments as parameters
+     * @param {string} func 
+     * @param {string} argument1 
+     * @param {string} argument2 
+     * @param {number} context
+     * @return {string} The value after evaluating the binary function
+     */
+    static evaluateBinaryFunction(func, argument1, argument2, context) {
+        //WARNING: This code heavily relies on the switch statement's fall-through feature
+
+        switch (context) {
+            case ExpressionContext.ALGEBRA: {
+                switch (func) {
+                    case "log":
+                        return Math.log(argument2) / Math.log(argument1);
+                    case "max":
+                        return Math.max(argument1, argument2);
+                    case "min":
+                        return Math.min(argument1, argument2);
+                    case "gcd":
+                        return BasicMath.GCD(argument1, argument2);
+                    case "lcm":
+                        return BasicMath.LCM(argument1, argument2);
+                    default:
+                        throw SyntaxError(`No such function "${func}" for the given context "${context}"`);
+                }
+            }
+            default: {
+                throw TypeError(`No such context "${context}"`);
+            }
+        }
+    }
+
+    /**
+     * Returns the value after applying passing the specified argument as parameters
+     * @param {string} func 
+     * @param {string} operand
+     * @param {number} context
+     * @return {string} The value after evaluating the unary function
+     */
+    static evaluateUnaryFunction(func, argument, context) {
+        switch (context) {
+            case ExpressionContext.ALGEBRA: {
+                switch (func) {
+                    case "sin":
+                        return Math.sin(argument);
+                    case "cos":
+                        return Math.cos(argument);
+                    case "tan":
+                        return Math.tan(argument);
+                    case "abs":
+                        return Math.abs(argument);
+                    case "floor":
+                        return Math.floor(argument);
+                    case "ceil":
+                        return Math.ceil(argument);
+                    default:
+                        throw SyntaxError(`No such function "${func}" for the given context "${context}"`);
+                }
+            }
+            default: {
+                throw TypeError(`No such context "${context}"`);
             }
         }
     }
@@ -494,7 +564,7 @@ export class ExpressionMath {
             case ExpressionContext.MATRIX:
                 return MatrixMath.multiplyByScalar(value, -1);
             default: {
-                throw SyntaxError(`No such context "${context}"`);
+                throw TypeError(`No such context "${context}"`);
             }
         }
     }
@@ -533,6 +603,12 @@ export class ExpressionMath {
             } else if (ExpressionRegExp.tokens.unaryOperators.test(postfixTokens[t])) {
                 //CASE: Token is a unary operator
                 valueStack.push(ExpressionMath.evaluateUnaryExpression(postfixTokens[t], valueStack.pop(), context));
+            } else if (ExpressionRegExp.tokens.binaryFunctions.test(postfixTokens[t])) {
+                //CASE: Token is a binary function
+                valueStack.push(ExpressionMath.evaluateBinaryFunction(postfixTokens[t], valueStack.pop(), valueStack.pop(), context));
+            } else if (ExpressionRegExp.tokens.unaryFunctions.test(postfixTokens[t])) {
+                //CASE: Token is a unary function
+                valueStack.push(ExpressionMath.evaluateUnaryFunction(postfixTokens[t], valueStack.pop(), context));
             }
         }
 
