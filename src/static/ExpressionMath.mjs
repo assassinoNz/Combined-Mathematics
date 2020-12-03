@@ -206,16 +206,16 @@ export class ExpressionMath {
 
     /**
      * Generates an empty value dictionary for a given expression
-     * @param expressionTokens
+     * @param tokens
      */
-    static generateEmptyValueDictionary(expressionTokens) {
+    static generateEmptyValueDictionary(tokens) {
         const valueDictionary = {};
 
-        for (let t = 0; t < expressionTokens.length; t++) {
-            if (ExpressionRegExp.tokens.variableOperand.test(expressionTokens[t])) {
+        for (let t = 0; t < tokens.length; t++) {
+            if (ExpressionRegExp.tokens.variableOperand.test(tokens[t])) {
                 //CASE: Token is a variable operand
                 //NOTE: Variable operands may contain a "-" prefix
-                valueDictionary[expressionTokens[t].replace("-", "")] = null;
+                valueDictionary[tokens[t].replace("-", "")] = null;
             }
         }
 
@@ -268,28 +268,35 @@ export class ExpressionMath {
                 //CASE: Character is a function name starting character
                 //Read ahead to capture the full function name token
                 let functionNameToken = "";
-                let c2 = c;
-                while (ExpressionRegExp.characters.functionNameCandidate.test(expression[c2])) {
-                    functionNameToken += expression[c2];
-                    c2++;
+                while (ExpressionRegExp.characters.functionNameCandidate.test(expression[c])) {
+                    functionNameToken += expression[c];
+                    c++;
                 }
-                c = c2 - 1;
+                c--;
                 tokens.push(functionNameToken);
             } else if (ExpressionRegExp.characters.numericOperandCandidate.test(expression[c])) {
                 //CASE: Character is numeric operand starting digit
                 //WARNING: Tokenizer can only recognize positive integers as numerical operands
                 //Read ahead to capture the full numeric operand token
                 let numericOperandToken = "";
-                let c2 = c;
-                while (ExpressionRegExp.characters.numericOperandCandidate.test(expression[c2])) {
-                    numericOperandToken += expression[c2];
-                    c2++;
+                while (ExpressionRegExp.characters.numericOperandCandidate.test(expression[c])) {
+                    numericOperandToken += expression[c];
+                    c++;
                 }
-                c = c2 - 1;
+                c--;
                 tokens.push(numericOperandToken);
             } else {
                 throw SyntaxError(`Unknown token "${expression[c]}"`);
             }
+        }
+
+        //NOTE: Expressions starting with negative operands must be treated accordingly
+        //EX: -A-B
+        if (tokens[0] === "-" && ExpressionRegExp.tokens.operands.test(tokens[1])) {
+            //CASE: Expression starts with a negative sign followed by an operand
+            //Make the operand sign negative
+            tokens[1] = "-" + tokens[1];
+            tokens.shift();
         }
 
         return tokens;
@@ -304,36 +311,36 @@ export class ExpressionMath {
         let postfixTokens = [];
         let operatorStack = [];
 
-        for (let c = 0; c < infixTokens.length; c++) {
-            if (ExpressionRegExp.tokens.ignorables.test(infixTokens[c])) {
+        for (let t = 0; t < infixTokens.length; t++) {
+            if (ExpressionRegExp.tokens.ignorables.test(infixTokens[t])) {
                 //CASE: Token is a non-significant character
                 //Do nothing
-            } else if (ExpressionRegExp.tokens.operands.test(infixTokens[c])) {
+            } else if (ExpressionRegExp.tokens.operands.test(infixTokens[t])) {
                 //CASE: Token is an operand
-                postfixTokens.push(infixTokens[c]);
-            } else if (ExpressionRegExp.tokens.functionName.test(infixTokens[c])) {
+                postfixTokens.push(infixTokens[t]);
+            } else if (ExpressionRegExp.tokens.functionName.test(infixTokens[t])) {
                 //CASE: Token is a function name
                 //NOTE: Functions are treated as operators
-                operatorStack.push(infixTokens[c]);
-            } else if (ExpressionRegExp.tokens.leftAssociativeOperators.test(infixTokens[c])) {
+                operatorStack.push(infixTokens[t]);
+            } else if (ExpressionRegExp.tokens.leftAssociativeOperators.test(infixTokens[t])) {
                 //CASE: Token is a left associative operator
-                while ((operatorStack.length > 0) && (!ExpressionRegExp.tokens.openingBrackets.test(operatorStack[operatorStack.length - 1])) && (ExpressionMath.getPrecedence(operatorStack[operatorStack.length - 1], context) >= ExpressionMath.getPrecedence(infixTokens[c], context))) {
+                while ((operatorStack.length > 0) && (!ExpressionRegExp.tokens.openingBrackets.test(operatorStack[operatorStack.length - 1])) && (ExpressionMath.getPrecedence(operatorStack[operatorStack.length - 1], context) >= ExpressionMath.getPrecedence(infixTokens[t], context))) {
                     postfixTokens.push(operatorStack.pop());
                 }
-                operatorStack.push(infixTokens[c]);
-            } else if (ExpressionRegExp.tokens.rightAssociativeOperators.test(infixTokens[c])) {
+                operatorStack.push(infixTokens[t]);
+            } else if (ExpressionRegExp.tokens.rightAssociativeOperators.test(infixTokens[t])) {
                 //CASE: Token is a right associative operator
-                while ((operatorStack.length > 0) && (!ExpressionRegExp.tokens.openingBrackets.test(operatorStack[operatorStack.length - 1])) && (ExpressionMath.getPrecedence(operatorStack[operatorStack.length - 1], context) > ExpressionMath.getPrecedence(infixTokens[c], context))) {
+                while ((operatorStack.length > 0) && (!ExpressionRegExp.tokens.openingBrackets.test(operatorStack[operatorStack.length - 1])) && (ExpressionMath.getPrecedence(operatorStack[operatorStack.length - 1], context) > ExpressionMath.getPrecedence(infixTokens[t], context))) {
                     postfixTokens.push(operatorStack.pop());
                 }
-                operatorStack.push(infixTokens[c]);
-            } else if (ExpressionRegExp.tokens.openingBrackets.test(infixTokens[c])) {
+                operatorStack.push(infixTokens[t]);
+            } else if (ExpressionRegExp.tokens.openingBrackets.test(infixTokens[t])) {
                 //CASE: Token is an opening bracket
-                operatorStack.push(infixTokens[c]);
-            } else if (ExpressionRegExp.tokens.closingBrackets.test(infixTokens[c])) {
+                operatorStack.push(infixTokens[t]);
+            } else if (ExpressionRegExp.tokens.closingBrackets.test(infixTokens[t])) {
                 //CASE: Token is a closing bracket
                 //Unload the stack until a matching opening bracket becomes the top of the stack or stack is empty
-                while ((operatorStack.length > 0) && (operatorStack[operatorStack.length - 1] !== ExpressionRegExp.inverseBrackets[infixTokens[c]])) {
+                while ((operatorStack.length > 0) && (operatorStack[operatorStack.length - 1] !== ExpressionRegExp.inverseBrackets[infixTokens[t]])) {
                     postfixTokens.push(operatorStack.pop());
                 }
 
@@ -341,7 +348,7 @@ export class ExpressionMath {
                 //Discard it
                 operatorStack.pop();
             } else {
-                throw SyntaxError(`Invalid token "${infixTokens[c]}"`);
+                throw SyntaxError(`Invalid token "${infixTokens[t]}"`);
             }
         }
 
@@ -601,7 +608,6 @@ export class ExpressionMath {
             if (ExpressionRegExp.tokens.variableOperand.test(postfixTokens[t])) {
                 //CASE: Token is a variable operand
                 let operandValue;
-
                 if (postfixTokens[t].startsWith("-")) {
                     //CASE: Operand is negated
                     //Lookup its value in the valueDictionary and assign the negated value
@@ -610,7 +616,6 @@ export class ExpressionMath {
                     //Lookup its value in the valueDictionary and assign the value
                     operandValue = valueDictionary[postfixTokens[t]];
                 }
-
                 valueStack.push(operandValue);
             } if (ExpressionRegExp.tokens.numericOperand.test(postfixTokens[t])) {
                 //CASE: Token is a numeric operand
