@@ -111,7 +111,7 @@ export class ExpressionRegExp {
 
     static characters = {
         //WARNING: Tokenizer can only recognize positive integers as numerical operands
-        singleTokens: /^[,)(\][}{*/%.&→>∧↑¬~!^↓↔⊕∨|+-]{1}$/,
+        singleTokens: /^[,=)(\][}{*/%.&→>∧↑¬~!^↓↔⊕∨|+-]{1}$/,
         numericOperandCandidate: /^\d{1}$/,
         functionNameCandidate: /^[a-z]{1}$/
     };
