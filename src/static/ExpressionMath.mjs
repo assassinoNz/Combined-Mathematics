@@ -83,11 +83,12 @@ export class ExpressionNotation {
 }
 
 export class ExpressionContext {
-    static ALGEBRA = 0;
-    static LOGIC = 1;
-    static SET = 2;
+    static REAL = 0;
+    static BIG_INTEGER = 1;
+    static BINARY = 2;
     static BOOLEAN = 3;
     static MATRIX = 4;
+    static SET = 5;
 }
 
 export class ExpressionRegExp {
@@ -95,11 +96,11 @@ export class ExpressionRegExp {
         variableOperand: /^-{0,1}[A-Z]{1}$/,
         numericOperand: /^-{0,1}\d{1,}$/,
         operands: /^-{0,1}[A-Z]{1}$|^-{0,1}\d{1,}$/,
-        leftAssociativeOperators: /^[*/.&→>∧↑↓↔⊕∨|+-]{1}$/,
+        leftAssociativeOperators: /^[*/%.&→>∧↑↓↔⊕∨|+-]{1}$/,
         rightAssociativeOperators: /^[¬~!^]{1}$/,
-        binaryOperators: /^[*/.&→>∧↑^↓↔⊕∨|+-]{1}$/,
+        binaryOperators: /^[*/%.&→>∧↑^↓↔⊕∨|+-]{1}$/,
         unaryOperators: /^[¬~!]{1}$/,
-        operators: /^[*/.&→>∧↑¬~!^↓↔⊕∨|+-]{1}$/,
+        operators: /^[*/*.&→>∧↑¬~!^↓↔⊕∨|+-]{1}$/,
         openingBrackets: /^[([{]{1}$/,
         closingBrackets: /^[)\]}]{1}$/,
         ignorables: /^,{1}$/,
@@ -110,7 +111,7 @@ export class ExpressionRegExp {
 
     static characters = {
         //WARNING: Tokenizer can only recognize positive integers as numerical operands
-        singleTokens: /^[,)(\][}{*/.&→>∧↑¬~!^↓↔⊕∨|+-]{1}$/,
+        singleTokens: /^[,)(\][}{*/%.&→>∧↑¬~!^↓↔⊕∨|+-]{1}$/,
         numericOperandCandidate: /^\d{1}$/,
         functionNameCandidate: /^[a-z]{1}$/
     };
@@ -137,40 +138,25 @@ export class ExpressionMath {
         } else {
             //WARNING: This code heavily relies on the switch statement's fall-through feature
             switch (context) {
-                case ExpressionContext.ALGEBRA: {
+                case ExpressionContext.BIG_INTEGER:
+                case ExpressionContext.REAL: {
                     switch (operator) {
                         case "+":
                         case "-":
                             return 1;
                         case "*":
                         case "/":
+                        case "%":
                         case ".":
                             return 2;
                         case "^": //POWER
                             return 3;
                         default:
-                            throw SyntaxError(`No such operator "${operator}" for the context ${context}`);
+                            throw SyntaxError(`Operator "${operator}" isn't defined for the the context "${context}"`);
                     }
                 }
-                case ExpressionContext.MATRIX: {
-                    switch (operator) {
-                        case "+":
-                        case "-":
-                            return 1;
-                        case "*":
-                        case ".":
-                            return 2;
-                        case "^": //POWER
-                        case "!": //INVERSE
-                        case "~": //INVERSE
-                        case "¬": //INVERSE
-                            return 3;
-                        default:
-                            throw SyntaxError(`No such operator "${operator}" for the context ${context}`);
-                    }
-                }
-                case ExpressionContext.BOOLEAN:
-                case ExpressionContext.LOGIC: {
+                case ExpressionContext.BINARY:
+                case ExpressionContext.BOOLEAN: {
                     switch (operator) {
                         case "+":
                         case "|":
@@ -192,11 +178,28 @@ export class ExpressionMath {
                         case "~":
                             return 3;
                         default:
-                            throw SyntaxError(`No such operator "${operator}" for the context ${context}`);
+                            throw SyntaxError(`Operator "${operator}" isn't defined for the the context "${context}"`);
+                    }
+                }
+                case ExpressionContext.MATRIX: {
+                    switch (operator) {
+                        case "+":
+                        case "-":
+                            return 1;
+                        case "*":
+                        case ".":
+                            return 2;
+                        case "^": //POWER
+                        case "!": //INVERSE
+                        case "~": //INVERSE
+                        case "¬": //INVERSE
+                            return 3;
+                        default:
+                            throw SyntaxError(`Operator "${operator}" isn't defined for the the context "${context}"`);
                     }
                 }
                 default:
-                    throw TypeError(`No such context "${context}"`);
+                    throw TypeError(`Operator "${operator}" isn't defined for the context "${context}"`);
             }
         }
     }
@@ -239,21 +242,22 @@ export class ExpressionMath {
                     //CASE: Previous token is an operand
                     //Since this character is a variable operand or a unary operator token, there must be a multiplication between them
                     switch (context) {
-                        case ExpressionContext.ALGEBRA: {
+                        case ExpressionContext.BIG_INTEGER:
+                        case ExpressionContext.REAL: {
                             tokens.push("*");
                             break;
                         }
                         case ExpressionContext.MATRIX:
-                        case ExpressionContext.BOOLEAN: {
+                        case ExpressionContext.BINARY: {
                             tokens.push(".");
                             break;
                         }
-                        case ExpressionContext.LOGIC: {
+                        case ExpressionContext.BOOLEAN: {
                             tokens.push("∧");
                             break;
                         }
                         default:
-                            throw TypeError(`No such context "${context}"`);
+                            throw TypeError(`Operator "${operator}" isn't defined for the context "${context}"`);
                     }
                 }
                 tokens.push(expression[c]);
@@ -360,7 +364,8 @@ export class ExpressionMath {
         //WARNING: This code heavily relies on the switch statement's fall-through feature
 
         switch (context) {
-            case ExpressionContext.ALGEBRA: {
+            case ExpressionContext.BIG_INTEGER:
+            case ExpressionContext.REAL: {
                 switch (operator) {
                     case "+":
                         return operand1 + operand2;
@@ -371,14 +376,16 @@ export class ExpressionMath {
                         return operand1 * operand2;
                     case "/":
                         return operand2 / operand1;
+                    case "%":
+                        return operand2 % operand1;
                     case "^":
                         return operand2 ** operand1;
                     default:
-                        throw SyntaxError(`No such operator "${operator}" for the given context "${context}"`);
+                        throw SyntaxError(`Operator "${operator}" isn't defined for the context "${context}"`);
                 }
             }
-            case ExpressionContext.BOOLEAN:
-            case ExpressionContext.LOGIC: {
+            case ExpressionContext.BINARY:
+            case ExpressionContext.BOOLEAN: {
                 let value;
 
                 switch (operator) {
@@ -410,10 +417,10 @@ export class ExpressionMath {
                         value = !(operand1 || operand2);
                         break;
                     default:
-                        throw SyntaxError(`No such operator "${operator}" for the given context "${context}"`);
+                        throw SyntaxError(`Operator "${operator}" isn't defined for the context "${context}"`);
                 }
 
-                if (context === ExpressionContext.BOOLEAN) {
+                if (context === ExpressionContext.BINARY) {
                     return Number(value);
                 } else {
                     return value;
@@ -431,11 +438,11 @@ export class ExpressionMath {
                     case "^":
                         return MatrixMath.pow(operand2, operand1);
                     default:
-                        throw SyntaxError(`No such operator "${operator}" for the given context "${context}"`);
+                        throw SyntaxError(`Operator "${operator}" isn't defined for the context "${context}"`);
                 }
             }
             default: {
-                throw TypeError(`No such context "${context}"`);
+                throw TypeError(`Operator "${operator}" isn't defined for the context "${context}"`);
             }
         }
     }
@@ -449,20 +456,24 @@ export class ExpressionMath {
      */
     static evaluateUnaryExpression(operator, operand, context) {
         switch (context) {
-            case ExpressionContext.BOOLEAN:
-            case ExpressionContext.LOGIC: {
+            case ExpressionContext.BINARY:
+            case ExpressionContext.BOOLEAN: {
+                let value;
+
                 switch (operator) {
                     case "~":
                     case "!":
-                    case "¬": {
-                        if (operand === "1") {
-                            return "0";
-                        } else {
-                            return "1";
-                        }
-                    }
+                    case "¬":
+                        value = !operand;
+                        break;
                     default:
-                        throw SyntaxError(`No such operator "${operator}" for the given context "${context}"`);
+                        throw SyntaxError(`Operator "${operator}" isn't defined for the context "${context}"`);
+                }
+
+                if (context === ExpressionContext.BINARY) {
+                    return Number(value);
+                } else {
+                    return value;
                 }
             }
             case ExpressionContext.MATRIX: {
@@ -472,11 +483,11 @@ export class ExpressionMath {
                     case "¬":
                         return MatrixMath.getInverseMatrix(operand);
                     default:
-                        throw SyntaxError(`No such operator "${operator}" for the given context "${context}"`);
+                        throw SyntaxError(`Operator "${operator}" isn't defined for the context "${context}"`);
                 }
             }
             default: {
-                throw TypeError(`No such context "${context}"`);
+                throw TypeError(`Operator "${operator}" isn't defined for the context "${context}"`);
             }
         }
     }
@@ -493,7 +504,7 @@ export class ExpressionMath {
         //WARNING: This code heavily relies on the switch statement's fall-through feature
 
         switch (context) {
-            case ExpressionContext.ALGEBRA: {
+            case ExpressionContext.REAL: {
                 switch (func) {
                     case "log":
                         return Math.log(argument2) / Math.log(argument1);
@@ -510,7 +521,7 @@ export class ExpressionMath {
                 }
             }
             default: {
-                throw TypeError(`No such context "${context}"`);
+                throw TypeError(`Operator "${operator}" isn't defined for the context "${context}"`);
             }
         }
     }
@@ -524,7 +535,7 @@ export class ExpressionMath {
      */
     static evaluateUnaryFunction(func, argument, context) {
         switch (context) {
-            case ExpressionContext.ALGEBRA: {
+            case ExpressionContext.REAL: {
                 switch (func) {
                     case "sin":
                         return Math.sin(argument);
@@ -543,28 +554,35 @@ export class ExpressionMath {
                 }
             }
             default: {
-                throw TypeError(`No such context "${context}"`);
+                throw TypeError(`Operator "${operator}" isn't defined for the context "${context}"`);
             }
         }
     }
 
     /**
-     * Negates an operand value
+     * Negates an operand value.
+     * NOTE: Negation is done when an operand is prefixed with "-"
      * @param {string} value
      * @param {number} context
      * @return {string} The value after negating it according to the context
      */
     static negateOperandValue(value, context) {
         switch (context) {
-            case ExpressionContext.ALGEBRA:
+            case ExpressionContext.BIG_INTEGER:
+            case ExpressionContext.REAL:
                 return -value;
-            case ExpressionContext.BOOLEAN:
-            case ExpressionContext.LOGIC:
-                return !value;
+            case ExpressionContext.BINARY:
+            case ExpressionContext.BOOLEAN: {
+                if (context === ExpressionContext.BINARY) {
+                    return Number(!value);
+                } else {
+                    return !value;
+                }
+            }
             case ExpressionContext.MATRIX:
                 return MatrixMath.multiplyByScalar(value, -1);
             default: {
-                throw TypeError(`No such context "${context}"`);
+                throw TypeError(`Operator "${operator}" isn't defined for the context "${context}"`);
             }
         }
     }
@@ -596,7 +614,11 @@ export class ExpressionMath {
                 valueStack.push(operandValue);
             } if (ExpressionRegExp.tokens.numericOperand.test(postfixTokens[t])) {
                 //CASE: Token is a numeric operand
-                valueStack.push(postfixTokens[t]);
+                if (context === ExpressionContext.REAL) {
+                    valueStack.push(parseFloat(postfixTokens[t]));
+                } else if (context === ExpressionContext.BIG_INTEGER) {
+                    valueStack.push(BigInt(postfixTokens[t]));
+                }
             } else if (ExpressionRegExp.tokens.binaryOperators.test(postfixTokens[t])) {
                 //CASE: Token is a binary operator
                 valueStack.push(ExpressionMath.evaluateBinaryExpression(postfixTokens[t], valueStack.pop(), valueStack.pop(), context));
@@ -681,8 +703,8 @@ export class BooleanMath {
 
             //Evaluate each expression using the updated valueDictionary
             for (let e = 0; e < tokenizedInfixExpressions.length; e++) {
-                const tokenizedPostfixExpression = ExpressionMath.infixToPostfix(tokenizedInfixExpressions[e], ExpressionContext.BOOLEAN);
-                const value = ExpressionMath.evaluateExpression(tokenizedPostfixExpression, valueDictionary, ExpressionContext.BOOLEAN);
+                const tokenizedPostfixExpression = ExpressionMath.infixToPostfix(tokenizedInfixExpressions[e], ExpressionContext.BINARY);
+                const value = ExpressionMath.evaluateExpression(tokenizedPostfixExpression, valueDictionary, ExpressionContext.BINARY);
                 truthTable[tokenizedInfixExpressions[e].join(" ")][i] = value;
             }
         }
