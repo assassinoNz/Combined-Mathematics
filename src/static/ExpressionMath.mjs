@@ -98,23 +98,23 @@ export class ExpressionRegExp {
         variableOperand: /^-{0,1}[A-Z]{1}$/,
         numericOperand: /^-{0,1}\d{1,}$/,
         stringOperand: /^".*"$/,
-        operands: /^-{0,1}[A-Z]{1}$|^-{0,1}\d{1,}$|^['"].*['"]$/,
-        leftAssociativeOperators: /^[*/%.&→>∧↑↓↔⊕∨|+-]{1}$/,
-        rightAssociativeOperators: /^[¬~!^]{1}$/,
-        binaryOperators: /^[*/%.&→>∧↑^↓↔⊕∨|+-]{1}$/,
-        unaryOperators: /^[¬~!]{1}$/,
-        operators: /^[*/*.&→>∧↑¬~!^↓↔⊕∨|+-]{1}$/,
-        openingBrackets: /^[([{]{1}$/,
-        closingBrackets: /^[)\]}]{1}$/,
-        ignorables: /^,{1}$/,
-        binaryFunctions: /^log|max|min|gcd|lcm|levenshtein|concatenate$/,
-        unaryFunctions: /^abs|sin|cos|tan|floor|ceil|name$/,
+        operand: /^-{0,1}[A-Z]{1}$|^-{0,1}\d{1,}$|^['"].*['"]$/,
+        leftAssociativeOperator: /^[*/%.&→>∧↑↓↔⊕∨|+-]{1}$/,
+        rightAssociativeOperator: /^[¬~!^]{1}$/,
+        binaryOperator: /^[*/%.&→>∧↑^↓↔⊕∨|+-]{1}$/,
+        unaryOperator: /^[¬~!]{1}$/,
+        operator: /^[*/*.&→>∧↑¬~!^↓↔⊕∨|+-]{1}$/,
+        openingBracket: /^[([{]{1}$/,
+        closingBracket: /^[)\]}]{1}$/,
+        ignorable: /^,{1}$/,
+        binaryFunction: /^log|max|min|gcd|lcm|levenshtein|concatenate$/,
+        unaryFunction: /^abs|sin|cos|tan|floor|ceil|name$/,
         functionName: /^[a-z]{1,}$/
     };
 
     static characters = {
         //WARNING: Tokenizer can only recognize positive integers as numerical operands
-        singleTokens: /^[,=)(\][}{*/%.&→>∧↑¬~!^↓↔⊕∨|+-]{1}$/,
+        singleToken: /^[,=)(\][}{*/%.&→>∧↑¬~!^↓↔⊕∨|+-]{1}$/,
         numericOperandCandidate: /^\d{1}$/,
         stringOperandCandidate: /^['"]$/,
         functionNameCandidate: /^[a-z]{1}$/
@@ -248,9 +248,9 @@ export class ExpressionMath {
         let tokens = [];
 
         for (let c = 0; c < expression.length; c++) {
-            if (ExpressionRegExp.tokens.variableOperand.test(expression[c]) || ExpressionRegExp.tokens.unaryOperators.test(expression[c])) {
+            if (ExpressionRegExp.tokens.variableOperand.test(expression[c]) || ExpressionRegExp.tokens.unaryOperator.test(expression[c])) {
                 //CASE: Character is a variable operand or a unary operator token
-                if (ExpressionRegExp.tokens.operands.test(tokens[tokens.length - 1])) {
+                if (ExpressionRegExp.tokens.operand.test(tokens[tokens.length - 1])) {
                     //CASE: Previous token is an operand
                     //Since this character is a variable operand or a unary operator token, there must be a multiplication between them
                     switch (context) {
@@ -273,7 +273,7 @@ export class ExpressionMath {
                     }
                 }
                 tokens.push(expression[c]);
-            } else if (ExpressionRegExp.characters.singleTokens.test(expression[c])) {
+            } else if (ExpressionRegExp.characters.singleToken.test(expression[c])) {
                 //CASE: Character is an accepted token
                 tokens.push(expression[c]);
             } else if (ExpressionRegExp.characters.functionNameCandidate.test(expression[c])) {
@@ -324,7 +324,7 @@ export class ExpressionMath {
 
         //NOTE: Expressions starting with negative operands must be treated accordingly
         //EX: -A-B
-        if (tokens[0] === "-" && ExpressionRegExp.tokens.operands.test(tokens[1])) {
+        if (tokens[0] === "-" && ExpressionRegExp.tokens.operand.test(tokens[1])) {
             //CASE: Expression starts with a negative sign followed by an operand
             //Make the operand sign negative
             tokens[1] = "-" + tokens[1];
@@ -344,32 +344,32 @@ export class ExpressionMath {
         let operatorStack = [];
 
         for (let t = 0; t < infixTokens.length; t++) {
-            if (ExpressionRegExp.tokens.ignorables.test(infixTokens[t])) {
+            if (ExpressionRegExp.tokens.ignorable.test(infixTokens[t])) {
                 //CASE: Token is a non-significant character
                 //Do nothing
-            } else if (ExpressionRegExp.tokens.operands.test(infixTokens[t])) {
+            } else if (ExpressionRegExp.tokens.operand.test(infixTokens[t])) {
                 //CASE: Token is an operand
                 postfixTokens.push(infixTokens[t]);
             } else if (ExpressionRegExp.tokens.functionName.test(infixTokens[t])) {
                 //CASE: Token is a function name
                 //NOTE: Functions are treated as operators
                 operatorStack.push(infixTokens[t]);
-            } else if (ExpressionRegExp.tokens.leftAssociativeOperators.test(infixTokens[t])) {
+            } else if (ExpressionRegExp.tokens.leftAssociativeOperator.test(infixTokens[t])) {
                 //CASE: Token is a left associative operator
-                while ((operatorStack.length > 0) && (!ExpressionRegExp.tokens.openingBrackets.test(operatorStack[operatorStack.length - 1])) && (ExpressionMath.getPrecedence(operatorStack[operatorStack.length - 1], context) >= ExpressionMath.getPrecedence(infixTokens[t], context))) {
+                while ((operatorStack.length > 0) && (!ExpressionRegExp.tokens.openingBracket.test(operatorStack[operatorStack.length - 1])) && (ExpressionMath.getPrecedence(operatorStack[operatorStack.length - 1], context) >= ExpressionMath.getPrecedence(infixTokens[t], context))) {
                     postfixTokens.push(operatorStack.pop());
                 }
                 operatorStack.push(infixTokens[t]);
-            } else if (ExpressionRegExp.tokens.rightAssociativeOperators.test(infixTokens[t])) {
+            } else if (ExpressionRegExp.tokens.rightAssociativeOperator.test(infixTokens[t])) {
                 //CASE: Token is a right associative operator
-                while ((operatorStack.length > 0) && (!ExpressionRegExp.tokens.openingBrackets.test(operatorStack[operatorStack.length - 1])) && (ExpressionMath.getPrecedence(operatorStack[operatorStack.length - 1], context) > ExpressionMath.getPrecedence(infixTokens[t], context))) {
+                while ((operatorStack.length > 0) && (!ExpressionRegExp.tokens.openingBracket.test(operatorStack[operatorStack.length - 1])) && (ExpressionMath.getPrecedence(operatorStack[operatorStack.length - 1], context) > ExpressionMath.getPrecedence(infixTokens[t], context))) {
                     postfixTokens.push(operatorStack.pop());
                 }
                 operatorStack.push(infixTokens[t]);
-            } else if (ExpressionRegExp.tokens.openingBrackets.test(infixTokens[t])) {
+            } else if (ExpressionRegExp.tokens.openingBracket.test(infixTokens[t])) {
                 //CASE: Token is an opening bracket
                 operatorStack.push(infixTokens[t]);
-            } else if (ExpressionRegExp.tokens.closingBrackets.test(infixTokens[t])) {
+            } else if (ExpressionRegExp.tokens.closingBracket.test(infixTokens[t])) {
                 //CASE: Token is a closing bracket
                 //Unload the stack until a matching opening bracket becomes the top of the stack or stack is empty
                 while ((operatorStack.length > 0) && (operatorStack[operatorStack.length - 1] !== ExpressionRegExp.inverseBrackets[infixTokens[t]])) {
@@ -682,16 +682,16 @@ export class ExpressionMath {
             } else if (ExpressionRegExp.tokens.stringOperand.test(postfixTokens[t])) {
                 //CASE: Token is a string operand
                 valueStack.push(postfixTokens[t]);
-            } else if (ExpressionRegExp.tokens.binaryOperators.test(postfixTokens[t])) {
+            } else if (ExpressionRegExp.tokens.binaryOperator.test(postfixTokens[t])) {
                 //CASE: Token is a binary operator
                 valueStack.push(ExpressionMath.evaluateBinaryExpression(postfixTokens[t], valueStack.pop(), valueStack.pop(), context));
-            } else if (ExpressionRegExp.tokens.unaryOperators.test(postfixTokens[t])) {
+            } else if (ExpressionRegExp.tokens.unaryOperator.test(postfixTokens[t])) {
                 //CASE: Token is a unary operator
                 valueStack.push(ExpressionMath.evaluateUnaryExpression(postfixTokens[t], valueStack.pop(), context));
-            } else if (ExpressionRegExp.tokens.binaryFunctions.test(postfixTokens[t])) {
+            } else if (ExpressionRegExp.tokens.binaryFunction.test(postfixTokens[t])) {
                 //CASE: Token is a binary function
                 valueStack.push(ExpressionMath.evaluateBinaryFunction(postfixTokens[t], valueStack.pop(), valueStack.pop(), context));
-            } else if (ExpressionRegExp.tokens.unaryFunctions.test(postfixTokens[t])) {
+            } else if (ExpressionRegExp.tokens.unaryFunction.test(postfixTokens[t])) {
                 //CASE: Token is a unary function
                 valueStack.push(ExpressionMath.evaluateUnaryFunction(postfixTokens[t], valueStack.pop(), context));
             }
@@ -709,19 +709,19 @@ export class ExpressionMath {
         const nodeStack = [];
 
         for (let t = 0; t < postfixTokens.length; t++) {
-            if (ExpressionRegExp.tokens.operands.test(postfixTokens[t])) {
+            if (ExpressionRegExp.tokens.operand.test(postfixTokens[t])) {
                 //CASE: Token is an operand
                 const node = new BinaryExpressionNode();
                 node.data = postfixTokens[t];
                 nodeStack.push(node);
-            } else if (ExpressionRegExp.tokens.binaryOperators.test(postfixTokens[t]) || ExpressionRegExp.tokens.functionName.test(postfixTokens[t])) {
+            } else if (ExpressionRegExp.tokens.binaryOperator.test(postfixTokens[t]) || ExpressionRegExp.tokens.functionName.test(postfixTokens[t])) {
                 //CASE: Token is a function name or a binary operator
                 const node = new BinaryExpressionNode();
                 node.data = postfixTokens[t];
                 node.right = nodeStack.pop();
                 node.left = nodeStack.pop();
                 nodeStack.push(node);
-            } else if (ExpressionRegExp.tokens.unaryOperators.test(postfixTokens[t])) {
+            } else if (ExpressionRegExp.tokens.unaryOperator.test(postfixTokens[t])) {
                 //CASE: Token is a unary operator
                 const node = new BinaryExpressionNode();
                 node.data = postfixTokens[t];
