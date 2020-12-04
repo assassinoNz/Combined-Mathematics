@@ -1,5 +1,6 @@
 import { MatrixMath } from "./MatrixMath.mjs";
 import { BasicMath } from "./BasicMath.mjs";
+import { CustomMath } from "./CustomMath.mjs";
 
 //@ts-check
 export class BinaryExpressionNode {
@@ -89,13 +90,15 @@ export class ExpressionContext {
     static BOOLEAN = 3;
     static MATRIX = 4;
     static SET = 5;
+    static STRING = 6;
 }
 
 export class ExpressionRegExp {
     static tokens = {
         variableOperand: /^-{0,1}[A-Z]{1}$/,
         numericOperand: /^-{0,1}\d{1,}$/,
-        operands: /^-{0,1}[A-Z]{1}$|^-{0,1}\d{1,}$/,
+        stringOperand: /^".*"$/,
+        operands: /^-{0,1}[A-Z]{1}$|^-{0,1}\d{1,}$|^['"].*['"]$/,
         leftAssociativeOperators: /^[*/%.&→>∧↑↓↔⊕∨|+-]{1}$/,
         rightAssociativeOperators: /^[¬~!^]{1}$/,
         binaryOperators: /^[*/%.&→>∧↑^↓↔⊕∨|+-]{1}$/,
@@ -104,8 +107,8 @@ export class ExpressionRegExp {
         openingBrackets: /^[([{]{1}$/,
         closingBrackets: /^[)\]}]{1}$/,
         ignorables: /^,{1}$/,
-        binaryFunctions: /^log|max|min|gcd|lcm$/,
-        unaryFunctions: /^abs|sin|cos|tan|floor|ceil$/,
+        binaryFunctions: /^log|max|min|gcd|lcm|levenshtein|concatenate$/,
+        unaryFunctions: /^abs|sin|cos|tan|floor|ceil|name$/,
         functionName: /^[a-z]{1,}$/
     };
 
@@ -113,6 +116,7 @@ export class ExpressionRegExp {
         //WARNING: Tokenizer can only recognize positive integers as numerical operands
         singleTokens: /^[,=)(\][}{*/%.&→>∧↑¬~!^↓↔⊕∨|+-]{1}$/,
         numericOperandCandidate: /^\d{1}$/,
+        stringOperandCandidate: /^['"]$/,
         functionNameCandidate: /^[a-z]{1}$/
     };
 
@@ -194,6 +198,14 @@ export class ExpressionMath {
                         case "~": //INVERSE
                         case "¬": //INVERSE
                             return 3;
+                        default:
+                            throw SyntaxError(`Operator "${operator}" isn't defined for the the context "${context}"`);
+                    }
+                }
+                case ExpressionContext.STRING: {
+                    switch (operator) {
+                        case "+": //CONCATENATION
+                            return 1;
                         default:
                             throw SyntaxError(`Operator "${operator}" isn't defined for the the context "${context}"`);
                     }
@@ -285,6 +297,26 @@ export class ExpressionMath {
                 }
                 c--;
                 tokens.push(numericOperandToken);
+            } else if (ExpressionRegExp.characters.stringOperandCandidate.test(expression[c])) {
+                //CASE: Character is string operand starting quote
+                //Read ahead to capture the full string operand token
+
+                //Save the quote to find the string operand end
+                const quote = expression[c];
+
+                //stringOperandToken should be started with a double quote
+                let stringOperandToken = '"';
+
+                //Position must be incremented before acquiring other inner content of the quote
+                c++;
+                while (expression[c] !== quote) {
+                    stringOperandToken += expression[c];
+                    c++;
+                }
+
+                //NOTE: The while loop ends at the position where c is the ending quote
+                stringOperandToken += '"';
+                tokens.push(stringOperandToken);
             } else {
                 throw SyntaxError(`Unknown token "${expression[c]}"`);
             }
@@ -448,6 +480,14 @@ export class ExpressionMath {
                         throw SyntaxError(`Operator "${operator}" isn't defined for the context "${context}"`);
                 }
             }
+            case ExpressionContext.STRING: {
+                switch (operator) {
+                    case "+":
+                        return argument2 + argument1;
+                    default:
+                        throw SyntaxError(`Operator "${operator}" isn't defined for the context "${context}"`);
+                }
+            }
             default: {
                 throw TypeError(`Operator "${operator}" isn't defined for the context "${context}"`);
             }
@@ -527,8 +567,21 @@ export class ExpressionMath {
                         throw SyntaxError(`No such function "${func}" for the given context "${context}"`);
                 }
             }
+            case ExpressionContext.STRING: {
+                //NOTE: String arguments contain quotes around them
+                //They must be removed before processing
+                argument2 = argument2.slice(1,-1);
+                argument1 = argument1.slice(1,-1);
+
+                switch (func) {
+                    case "levenshtein":
+                        return CustomMath.getMinEditDistance(argument2, argument1);
+                    default:
+                        throw SyntaxError(`No such function "${func}" for the given context "${context}"`);
+                }
+            }
             default: {
-                throw TypeError(`Operator "${operator}" isn't defined for the context "${context}"`);
+                throw TypeError(`No such function "${func}" for the given context "${context}"`);
             }
         }
     }
@@ -556,12 +609,14 @@ export class ExpressionMath {
                         return Math.floor(argument);
                     case "ceil":
                         return Math.ceil(argument);
+                    case "name":
+                        return CustomMath.getNumberName(argument);
                     default:
                         throw SyntaxError(`No such function "${func}" for the given context "${context}"`);
                 }
             }
             default: {
-                throw TypeError(`Operator "${operator}" isn't defined for the context "${context}"`);
+                throw TypeError(`No such function "${func}" for the given context "${context}"`);
             }
         }
     }
@@ -624,6 +679,9 @@ export class ExpressionMath {
                 } else if (context === ExpressionContext.BIG_INTEGER) {
                     valueStack.push(BigInt(postfixTokens[t]));
                 }
+            } else if (ExpressionRegExp.tokens.stringOperand.test(postfixTokens[t])) {
+                //CASE: Token is a string operand
+                valueStack.push(postfixTokens[t]);
             } else if (ExpressionRegExp.tokens.binaryOperators.test(postfixTokens[t])) {
                 //CASE: Token is a binary operator
                 valueStack.push(ExpressionMath.evaluateBinaryExpression(postfixTokens[t], valueStack.pop(), valueStack.pop(), context));
