@@ -217,6 +217,25 @@ export class ExpressionMath {
     }
 
     /**
+     * Returns all the variables in an expression
+     * @param tokens
+     * @return {Set} All the variables found in the expression
+     */
+    static getVariables(tokens) {
+        const variables = new Set();
+
+        for (let t = 0; t < tokens.length; t++) {
+            if (ExpressionRegExp.tokens.variableOperand.test(tokens[t])) {
+                //CASE: Token is a variable operand
+                //NOTE: Variable operands may contain a "-" prefix
+                variables.add(tokens[t].replace("-", ""));
+            }
+        }
+
+        return variables;
+    }
+
+    /**
      * Generates an empty value dictionary for a given expression
      * @param tokens
      */
@@ -754,47 +773,5 @@ export class ExpressionMath {
         }
 
         return nodeStack.pop();
-    }
-}
-
-export class BooleanMath {
-    /**
-     * Generates a truth table where the tokenizedInfixExpressions are represented by its columns
-     * @param valueDictionary Must contain entries for the variables used in infixExpressions
-     * @param {string[][]} tokenizedInfixExpressions Must be tokenized properly
-     */
-    static generateTruthTable(valueDictionary, tokenizedInfixExpressions) {
-        const variables = Object.keys(valueDictionary);
-        const truthTable = {
-            // "P": [],
-            // "Q": [],
-            // "P→Q": [],
-            //"¬P∨Q": [],
-            //"¬Q→¬P": []
-        }
-
-        for (const tokenizedInfixExpression of tokenizedInfixExpressions) {
-            truthTable[tokenizedInfixExpression.join(" ")] = [];
-        }
-
-        for (let i = 0; i < 2 ** variables.length; i++) {
-            //Generate a new set of variable values
-            const binaryString = i.toString(2);
-            const generatedValues = ("0".repeat(variables.length - binaryString.length) + binaryString).split("");
-
-            //Update valueDictionary
-            for (let v = 0; v < variables.length; v++) {
-                valueDictionary[variables[v]] = parseInt(generatedValues[v]);
-            }
-
-            //Evaluate each expression using the updated valueDictionary
-            for (let e = 0; e < tokenizedInfixExpressions.length; e++) {
-                const tokenizedPostfixExpression = ExpressionMath.infixToPostfix(tokenizedInfixExpressions[e], ExpressionContext.BINARY);
-                const value = ExpressionMath.evaluateExpression(tokenizedPostfixExpression, valueDictionary, ExpressionContext.BINARY);
-                truthTable[tokenizedInfixExpressions[e].join(" ")][i] = value;
-            }
-        }
-
-        return truthTable;
     }
 }
