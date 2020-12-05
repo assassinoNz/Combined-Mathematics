@@ -107,7 +107,7 @@ export class ExpressionRegExp {
         openingBracket: /^[([{]{1}$/,
         closingBracket: /^[)\]}]{1}$/,
         ignorable: /^,{1}$/,
-        binaryFunction: /^log|max|min|gcd|lcm|levenshtein|concatenate$/,
+        binaryFunction: /^log|max|min|gcd|lcm|npr|ncr|levenshtein|concatenate$/,
         unaryFunction: /^abs|sin|cos|tan|floor|ceil|name$/,
         functionName: /^[a-z]{1,}$/
     };
@@ -248,11 +248,11 @@ export class ExpressionMath {
         let tokens = [];
 
         for (let c = 0; c < expression.length; c++) {
-            if (ExpressionRegExp.tokens.variableOperand.test(expression[c]) || ExpressionRegExp.tokens.unaryOperator.test(expression[c])) {
-                //CASE: Character is a variable operand or a unary operator token
+            if (ExpressionRegExp.tokens.variableOperand.test(expression[c])|| ExpressionRegExp.tokens.openingBracket.test(expression[c])) {
+                //CASE: Character is a variable operand or an opening bracket
                 if (ExpressionRegExp.tokens.operand.test(tokens[tokens.length - 1])) {
                     //CASE: Previous token is an operand
-                    //Since this character is a variable operand or a unary operator token, there must be a multiplication between them
+                    //There must be a multiplication between them
                     switch (context) {
                         case ExpressionContext.BIG_INTEGER:
                         case ExpressionContext.REAL: {
@@ -268,16 +268,35 @@ export class ExpressionMath {
                             tokens.push("∧");
                             break;
                         }
-                        default:
-                            throw TypeError(`Operator "${operator}" isn't defined for the context "${context}"`);
                     }
                 }
                 tokens.push(expression[c]);
-            } else if (ExpressionRegExp.characters.singleToken.test(expression[c])) {
+            }else if (ExpressionRegExp.characters.singleToken.test(expression[c])) {
                 //CASE: Character is an accepted token
                 tokens.push(expression[c]);
             } else if (ExpressionRegExp.characters.functionNameCandidate.test(expression[c])) {
                 //CASE: Character is a function name starting character
+                if (ExpressionRegExp.tokens.operand.test(tokens[tokens.length - 1])) {
+                    //CASE: Previous token is an operand
+                    //There must be a multiplication between them
+                    switch (context) {
+                        case ExpressionContext.BIG_INTEGER:
+                        case ExpressionContext.REAL: {
+                            tokens.push("*");
+                            break;
+                        }
+                        case ExpressionContext.MATRIX:
+                        case ExpressionContext.BINARY: {
+                            tokens.push(".");
+                            break;
+                        }
+                        case ExpressionContext.BOOLEAN: {
+                            tokens.push("∧");
+                            break;
+                        }
+                    }
+                }
+
                 //Read ahead to capture the full function name token
                 let functionNameToken = "";
                 while (ExpressionRegExp.characters.functionNameCandidate.test(expression[c])) {
@@ -563,6 +582,10 @@ export class ExpressionMath {
                         return BasicMath.GCD(argument1, argument2);
                     case "lcm":
                         return BasicMath.LCM(argument1, argument2);
+                    case "npr":
+                        return BasicMath.nPr(argument2, argument1);
+                    case "ncr":
+                        return BasicMath.nCr(argument2, argument1);
                     default:
                         throw SyntaxError(`No such function "${func}" for the given context "${context}"`);
                 }
@@ -570,8 +593,8 @@ export class ExpressionMath {
             case ExpressionContext.STRING: {
                 //NOTE: String arguments contain quotes around them
                 //They must be removed before processing
-                argument2 = argument2.slice(1,-1);
-                argument1 = argument1.slice(1,-1);
+                argument2 = argument2.slice(1, -1);
+                argument1 = argument1.slice(1, -1);
 
                 switch (func) {
                     case "levenshtein":
