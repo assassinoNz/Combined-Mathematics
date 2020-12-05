@@ -110,6 +110,26 @@ export class BasicMath {
     }
 
     /**
+     * Returns the number of permutations that can be done using r elements among n unique elements
+     * @param {number} n
+     * @param {number} r
+     * @return {number} The nPr
+     */
+    static nPr(n, r) {
+        return BasicMath.getFactorial(n) / BasicMath.getFactorial(n - r);
+    }
+
+    /**
+     * Returns the number of combinations that can be done using r elements among n unique elements
+     * @param {number} n
+     * @param {number} r
+     * @return {number} The nCr
+     */
+    static nCr(n, r) {
+        return BasicMath.getFactorial(n) / (BasicMath.getFactorial(n - r) * BasicMath.getFactorial(r));
+    }
+
+    /**
      * Checks if an integer has no square factors other than 1
      * @param {number} integer
      * @return {boolean}
