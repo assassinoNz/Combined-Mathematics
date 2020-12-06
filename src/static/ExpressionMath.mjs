@@ -1,6 +1,6 @@
 import { MatrixMath } from "./MatrixMath.mjs";
-import { BasicMath } from "./BasicMath.mjs";
-import { CustomMath } from "./CustomMath.mjs";
+import { IntegerMath } from "./NumberMath.mjs";
+import { StringMath } from "./StringMath.mjs";
 
 //@ts-check
 export class BinaryExpressionNode {
@@ -621,13 +621,13 @@ export class ExpressionMath {
                     case "min":
                         return Math.min(argument1, argument2);
                     case "gcd":
-                        return BasicMath.GCD(argument1, argument2);
+                        return IntegerMath.gcd(argument1, argument2);
                     case "lcm":
-                        return BasicMath.LCM(argument1, argument2);
+                        return IntegerMath.lcm(argument1, argument2);
                     case "npr":
-                        return BasicMath.nPr(argument2, argument1);
+                        return IntegerMath.nPr(argument2, argument1);
                     case "ncr":
-                        return BasicMath.nCr(argument2, argument1);
+                        return IntegerMath.nCr(argument2, argument1);
                     default:
                         throw SyntaxError(`No such function "${func}" for the given context "${context}"`);
                 }
@@ -640,7 +640,7 @@ export class ExpressionMath {
 
                 switch (func) {
                     case "levenshtein":
-                        return CustomMath.getMinEditDistance(argument2, argument1);
+                        return StringMath.getMinEditDistance(argument2, argument1);
                     default:
                         throw SyntaxError(`No such function "${func}" for the given context "${context}"`);
                 }
@@ -675,7 +675,7 @@ export class ExpressionMath {
                     case "ceil":
                         return Math.ceil(argument);
                     case "name":
-                        return CustomMath.getNumberName(argument);
+                        return StringMath.getNumberName(argument);
                     default:
                         throw SyntaxError(`No such function "${func}" for the given context "${context}"`);
                 }

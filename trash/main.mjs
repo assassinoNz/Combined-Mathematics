@@ -1,37 +1,45 @@
 //@ts-check
+import { BasicMath } from "../src/static/BasicMath.mjs";
+import { LinearEquationMath } from "../src/static/EquationMath.mjs";
+import { ExpressionContext } from "../src/static/ExpressionMath.mjs";
+import { BooleanMath } from "../src/static/BooleanMath.mjs";
 import { ExpressionMath } from "../src/static/ExpressionMath.mjs";
 
-// ex.print("PRE");
-// ex.print("IN");
-// ex.print("POST");
+let valueDictionary = {
+    A: true,
+    B: false,
+    C: false,
+}
 
-// console.log(ex.root.toPrefix());
-// console.log(ex.root.toInfix());
-// console.log(ex.root.toPostfix());
+let context = ExpressionContext.REAL;
+// let expressions = ["!A!B", "B", "A+B", "A.B", "A>B", "A↔B", "A↑B", "A↓B"];
+let expressions = ["25^B"];
 
-// let ex = ExpressionMath.separateToTokens("A+B*C^D");
-let infix = ExpressionMath.separateToTokens("2-3");
-console.log(infix);
-let postfix = ExpressionMath.infixToPostfix(infix);
-console.log(postfix);
+const tokenizedExpressions = [];
+const postfixedExpressions = [];
+const evaluatedExpressions = [];
+// const matrices = LinearEquationMath.solveSLE(["A+Z=3", "Z-A=1"], context);
+for (let e = 0; e < expressions.length; e++) {
+    tokenizedExpressions[e] = ExpressionMath.separateToTokens(expressions[e], context);
+    // postfixedExpressions[e] = ExpressionMath.infixToPostfix(tokenizedExpressions[e], context);
+    // evaluatedExpressions[e] = ExpressionMath.evaluateExpression(postfixedExpressions[e], valueDictionary, context);
+    // standardizedEquations[e] = LinearEquationMath.standardizeTokens(tokenizedExpressions[e]);
+    // coefficientDictionaries[e] = LinearEquationMath.generateCoefficientsDictionary(standardizedEquations[e]);
+    // LinearEquationMath.addMatrixRow(constantMatrix, coefficientsMatrix, coefficientDictionaries[e]);
+}
 
-let values = ExpressionMath.generateEmptyValueDictionary(postfix);
-// values.A = "4";
-// values.B = "-3";
-// values.C = "-2";
-// values.D = "1";
 
-let replaced = ExpressionMath.replaceVariablesByValues(postfix, values);
-console.log(ExpressionMath.solveExpressionToValue(replaced));
-// let tree = ExpressionMath.generateExpressionTree(postfix);
 
-// for (let i = 0; i < 8; i++) {
-//     const bin = i.toString(2);
-//     const generatedValues = ("0".repeat(3-bin.length) + bin).split("");
-//     values.P = generatedValues[0];
-//     values.Q = generatedValues[1];
-//     values.R = generatedValues[2];
+// console.log(expressions);
+console.log(tokenizedExpressions);
+// console.log(postfixedExpressions);
+// console.log(evaluatedExpressions);
+// console.log(standardizedEquations);
+// console.log(coefficientDictionaries);
+// console.log(constantMatrix);
+// console.log(coefficientsMatrix);
+// console.log(matrices);
 
-//     const replaced = ExpressionMath.replaceVariablesByValues(postfix, values);
-//     console.log(generatedValues.join(""), ExpressionMath.solveExpressionToValue(replaced));
-// }
+// console.log(BooleanMath.generateTruthTable(tokenizedExpressions, context));
+
+

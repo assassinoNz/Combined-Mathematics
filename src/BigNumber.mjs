@@ -1,5 +1,5 @@
 //@ts-check
-import { StringMath } from "./static/StringMath.mjs";
+import { MultiPrecisionMath } from "./static/MultiPrecisionMath.mjs";
 
 export class BigNumber {
     /** Constructs a BigNumber
@@ -40,27 +40,27 @@ export class BigNumber {
         if (operand instanceof BigNumber) {
             if (this.type === "decimal" && operand.type === "decimal") {
                 if (this.sign === "+" && operand.sign === "+") {
-                    return new BigNumber(StringMath.addUnsignedDec(this.value, operand.value));
+                    return new BigNumber(MultiPrecisionMath.addUnsignedDec(this.value, operand.value));
                 } else {
-                    return new BigNumber(StringMath.addDec(this.value, operand.value));
+                    return new BigNumber(MultiPrecisionMath.addDec(this.value, operand.value));
                 }
             } else if (this.type === "integer" && operand.type === "integer") {
                 if (this.sign === "+" && operand.sign === "+") {
-                    return new BigNumber(StringMath.addUnsignedInt(this.value, operand.value));
+                    return new BigNumber(MultiPrecisionMath.addUnsignedInt(this.value, operand.value));
                 } else {
-                    return new BigNumber(StringMath.addInt(this.value, operand.value));
+                    return new BigNumber(MultiPrecisionMath.addInt(this.value, operand.value));
                 }
             } else if (this.type === "integer") {
                 if (this.sign === "+" && operand.sign === "+") {
-                    return new BigNumber(StringMath.addUnsignedDec(this.value + ".0", operand.value));
+                    return new BigNumber(MultiPrecisionMath.addUnsignedDec(this.value + ".0", operand.value));
                 } else {
-                    return new BigNumber(StringMath.addDec(this.value + ".0", operand.value));
+                    return new BigNumber(MultiPrecisionMath.addDec(this.value + ".0", operand.value));
                 }
             } else if (operand.type === "integer") {
                 if (this.sign === "+" && operand.sign === "+") {
-                    return new BigNumber(StringMath.addUnsignedDec(this.value, operand.value + ".0"));
+                    return new BigNumber(MultiPrecisionMath.addUnsignedDec(this.value, operand.value + ".0"));
                 } else {
-                    return new BigNumber(StringMath.addDec(this.value, operand.value + ".0"));
+                    return new BigNumber(MultiPrecisionMath.addDec(this.value, operand.value + ".0"));
                 }
             }
         } else {
@@ -76,15 +76,15 @@ export class BigNumber {
         if (operand instanceof BigNumber) {
             if (this.type === "decimal" || operand.type === "decimal") {
                 if (this.sign === "+" && operand.sign === "+") {
-                    return new BigNumber(StringMath.multiplyUnsignedDec2(this.value, operand.value));
+                    return new BigNumber(MultiPrecisionMath.multiplyUnsignedDec2(this.value, operand.value));
                 } else {
-                    return new BigNumber(StringMath.multiplyDec2(this.value, operand.value));
+                    return new BigNumber(MultiPrecisionMath.multiplyDec2(this.value, operand.value));
                 }
             } else {
                 if (this.sign === "+" && operand.sign === "+") {
-                    return new BigNumber(StringMath.multiplyUnsignedInt2(this.value, operand.value));
+                    return new BigNumber(MultiPrecisionMath.multiplyUnsignedInt2(this.value, operand.value));
                 } else {
-                    return new BigNumber(StringMath.multiplyInt2(this.value, operand.value));
+                    return new BigNumber(MultiPrecisionMath.multiplyInt2(this.value, operand.value));
                 }
             }
         } else {
@@ -103,15 +103,15 @@ export class BigNumber {
                 throw new RangeError("Numbers larger than 1000799917193442.5 aren't allowed due to loss of precision. Use 'BigNumber.multiply()' instead");
             } else if (this.type === "decimal" || operand.toString().includes(".")) {
                 if (this.sign === "+" && (Math.abs(operand) === operand)) {
-                    return new BigNumber(StringMath.multiplyUnsignedDec(this.value, operand));
+                    return new BigNumber(MultiPrecisionMath.multiplyUnsignedDec(this.value, operand));
                 } else {
-                    return new BigNumber(StringMath.multiplyDec(this.value, operand));
+                    return new BigNumber(MultiPrecisionMath.multiplyDec(this.value, operand));
                 }
             } else {
                 if (this.sign === "+" && (Math.abs(operand) === operand)) {
-                    return new BigNumber(StringMath.multiplyUnsignedInt(this.value, operand));
+                    return new BigNumber(MultiPrecisionMath.multiplyUnsignedInt(this.value, operand));
                 } else {
-                    return new BigNumber(StringMath.multiplyInt(this.value, operand));
+                    return new BigNumber(MultiPrecisionMath.multiplyInt(this.value, operand));
                 }
             }
         } else {

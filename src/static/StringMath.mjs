@@ -1,449 +1,381 @@
 //@ts-check
 export class StringMath {
-    /**
-     * Adds two unsigned integers with unlimited precision
-     * NOTE: Can only be used for unsigned(positive) integer addition
-     * @param {string} int1 
-     * @param {string} int2
-     * @return {string} The final result after the addition of int1 and int2
-     */
-    static addUnsignedInt(int1, int2) {
-        //Make both numbers have the same length by adding leading zeros
-        if (int1.length - int2.length > 0) {
-            int2 = "0".repeat(int1.length - int2.length) + int2;
-        } else if (int2.length - int1.length > 0) {
-            int1 = "0".repeat(int2.length - int1.length) + int1;
+    /** Returns the name of an integer
+    * @param {number} integer Must honor the range 0<=integer<=9999
+    * @return {string} The name of the integer in US English pascal case
+   */
+    static getNumberName(integer) {
+        if (integer.toString().length > 4) {
+            return "Number out of range";
         }
 
-        let carryValue = 0;
-        const resultDigits = [];
-        for (let i = int1.length - 1; i > -1; i--) {
-            const temporalSum = parseInt(int1[i]) + parseInt(int2[i]) + carryValue;
-            const temporalSumDigits = temporalSum.toString().split("");
-            resultDigits.unshift(temporalSumDigits.pop());
-            if (i === 0) {
-                resultDigits.unshift(temporalSumDigits.join(""));
-            } else if (temporalSumDigits.length > 0) {
-                carryValue = parseInt(temporalSumDigits.join(""));
-            } else {
-                carryValue = 0;
+        const digitNames = [
+            ["Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"],
+            ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"],
+            ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"],
+            ["", "OneHundred", "TwoHundred", "ThreeHundred", "FourHundred", "FiveHundred", "SixHundred", "SevenHundred", "EightHundred", "NineHundred"],
+            ["", "OneThousand", "TwoThousand", "ThreeThousand", "FourThousand", "FiveThousand", "SixThousand", "SevenThousand", "EightThousand", "NineThousand"]
+        ];
+
+        let modifiedNumber = integer.toString();
+
+        switch (modifiedNumber.length) {
+            case 1:
+                modifiedNumber = "000" + integer;
+                break;
+            case 2:
+                modifiedNumber = "00" + integer;
+                break;
+            case 3:
+                modifiedNumber = "0" + integer;
+                break;
+            default:
+                break;
+        }
+
+        const reversedDigitsArray = modifiedNumber.split("").reverse();
+
+        let digitName1 = "";
+        let digitName2 = "";
+        let digitName3 = "";
+        let digitName4 = "";
+
+        if (reversedDigitsArray[1] === "1") {
+            digitName1 = "";
+            switch (reversedDigitsArray[0]) {
+                case "0":
+                    digitName2 = digitNames[0][0];
+                    break;
+                case "1":
+                    digitName2 = digitNames[0][1];
+                    break;
+                case "2":
+                    digitName2 = digitNames[0][2];
+                    break;
+                case "3":
+                    digitName2 = digitNames[0][3];
+                    break;
+                case "4":
+                    digitName2 = digitNames[0][4];
+                    break;
+                case "5":
+                    digitName2 = digitNames[0][5];
+                    break;
+                case "6":
+                    digitName2 = digitNames[0][6];
+                    break;
+                case "7":
+                    digitName2 = digitNames[0][7];
+                    break;
+                case "8":
+                    digitName2 = digitNames[0][8];
+                    break;
+                case "9":
+                    digitName2 = digitNames[0][9];
+                    break;
+                default:
+                    break;
             }
-        }
-        return resultDigits.join("");
-    }
-
-    /**
-     * Subtracts an integer from another integer with unlimited precision
-     * NOTE: Can only be used for unsigned(positive) integer subtraction
-     * NOTE: Subtraction refers to the operation and not the number's sign
-     * @param {string} largerInt 
-     * @param {string} smallerInt
-     * @return {string} The final result after the subtraction of smallerInt from largerInt
-     */
-    static subtractUnsignedInt(largerInt, smallerInt) {
-        //Make both numbers have the same length by adding leading zeros
-        if (largerInt.length - smallerInt.length > 0) {
-            smallerInt = "0".repeat(largerInt.length - smallerInt.length) + smallerInt;
-        } else if (smallerInt.length - largerInt.length > 0) {
-            largerInt = "0".repeat(smallerInt.length - largerInt.length) + largerInt;
-        }
-
-        const answers = [];
-        for (let i = largerInt.length - 1; i > -1; i--) {
-            let upgradedValue;
-            if (i === largerInt.length - 1) {
-                upgradedValue = parseInt(largerInt[i]) + 10;
-            } else if (i === 0) {
-                upgradedValue = parseInt(largerInt[i]) - 1;
-            } else {
-                upgradedValue = parseInt(largerInt[i]) - 1 + 10;
-            }
-            answers.unshift(upgradedValue - parseInt(smallerInt[i]));
-        }
-
-        const digits = [];
-        let carryValue = 0;
-        for (let j = answers.length - 1; j > -1; j--) {
-            if (answers[j] + carryValue < 10) {
-                digits[j] = answers[j] + carryValue;
-                carryValue = 0;
-            } else {
-                digits[j] = answers[j] - 10 + carryValue;
-                carryValue = 1;
-            }
-        }
-
-        return digits.join("");
-    }
-
-    /**
-     * Adds two signed integers with unlimited precision
-     * NOTE: Can only be used for signed integer addition
-     * NOTE: Positive sign must be omitted for positive integers
-     * @param {string} int1 
-     * @param {string} int2
-     * @return {string} The final result after the addition of int1 and int2
-     */
-    static addInt(int1, int2) {
-        let int1Sign = "";
-        let int2Sign = "";
-
-        if (int1.startsWith("-")) {
-            int1Sign = "-";
-            int1 = int1.replace("-", "");
-        }
-
-        if (int2.startsWith("-")) {
-            int2Sign = "-";
-            int2 = int2.replace("-", "");
-        }
-
-        if (int1Sign === int2Sign) {
-            return int1Sign + this.addUnsignedInt(int1, int2);
-        } else if (int1 === int2) {
-            return "0";
         } else {
-            if (int1.length > int2.length) {
-                return int1Sign + this.subtractUnsignedInt(int1, int2);
-            } else if (int1.length < int2.length) {
-                return int2Sign + this.subtractUnsignedInt(int2, int1);
-            } else if (int1.length === int2.length) {
-                for (let i = 0; i < int1.length; i++) {
-                    if (int1[i] === int2[i]) {
-                        continue;
-                    } else if (parseInt(int1[i]) > parseInt(int2[i])) {
-                        return int1Sign + this.subtractUnsignedInt(int1, int2);
-                    } else {
-                        return int2Sign + this.subtractUnsignedInt(int2, int1);
-                    }
-                }
+            switch (reversedDigitsArray[0]) {
+                case "0":
+                    digitName1 = digitNames[1][0];
+                    break;
+                case "1":
+                    digitName1 = digitNames[1][1];
+                    break;
+                case "2":
+                    digitName1 = digitNames[1][2];
+                    break;
+                case "3":
+                    digitName1 = digitNames[1][3];
+                    break;
+                case "4":
+                    digitName1 = digitNames[1][4];
+                    break;
+                case "5":
+                    digitName1 = digitNames[1][5];
+                    break;
+                case "6":
+                    digitName1 = digitNames[1][6];
+                    break;
+                case "7":
+                    digitName1 = digitNames[1][7];
+                    break;
+                case "8":
+                    digitName1 = digitNames[1][8];
+                    break;
+                case "9":
+                    digitName1 = digitNames[1][9];
+                    break;
+                default:
+                    break;
             }
-        }
-    }
-
-    /**
-     * Adds two unsigned decimal numbers with unlimited precision
-     * NOTE: Can only be used for unsigned(positive) decimal number addition
-     * @param {string} dec1 
-     * @param {string} dec2
-     * @return {string} The final result after the addition of dec1 and dec2
-     */
-    static addUnsignedDec(dec1, dec2) {
-        const dec1Parts = dec1.split(".");
-        const dec2Parts = dec2.split(".");
-        //Make whole number part of both numbers have the same length by adding leading zeros
-        if (dec1Parts[0].length - dec2Parts[0].length > 0) {
-            dec2Parts[0] = "0".repeat(dec1Parts[0].length - dec2Parts[0].length) + dec2Parts[0];
-        } else if (dec2Parts[0].length - dec1Parts[0].length > 0) {
-            dec1Parts[0] = "0".repeat(dec2Parts[0].length - dec1Parts[0].length) + dec1Parts[0];
-        }
-        //Make decimal number part of both numbers have the same length by adding leading zeros
-        if (dec1Parts[1].length - dec2Parts[1].length > 0) {
-            dec2Parts[1] = dec2Parts[1] + "0".repeat(dec1Parts[1].length - dec2Parts[1].length);
-        } else if (dec2Parts[1].length - dec1Parts[1].length > 0) {
-            dec1Parts[1] = dec1Parts[1] + "0".repeat(dec2Parts[1].length - dec1Parts[1].length);
-        }
-
-        dec1 = dec1Parts.join("");
-        dec2 = dec2Parts.join("");
-
-        const resultDigits = this.addUnsignedInt(dec1, dec2).split("");
-        resultDigits.splice(resultDigits.length - dec1Parts[1].length, 0, ".");
-        return resultDigits.join("");
-    }
-
-    /**
-     * Subtracts a decimal number from another decimal number with unlimited precision
-     * NOTE: Can only be used for unsigned(positive) decimal number subtraction
-     * NOTE: Subtraction refers to the operation and not the number's sign
-     * @param {string} largerDec
-     * @param {string} smallerDec
-     * @return {string} The final result after the subtraction of smallerDec from largerDec
-     */
-    static subtractUnsignedDec(largerDec, smallerDec) {
-        const largerDecParts = largerDec.split(".");
-        const smallerDecParts = smallerDec.split(".");
-        //Make whole number part of both numbers have the same length by adding leading zeros
-        if (largerDecParts[0].length - smallerDecParts[0].length > 0) {
-            smallerDecParts[0] = "0".repeat(largerDecParts[0].length - smallerDecParts[0].length) + smallerDecParts[0];
-        } else if (smallerDecParts[0].length - largerDecParts[0].length > 0) {
-            largerDecParts[0] = "0".repeat(smallerDecParts[0].length - largerDecParts[0].length) + largerDecParts[0];
-        }
-        //Make decimal number part of both numbers have the same length by adding leading zeros
-        if (largerDecParts[1].length - smallerDecParts[1].length > 0) {
-            smallerDecParts[1] = smallerDecParts[1] + "0".repeat(largerDecParts[1].length - smallerDecParts[1].length);
-        } else if (smallerDecParts[1].length - largerDecParts[1].length > 0) {
-            largerDecParts[1] = largerDecParts[1] + "0".repeat(smallerDecParts[1].length - largerDecParts[1].length);
-        }
-
-        largerDec = largerDecParts.join("");
-        smallerDec = smallerDecParts.join("");
-
-        const resultDigits = this.subtractUnsignedInt(largerDec, smallerDec).split("");
-        resultDigits.splice(resultDigits.length - largerDecParts[1].length, 0, ".");
-        return resultDigits.join("");
-    }
-
-    /**
-     * Adds two signed decimal numbers with unlimited precision
-     * NOTE: Can only be used for signed decimal number addition
-     * NOTE: Positive sign must be omitted for positive integers
-     * @param {string} dec1 
-     * @param {string} dec2
-     * @return {string} The final result after the addition of dec1 and dec2
-     */
-    static addDec(dec1, dec2) {
-        let dec1Sign = "";
-        let dec2Sign = "";
-
-        if (dec1.startsWith("-")) {
-            dec1Sign = "-";
-            dec1 = dec1.replace("-", "");
-        }
-
-        if (dec2.startsWith("-")) {
-            dec2Sign = "-";
-            dec2 = dec2.replace("-", "");
-        }
-
-        if (dec1Sign === dec2Sign) {
-            return dec1Sign + this.addUnsignedDec(dec1, dec2);
-        } else if (dec1 === dec2) {
-            return "0";
-        } else {
-            if (dec1.length > dec2.length) {
-                return dec1Sign + this.subtractUnsignedDec(dec1, dec2);
-            } else if (dec1.length < dec2.length) {
-                return dec2Sign + this.subtractUnsignedDec(dec2, dec1);
-            } else {
-                for (let i = 0; i < dec1.length; i++) {
-                    if (dec1[i] === dec2[i]) {
-                        continue;
-                    } else if (dec1[i] === ".") {
-                        return dec2Sign + this.subtractUnsignedDec(dec2, dec1);
-                    } else if (dec2[i] === ".") {
-                        return dec1Sign + this.subtractUnsignedDec(dec1, dec2);
-                    } else if (parseInt(dec1[i]) > parseInt(dec2[i])) {
-                        return dec1Sign + this.subtractUnsignedDec(dec1, dec2);
-                    } else {
-                        return dec2Sign + this.subtractUnsignedDec(dec2, dec1);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Multiplies two unsigned integers with unlimited precision
-     * NOTE: Can only be used for unsigned(positive) integer multiplication
-     * @param {string} integer 
-     * @param {number} multiplier Must honor the range 0<=multiplier<=NUmber.MAX_SAFE_INTEGER/9
-     * @return {string} The final result after the multiplication of integer with multiplier
-     */
-    static multiplyUnsignedInt(integer, multiplier) {
-        const resultDigits = [];
-        let carryValue = 0;
-
-        for (let i = integer.length - 1; i > -1; i--) {
-            let temporalProduct = (parseInt(integer[i]) * multiplier) + carryValue;
-            let temporalProductDigits = temporalProduct.toString().split("");
-            resultDigits.unshift(temporalProductDigits.pop());
-            if (i === 0) {
-                resultDigits.unshift(temporalProductDigits.join(""));
-            } else if (temporalProductDigits.length > 0) {
-                carryValue = parseInt(temporalProductDigits.join(""));
-            } else {
-                carryValue = 0;
+            switch (reversedDigitsArray[1]) {
+                case "0":
+                    digitName2 = digitNames[2][0];
+                    break;
+                case "1":
+                    digitName2 = digitNames[2][1];
+                    break;
+                case "2":
+                    digitName2 = digitNames[2][2];
+                    break;
+                case "3":
+                    digitName2 = digitNames[2][3];
+                    break;
+                case "4":
+                    digitName2 = digitNames[2][4];
+                    break;
+                case "5":
+                    digitName2 = digitNames[2][5];
+                    break;
+                case "6":
+                    digitName2 = digitNames[2][6];
+                    break;
+                case "7":
+                    digitName2 = digitNames[2][7];
+                    break;
+                case "8":
+                    digitName2 = digitNames[2][8];
+                    break;
+                case "9":
+                    digitName2 = digitNames[2][9];
+                    break;
+                default:
+                    break;
             }
         }
 
-        return resultDigits.join("");
+        switch (reversedDigitsArray[2]) {
+            case "0":
+                digitName3 = digitNames[3][0];
+                break;
+            case "1":
+                digitName3 = digitNames[3][1];
+                break;
+            case "2":
+                digitName3 = digitNames[3][2];
+                break;
+            case "3":
+                digitName3 = digitNames[3][3];
+                break;
+            case "4":
+                digitName3 = digitNames[3][4];
+                break;
+            case "5":
+                digitName3 = digitNames[3][5];
+                break;
+            case "6":
+                digitName3 = digitNames[3][6];
+                break;
+            case "7":
+                digitName3 = digitNames[3][7];
+                break;
+            case "8":
+                digitName3 = digitNames[3][8];
+                break;
+            case "9":
+                digitName3 = digitNames[3][9];
+                break;
+            default:
+                break;
+        }
+        switch (reversedDigitsArray[3]) {
+            case "0":
+                digitName4 = digitNames[4][0];
+                break;
+            case "1":
+                digitName4 = digitNames[4][1];
+                break;
+            case "2":
+                digitName4 = digitNames[4][2];
+                break;
+            case "3":
+                digitName4 = digitNames[4][3];
+                break;
+            case "4":
+                digitName4 = digitNames[4][4];
+                break;
+            case "5":
+                digitName4 = digitNames[4][5];
+                break;
+            case "6":
+                digitName4 = digitNames[4][6];
+                break;
+            case "7":
+                digitName4 = digitNames[4][7];
+                break;
+            case "8":
+                digitName4 = digitNames[4][8];
+                break;
+            case "9":
+                digitName4 = digitNames[4][9];
+                break;
+            default:
+                break;
+        }
+
+        return digitName4 + digitName3 + digitName2 + digitName1;
     }
 
     /**
-     * Multiplies two signed integers with unlimited precision
-     * NOTE: Can only be used for signed integer multiplication
-     * NOTE: Positive sign must be omitted for positive integers
-     * @param {string} integer 
-     * @param {number} multiplier Must honor the range 0<=multiplier<=NUmber.MAX_SAFE_INTEGER/9
-     * @return {string} The final result after the multiplication of integer with multiplier
+     * Returns the minimum edit distance between two strings
+     * NOTE: All the editing methods (insertion, deletion, substitution) have a distance of +1, unlike Levenshtein Distance where substitution has +2 distance
+     * @param {string} columnString 
+     * @param {string} rowString 
      */
-    static multiplyInt(integer, multiplier) {
-        let signString = "";
-        if (!integer.startsWith("-") !== !multiplier.toString().startsWith("-")) {
-            signString = "-";
+    static getMinEditDistance(columnString, rowString) {
+        //Generate Dynamic Programming table
+        const dpTable = [];
+        for (let i = 0; i < rowString.length + 1; i++) {
+            dpTable.push(new Array(columnString.length + 1));
         }
-        integer = integer.replace("-", "");
-        multiplier = Math.abs(multiplier);
 
-        return signString + this.multiplyUnsignedInt(integer, multiplier);
-    }
-
-    /**
-     * Multiplies two unsigned decimal numbers with unlimited precision
-     * NOTE: Can only be used for unsigned(positive) decimal number multiplication
-     * @param {string} decimal 
-     * @param {number} multiplier Must honor the range 0<=multiplier<=NUmber.MAX_SAFE_INTEGER/9
-     * @return {string} The final result after the multiplication of decimal with multiplier
-     */
-    static multiplyUnsignedDec(decimal, multiplier) {
-        let decDecimals = decimal.split("").reverse().indexOf(".");
-        let multiplierDecimals = multiplier.toString().split("").reverse().indexOf(".");
-        let numOfDecimals = 0;
-        if (decDecimals !== -1) {
-            numOfDecimals = numOfDecimals + decDecimals;
+        //Fill-up edit distances compared with the "" (empty string)
+        //Fill the first column (represents number of insertions)
+        for (let i = 0; i < dpTable.length; i++) {
+            dpTable[i][0] = i;
         }
-        if (multiplierDecimals !== -1) {
-            numOfDecimals = numOfDecimals + multiplierDecimals;
+        //Fill the first row (represents number of deletions)
+        for (let i = 0; i < dpTable[0].length; i++) {
+            dpTable[0][i] = i;
         }
-        decimal = decimal.replace(".", "");
-        multiplier = parseInt(multiplier.toString().replace(".", ""));
 
-        if (numOfDecimals > 0) {
-            const resultDigits = this.multiplyUnsignedInt(decimal, multiplier).split("");
-            resultDigits.splice(resultDigits.length - numOfDecimals, 0, ".");
-            return resultDigits.join("");
-        } else {
-            return this.multiplyUnsignedInt(decimal, multiplier);
-        }
-    }
-
-    /**
-     * Multiplies two signed decimal numbers with unlimited precision
-     * NOTE: Can only be used for signed decimal number multiplication
-     * NOTE: Positive sign must be omitted for positive integers
-     * @param {string} decimal 
-     * @param {number} multiplier Must honor the range 0<=multiplier<=NUmber.MAX_SAFE_INTEGER/9
-     * @return {string} The final result after the multiplication of decimal with multiplier
-     */
-    static multiplyDec(decimal, multiplier) {
-        let signString = "";
-        if (!decimal.startsWith("-") !== !multiplier.toString().startsWith("-")) {
-            signString = "-";
-        }
-        decimal = decimal.replace("-", "");
-        multiplier = Math.abs(multiplier);
-
-        return signString + this.multiplyUnsignedDec(decimal, multiplier);
-    }
-
-    /**
-     * Multiplies two signed integers with unlimited precision
-     * NOTE: Can only be used for signed integer multiplication
-     * @param {string} int1 
-     * @param {string} int2
-     * @return {string} The final result after the multiplication of int1 with int2
-     */
-    static multiplyUnsignedInt2(int1, int2) {
-        const productRows = [];
-
-        for (let j = int2.length - 1; j > -1; j--) {
-
-            const temporalResultDigits = [];
-            let carryValue = 0;
-
-            for (let i = int1.length - 1; i > -1; i--) {
-                let temporalProduct = (parseInt(int1[i]) * parseInt(int2[j])) + carryValue;
-                let temporalProductDigits = temporalProduct.toString().split("");
-                temporalResultDigits.unshift(temporalProductDigits.pop());
-                if (i === 0) {
-                    temporalResultDigits.unshift(temporalProductDigits.join(""));
-                } else if (temporalProductDigits.length > 0) {
-                    carryValue = parseInt(temporalProductDigits.join(""));
+        for (let i = 1; i <= columnString.length; i++) {
+            for (let j = 1; j <= rowString.length; j++) {
+                //Check if the last characters of both the column and row substrings matches
+                //columnString[i-1] = last character of the column substring for the current iteration
+                //rowString[j-1] = last character of the row substring for the current iteration
+                if (columnString[i - 1] === rowString[j - 1]) {
+                    //If matches, no edits are required. New min edit distance = previous min edit distance
+                    dpTable[j][i] = dpTable[j - 1][i - 1];
                 } else {
-                    carryValue = 0;
+                    //If doesn't match, one or more edits are required. New min edit distance = (previous min edit distance) + (required number of edits)
+                    //Required number of edits is always +1.
+                    //Therefore, New min edit distance = (previous min edit distance) + 1
+                    dpTable[j][i] = Math.min(dpTable[j - 1][i - 1], dpTable[j][i - 1], dpTable[j - 1][i]) + 1;
                 }
             }
-
-            productRows.push(temporalResultDigits.join("") + "0".repeat(int2.length - 1 - j));
         }
 
-        let resultDigits = "0";
-        for (let k = 0; k < productRows.length; k++) {
-            resultDigits = this.addUnsignedInt(resultDigits, productRows[k]);
-        }
-
-        return resultDigits;
+        //Minimum edit distance is the lower right value of the dpTable
+        return dpTable[rowString.length][columnString.length];
     }
 
     /**
-     * Multiplies two signed integers with unlimited precision
-     * NOTE: Can only be used for signed integer multiplication
-     * NOTE: Positive sign must be omitted for positive integers
-     * @param {string} int1 
-     * @param {string} int2
-     * @return {string} The final result after the multiplication of int1 with int2
+     * Returns unique permutations of a string
+     * NOTE: This algorithm is much faster with strings which include duplicate characters
+     * @param {string} string
+     * @return {string[]} An array with all the unique permutations of the string
      */
-    static multiplyInt2(int1, int2) {
-        let signString = "";
-        if (!int1.startsWith("-") !== !int2.startsWith("-")) {
-            signString = "-";
+    static getUniquePermutations(string) {
+        let previousLevelPermutations = [string];
+        //"i" is the iterator for the levels (i = currentPermutationLevel)
+        //"i" starts with 1. Because the 0th permutation level is the string itself
+        for (let i = 1; i < string.length; i++) {
+            //Declare a set to store current level permutations
+            //NOTE: Sets don't allow duplicate values
+            const currentLevelPermutations = new Set();
+            //primaryCharacterIndex of currentPermutationLevel = previousPermutationLevel
+            const primaryCharIndex = i - 1;
+            //"j" is the iterator for permutations inside previous level (j = previousLevelPermutationIndex)
+            //NOTE: Permutations array's 0th index will always be the previousPermutationLevel
+            //We derive currentLevelPermutations by swapping letters in each permutation of the previous level permutations
+            for (let j = 0; j < previousLevelPermutations.length; j++) {
+                //secondaryCharacterIndex starts equal to primaryCharacterIndex
+                //Because all the characters before primaryCharacterIndex is fixed and doesn't need swapping
+                for (let secondaryCharIndex = primaryCharIndex; secondaryCharIndex < previousLevelPermutations[j].length; secondaryCharIndex++) {
+                    const previousLevelPermutationChars = previousLevelPermutations[j].split("");
+                    //Get the primary character to be swapped
+                    const primaryChar = previousLevelPermutationChars[primaryCharIndex];
+                    //Get the secondary character to be swapped
+                    const secondaryChar = previousLevelPermutationChars[secondaryCharIndex];
+                    //Replace primaryCharacter with secondaryCharacter
+                    previousLevelPermutationChars[primaryCharIndex] = secondaryChar;
+                    //Replace secondaryCharacter with primaryCharacter
+                    previousLevelPermutationChars[secondaryCharIndex] = primaryChar;
+                    //Now we have generated another permutation
+                    //Since currentLevelPermutations set takes care of the duplication checking, we just have to add the generated permutation to currentLevelPermutations
+                    currentLevelPermutations.add(previousLevelPermutationChars.join(""));
+                }
+            }
+            //At the end of the current iteration currentLevelPermutations should become previousLevelPermutations for the next iteration
+            previousLevelPermutations = Array.from(currentLevelPermutations);
         }
-        int1 = int1.replace("-", "");
-        int2 = int2.replace("-", "");
-
-        return signString + this.multiplyUnsignedInt2(int1, int2);
+        //At last previousLevelPermutations represents all the possible permutations for the given string
+        return previousLevelPermutations;
     }
 
     /**
-     * Multiplies two unsigned decimal numbers with unlimited precision
-     * NOTE: Can only be used for unsigned(positive) decimal number multiplication
-     * @param {string} dec1
-     * @param {string} dec2
-     * @return {string} The final result after the multiplication of dec1 with dec2
+     * @deprecated
+     * Returns unique permutations of a string
+     * WARNING: Abysmal performance. Method exists only to demonstrate the algorithm
+     * @param {string} string
+     * @return {string[]} An array with all the unique permutations of the string
      */
-    static multiplyUnsignedDec2(dec1, dec2) {
-        const dec1Decimals = dec1.split("").reverse().indexOf(".");
-        const dec2Decimals = dec2.split("").reverse().indexOf(".");
-        let numOfDecimals = 0;
-        if (dec1Decimals !== -1) {
-            numOfDecimals = numOfDecimals + dec1Decimals;
-        }
-        if (dec2Decimals !== -1) {
-            numOfDecimals = numOfDecimals + dec2Decimals;
-        }
-        dec1 = dec1.replace(".", "");
-        dec2 = dec2.replace(".", "");
+    static getUniquePermutations2(string) {
+        const permutations = [];
 
-        if (numOfDecimals > 0) {
-            const resultDigits = this.multiplyUnsignedInt2(dec1, dec2).split("");
-            resultDigits.splice(resultDigits.length - numOfDecimals, 0, ".");
-            return resultDigits.join("");
-        } else {
-            return this.multiplyUnsignedInt2(dec1, dec2);
+        function getPermutationsRecursively(string, possibleChars) {
+            if (possibleChars.length === 1) {
+                const permutation = string + possibleChars.shift();
+                if (!permutations.includes(permutation)) {
+                    permutations.push(permutation);
+                }
+            } else {
+                for (let i = 0; i < possibleChars.length; i++) {
+                    const clonedPossibleChars = possibleChars.slice(0);
+                    const appendedString = string + clonedPossibleChars.splice(i, 1)[0];
+                    getPermutationsRecursively(appendedString, clonedPossibleChars);
+                }
+            }
         }
+
+        getPermutationsRecursively("", string.split(""));
+        return permutations;
     }
 
     /**
-     * Multiplies two signed decimal numbers with unlimited precision
-     * NOTE: Can only be used for signed decimal number multiplication
-     * NOTE: Positive sign must be omitted for positive integers
-     * @param {string} dec1
-     * @param {string} dec2
-     * @return {string} The final result after the multiplication of dec1 with dec2
+     * Returns unique permutations of a string
+     * NOTE: This algorithm is faster with strings which don't include duplicate characters
+     * @param {string} string
+     * @return {string[]} An array with all the permutations of the string
      */
-    static multiplyDec2(dec1, dec2) {
-        let signString = "";
-        if (!dec1.startsWith("-") !== !dec2.startsWith("-")) {
-            signString = "-";
+    static getAllPermutations(string) {
+        let previousLevelPermutations = [string];
+        //"i" is the iterator for the levels (i = currentPermutationLevel)
+        //"i" starts with 1. Because the 0th permutation level is the string itself
+        for (let i = 1; i < string.length; i++) {
+            //Declare an array to store current level permutations
+            const currentLevelPermutations = [];
+            //primaryCharacterIndex of currentPermutationLevel = previousPermutationLevel
+            const primaryCharacterIndex = i - 1;
+            //"j" is the iterator for permutations inside previous level (j = previousLevelPermutationIndex)
+            //NOTE: Permutations array's 0th index will always be the previousPermutationLevel
+            //We derive currentLevelPermutations by swapping letters in each permutation of the previous level permutations
+            for (let j = 0; j < previousLevelPermutations.length; j++) {
+                //secondaryCharacterIndex starts equal to primaryCharacterIndex
+                //Because all the characters before primaryCharacterIndex is fixed and doesn't need swapping
+                for (let secondaryCharIndex = primaryCharacterIndex; secondaryCharIndex < previousLevelPermutations[j].length; secondaryCharIndex++) {
+                    const previousLevelPermutationChars = previousLevelPermutations[j].split("");
+                    //Get the primary character to be swapped
+                    const primaryChar = previousLevelPermutationChars[primaryCharacterIndex];
+                    //Get the secondary character to be swapped
+                    const secondaryChar = previousLevelPermutationChars[secondaryCharIndex];
+                    //Replace primaryCharacter with secondaryCharacter
+                    previousLevelPermutationChars[primaryCharacterIndex] = secondaryChar;
+                    //Replace secondaryCharacter with primaryCharacter
+                    previousLevelPermutationChars[secondaryCharIndex] = primaryChar;
+                    //Now we have generated another permutation
+                    //Just add the new permutations (checking for duplicates is skipped)
+                    currentLevelPermutations.push(previousLevelPermutationChars.join(""));
+                }
+            }
+            //At the end of the current iteration currentLevelPermutations should become previousLevelPermutations for the next iteration
+            previousLevelPermutations = currentLevelPermutations;
         }
-        dec1 = dec1.replace("-", "");
-        dec2 = dec2.replace("-", "");
-
-        return signString + this.multiplyUnsignedDec2(dec1, dec2);
-    }
-
-    /**
-     * Raises a decimal number to a given integer power
-     * NOTE: Can be used with signed(both positive and negative) integers and decimals
-     * @param {number} integer 
-     * @param {number} power
-     */
-    static pow(integer, power) {
-        let finalProduct = integer.toString();
-        for (let i = 1; i < power; i++) {
-            finalProduct = StringMath.multiplyDec(finalProduct, integer);
-        }
-        return finalProduct;
+        //At last previousLevelPermutations represents all the possible permutations for the given string
+        return previousLevelPermutations;
     }
 }
