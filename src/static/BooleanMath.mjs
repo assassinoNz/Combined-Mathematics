@@ -51,8 +51,6 @@ export class BooleanMath {
                 }
             }
 
-            console.log(globalValueDictionary);
-
             //Evaluate each expression using the updated valueDictionary
             for (let e = 0; e < tokenizedInfixExpressions.length; e++) {
                 const tokenizedPostfixExpression = ExpressionMath.infixToPostfix(tokenizedInfixExpressions[e], context);
