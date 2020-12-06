@@ -214,34 +214,34 @@ describe("StringMath", () => {
 
     describe("#formatWholePart()", () => {
         it("should return the number intact when it is already formatted", () => {
-            assert.strictEqual(MultiPrecisionMath.formatWholePart("12"), "12");
+            assert.strictEqual(Formatter.formatWholePart("12"), "12");
         });
         it("should return the decimal intact when it is already formatted", () => {
-            assert.strictEqual(MultiPrecisionMath.formatWholePart("-12"), "-12");
+            assert.strictEqual(Formatter.formatWholePart("-12"), "-12");
         });
         it("should return the number with leading zeros removed when number > 0", () => {
-            assert.strictEqual(MultiPrecisionMath.formatWholePart("000012"), "12");
+            assert.strictEqual(Formatter.formatWholePart("000012"), "12");
         });
         it("should return the number with leading zeros removed when number < 0", () => {
-            assert.strictEqual(MultiPrecisionMath.formatWholePart("-000012"), "-12");
+            assert.strictEqual(Formatter.formatWholePart("-000012"), "-12");
         });
     });
 
     describe("#formatFractionalPart()", () => {
         it("should return the decimal intact when it is already formatted", () => {
-            assert.strictEqual(MultiPrecisionMath.formatFractionalPart("12.0"), "12.0");
+            assert.strictEqual(Formatter.formatFractionalPart("12.0"), "12.0");
         });
         it("should return the decimal intact when it is already formatted", () => {
-            assert.strictEqual(MultiPrecisionMath.formatFractionalPart("0.0"), "0.0");
+            assert.strictEqual(Formatter.formatFractionalPart("0.0"), "0.0");
         });
         it("should return the decimal intact when it is already formatted", () => {
-            assert.strictEqual(MultiPrecisionMath.formatFractionalPart("12.1324"), "12.1324");
+            assert.strictEqual(Formatter.formatFractionalPart("12.1324"), "12.1324");
         });
         it("should return the correct decimal when it has 0 fractional part", () => {
-            assert.strictEqual(MultiPrecisionMath.formatFractionalPart("12.0000"), "12.0");
+            assert.strictEqual(Formatter.formatFractionalPart("12.0000"), "12.0");
         });
         it("should return the correct decimal when it has trailing fractional zeros", () => {
-            assert.strictEqual(MultiPrecisionMath.formatFractionalPart("12.545000"), "12.545");
+            assert.strictEqual(Formatter.formatFractionalPart("12.545000"), "12.545");
         });
     });
 });

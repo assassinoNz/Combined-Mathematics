@@ -1,21 +1,5 @@
 //@ts-check
 export class Utility {
-    //Clones a multiArray
-    //NOTE: This won't be necessary if ECMAScript specification includes a method for deep copying of objects
-    static cloneMultiArray(multiArray = [[1]]) {
-        //Declare and initialize an array to store clonedArray
-        const clonedMultiArray = [[]];
-        //Iteratively clone every immutable elements inside the multiArray into clonedMultiArray
-        for (let i = 0; i < multiArray.length; i++) {
-            clonedMultiArray[i] = [];
-            for (let j = 0; j < multiArray[i].length; j++) {
-                clonedMultiArray[i][j] = multiArray[i][j];
-            }
-        }
-        //return clonedMultiArray
-        return clonedMultiArray;
-    }
-
     //Returns the HTMLTableElement for a given multiArray
     static getTableForMultiArray(multiArray = [[1]]) {
         var table = document.createElement("table");
@@ -83,8 +67,83 @@ export class Utility {
             }
         }
     }
+}
 
-    static formatOutput(value) {
+export class ArgumentParser {
+    static parseToInt(args) {
+        const parsedArgs = [];
+        //Parse all arguments to integers
+        for (let i = 0; i < args.length; i++) {
+            parsedArgs[i] = parseInt(args[i]);
+
+            if (isNaN(parsedArgs[i])) {
+                throw TypeError(`Cannot parse argument "${args[i]}" as Integer`);
+            }
+        }
+        
+        return parsedArgs;
+    }
+}
+
+export class ArrayUtil {
+    /**
+     * Sorts an array of numbers
+     * @param {number[]} numberArray
+     */
+    static sortNumberArray(numberArray) {
+        numberArray.sort((element1, element2) => element1 - element2);
+    }
+}
+
+export class Formatter {
+    /**
+     * Formats the whole part of an integer or a decimal string
+     * @param {string} number 
+     */
+    static formatWholePart(number) {
+        let matches;
+        if ((matches = number.match(/^-{0,1}(0{1,})[1-9]{1,}/)) !== null) {
+            //CASE: Number is in one of the forms
+            //-000XXX... or 000XXX...
+            //Convert it into the form -XXX... or XXX...
+            return number.replace(matches[1], "");
+        } else if (/^-{0,1}0{1,}/.test(number)) {
+            //CASE: Number is in one of the forms
+            //-000... or 000...
+            //Return a single zero
+            return "0";
+        } else {
+            //CASE: No formatting needed
+            return number;
+        }
+    }
+
+    /**
+     * Formats the fractional part of a decimal string
+     * @param {string} decimal 
+     */
+    static formatFractionalPart(decimal) {
+        let matches;
+        if ((matches = decimal.match(/[.]0{1,}$/)) !== null) {
+            //CASE: Decimal is in the form XXX.00000...
+            //Convert it into the form XXX.0
+            return decimal.replace(matches[0], ".0");
+        } else if ((matches = decimal.match(/0{1,}$/)) !== null) {
+            //CASE: Decimal is in the form XXX.YYY00...
+            //Convert it into the form XXX.YYY
+            return decimal.replace(matches[0], "");
+        } else {
+            //CASE: No formatting needed
+            return decimal;
+        }
+    }
+
+    /**
+     * Formats a given value in a user-friendly and Discord friendly way
+     * @param value
+     * @return {string} A user and Discord friendly output
+     */
+    static formatBotOutput(value) {
         if (value === true) {
             return "Yep";
         } else if (value === false) {
@@ -108,23 +167,5 @@ export class Utility {
         } else {
             return value;
         }
-    }
-
-    static sortIntArray(intArray) {
-        intArray.sort((element1, element2) => element1 - element2);
-    }
-
-    static parseArgsAsInt(args) {
-        const parsedArgs = [];
-        //Parse all arguments to integers
-        for (let i = 0; i < args.length; i++) {
-            parsedArgs[i] = parseInt(args[i]);
-
-            if (isNaN(parsedArgs[i])) {
-                throw TypeError(`Cannot parse argument "${args[i]}" as Integer`);
-            }
-        }
-        
-        return parsedArgs;
     }
 }

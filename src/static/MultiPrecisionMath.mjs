@@ -1,4 +1,6 @@
 //@ts-check
+import { Formatter } from "./Utility.mjs";
+
 export class MultiPrecisionMath {
     /**
      * @deprecated
@@ -30,7 +32,7 @@ export class MultiPrecisionMath {
                 carryValue = 0;
             }
         }
-        return MultiPrecisionMath.formatWholePart(resultDigits.join(""));
+        return Formatter.formatWholePart(resultDigits.join(""));
     }
 
     /**
@@ -75,7 +77,7 @@ export class MultiPrecisionMath {
             }
         }
 
-        return MultiPrecisionMath.formatWholePart(digits.join(""));
+        return Formatter.formatWholePart(digits.join(""));
     }
 
     /**
@@ -153,7 +155,7 @@ export class MultiPrecisionMath {
 
         const resultDigits = this.addUnsignedInt(dec1, dec2).split("");
         resultDigits.splice(resultDigits.length - dec1Parts[1].length, 0, ".");
-        return MultiPrecisionMath.formatFractionalPart(resultDigits.join(""));
+        return Formatter.formatFractionalPart(resultDigits.join(""));
     }
 
     /**
@@ -186,7 +188,7 @@ export class MultiPrecisionMath {
 
         const resultDigits = this.subtractUnsignedInt(largerDec, smallerDec).split("");
         resultDigits.splice(resultDigits.length - largerDecParts[1].length, 0, ".");
-        return MultiPrecisionMath.formatFractionalPart(resultDigits.join(""));
+        return Formatter.formatFractionalPart(resultDigits.join(""));
     }
 
     /**
@@ -264,7 +266,7 @@ export class MultiPrecisionMath {
             }
         }
 
-        return MultiPrecisionMath.formatWholePart(resultDigits.join(""));
+        return Formatter.formatWholePart(resultDigits.join(""));
     }
 
     /**
@@ -313,7 +315,7 @@ export class MultiPrecisionMath {
             resultDigits.splice(resultDigits.length - numOfDecimals, 0, ".");
             return resultDigits.join("");
         } else {
-            return MultiPrecisionMath.formatFractionalPart(this.multiplyUnsignedInt(decimal, multiplier));
+            return Formatter.formatFractionalPart(this.multiplyUnsignedInt(decimal, multiplier));
         }
     }
 
@@ -476,7 +478,7 @@ export class MultiPrecisionMath {
         //Put the decimal point in the correct position
         answer = answer.slice(0, -fractionalLength) + "." + answer.slice(-fractionalLength);
 
-        return MultiPrecisionMath.formatFractionalPart(answer);
+        return Formatter.formatFractionalPart(answer);
     
     }
 
@@ -500,7 +502,7 @@ export class MultiPrecisionMath {
         //Put the decimal point in the correct position
         answer = answer.slice(0, -totalDecimalPlaces) + "." + answer.slice(-totalDecimalPlaces);
 
-        return MultiPrecisionMath.formatFractionalPart(answer);
+        return Formatter.formatFractionalPart(answer);
     }
 
     /**
@@ -515,39 +517,5 @@ export class MultiPrecisionMath {
         //     finalProduct = StringMath.multiplyDec(finalProduct, integer);
         // }
         // return finalProduct;
-    }
-
-    static formatWholePart(number) {
-        let matches;
-        if ((matches = number.match(/^-{0,1}(0{1,})[1-9]{1,}/)) !== null) {
-            //CASE: Number is in one of the forms
-            //-000XXX... or 000XXX...
-            //Convert it into the form -XXX... or XXX...
-            return number.replace(matches[1], "");
-        } else if (/^-{0,1}0{1,}/.test(number)) {
-            //CASE: Number is in one of the forms
-            //-000... or 000...
-            //Return a single zero
-            return "0";
-        } else {
-            //CASE: No formatting needed
-            return number;
-        }
-    }
-
-    static formatFractionalPart(dec) {
-        let matches;
-        if ((matches = dec.match(/[.]0{1,}$/)) !== null) {
-            //CASE: Decimal is in the form XXX.00000...
-            //Convert it into the form XXX.0
-            return dec.replace(matches[0], ".0");
-        } else if ((matches = dec.match(/0{1,}$/)) !== null) {
-            //CASE: Decimal is in the form XXX.YYY00...
-            //Convert it into the form XXX.YYY
-            return dec.replace(matches[0], "");
-        } else {
-            //CASE: No formatting needed
-            return dec;
-        }
     }
 }

@@ -1,13 +1,11 @@
 //@ts-check
-import { BasicMath } from "./src/static/BasicMath.mjs";
-import { PrimeMath } from "./src/static/PrimeMath.mjs";
+import * as Discord from "discord.js";
+import { IntegerMath, PrimeMath } from "./src/static/NumberMath.mjs";
+import { StringMath } from "./src/static/StringMath.mjs";
 import { SequenceMath } from "./src/static/SequenceMath.mjs";
 import { CustomMath } from "./src/static/CustomMath.mjs";
-import { ExpressionMath } from "./src/static/ExpressionMath.mjs";
-import { Utility } from "./src/static/Utility.mjs";
 import { SudokuPuzzle } from "./src/SudokuPuzzle.mjs";
-
-import * as Discord from "discord.js";
+import { ArrayUtil, Formatter, ArgumentParser } from "./src/static/Utility.mjs";
 
 const client = new Discord.Client();
 
@@ -31,9 +29,9 @@ client.on("message", message => {
                     switch (method) {
                         case "factors": {
                             try {
-                                const parsedArgs = Utility.parseArgsAsInt(restArgs);
-                                output = BasicMath.getIntFactors(parsedArgs);
-                                Utility.sortIntArray(output);
+                                const parsedArgs = ArgumentParser.parseToInt(restArgs);
+                                output = IntegerMath.getIntFactors(parsedArgs);
+                                ArrayUtil.sortIntArray(output);
                             } catch (error) {
                                 output = error.toString();
                             }
@@ -46,9 +44,9 @@ client.on("message", message => {
                                 if (restArgs.length < 2) {
                                     throw Error("2 Arguments must be provided");
                                 } else {
-                                    const parsedArgs = Utility.parseArgsAsInt(restArgs);
-                                    output = BasicMath.getCommonIntFactors(parsedArgs[0], parsedArgs[1]);
-                                    Utility.sortIntArray(output);
+                                    const parsedArgs = ArgumentParser.parseToInt(restArgs);
+                                    output = IntegerMath.getCommonIntFactors(parsedArgs[0], parsedArgs[1]);
+                                    ArrayUtil.sortNumberArray(output);
                                 }
                             } catch (error) {
                                 output = error.toString();
@@ -59,8 +57,8 @@ client.on("message", message => {
     
                         case "factorial": {
                             try {
-                                const parsedArgs = Utility.parseArgsAsInt(restArgs);
-                                output = BasicMath.getFactorial(parsedArgs[0]);
+                                const parsedArgs = ArgumentParser.parseToInt(restArgs);
+                                output = IntegerMath.getFactorial(parsedArgs[0]);
                             } catch (error) {
                                 output = error.toString();
                             }
@@ -70,8 +68,8 @@ client.on("message", message => {
     
                         case "gcd": {
                             try {
-                                const parsedArgs = Utility.parseArgsAsInt(restArgs);
-                                output = BasicMath.getGCD(parsedArgs);
+                                const parsedArgs = ArgumentParser.parseToInt(restArgs);
+                                output = IntegerMath.getGcd(parsedArgs);
                             } catch (error) {
                                 output = error.toString();
                             }
@@ -81,8 +79,8 @@ client.on("message", message => {
     
                         case "lcm": {
                             try {
-                                const parsedArgs = Utility.parseArgsAsInt(restArgs);
-                                output = BasicMath.getLCM(parsedArgs);
+                                const parsedArgs = ArgumentParser.parseToInt(restArgs);
+                                output = IntegerMath.getLcm(parsedArgs);
                             } catch (error) {
                                 output = error.toString();
                             }
@@ -92,7 +90,7 @@ client.on("message", message => {
     
                         case "primes": {
                             try {
-                                const parsedArgs = Utility.parseArgsAsInt(restArgs);
+                                const parsedArgs = ArgumentParser.parseToInt(restArgs);
                                 if (parsedArgs.length > 1) {
                                     //CASE: Two limits are specified
                                     //Assume that it is for getPrimesWithin()
@@ -100,13 +98,13 @@ client.on("message", message => {
                                         throw RangeError("Lower bound should be greater than or equal to 3");
                                     } else {
                                         output = PrimeMath.getPrimesWithin(parsedArgs[0], parsedArgs[1]);
-                                        Utility.sortIntArray(output);
+                                        ArrayUtil.sortNumberArray(output);
                                     }
                                 } else {
                                     //CASE: Only one limit is specified
                                     //Assume that it is for getPrimesUpTo()
                                     output = PrimeMath.getPrimesUpTo(parsedArgs[0]);
-                                    Utility.sortIntArray(output);
+                                    ArrayUtil.sortNumberArray(output);
                                 }
                             } catch (error) {
                                 output = error.toString();
@@ -117,7 +115,7 @@ client.on("message", message => {
     
                         case "collatz": {
                             try {
-                                const parsedArgs = Utility.parseArgsAsInt(restArgs);
+                                const parsedArgs = ArgumentParser.parseToInt(restArgs);
                                 output = SequenceMath.getCollatzSequence(parsedArgs[0]);
                             } catch (error) {
                                 output = error.toString();
@@ -128,7 +126,7 @@ client.on("message", message => {
     
                         case "fibonacci": {
                             try {
-                                const parsedArgs = Utility.parseArgsAsInt(restArgs);
+                                const parsedArgs = ArgumentParser.parseToInt(restArgs);
                                 output = SequenceMath.getFibonacciSequence(parsedArgs[0]);
                             } catch (error) {
                                 output = error.toString();
@@ -139,11 +137,11 @@ client.on("message", message => {
     
                         case "name": {
                             try {
-                                const parsedArgs = Utility.parseArgsAsInt(restArgs);
+                                const parsedArgs = ArgumentParser.parseToInt(restArgs);
                                 if (parsedArgs[0] < 0 || parsedArgs[0] > 9999) {
                                     throw RangeError("Argument should be in the range from 0 to 9999");
                                 } else {
-                                    output = CustomMath.getNumberName(parsedArgs[0]);
+                                    output = StringMath.getNumberName(parsedArgs[0]);
                                 }
                             } catch (error) {
                                 output = error.toString();
@@ -157,18 +155,8 @@ client.on("message", message => {
                                 if (restArgs.length < 2) {
                                     throw Error("At least 2 arguments are required");
                                 } else {
-                                    output = CustomMath.getMinEditDistance(restArgs[0], restArgs[1]);
+                                    output = StringMath.getMinEditDistance(restArgs[0], restArgs[1]);
                                 }
-                            } catch (error) {
-                                output = error.toString();
-                            }
-    
-                            break;
-                        }
-    
-                        case "postfix": {
-                            try {
-                                output = ExpressionMath.infixToPostfix(ExpressionMath.separateToTokens(restArgs[0])).join("");
                             } catch (error) {
                                 output = error.toString();
                             }
@@ -193,14 +181,14 @@ client.on("message", message => {
                 case "do": {
                     switch (method) {
                         case "help": {
-                            output = "get factors <int:num>\nget common-factors <int:num1> <int:num2>\nget factorial <int:num>\nget gcd <int...:nums>\nget lcm <int...:nums>\nget primes <int:lowerBound> <int:upperBound>\nget primes <int:upperBound>\nget collatz <int:num>\nget fibonacci <int:limit>\nget name <int:num>\nget min-edit <String:str1> <String:str2>\nget postfix <String:infixExpression>\nget nic-details <String:nicCode>\n\ndo help\ndo prime-factorize <int:num>\ndo permute <String:str>\n\nsolve sle <String...:expressions>\nsolve sudoku <String:puzzle>\n\nis square-free <int:num>\nis prime <int:num>\nis square <int:num>\nis triangular <int:num>\nis pythagorean-triplet <int:num1> <int:num2> <int:num3>";
+                            output = "get factors <int:num>\nget common-factors <int:num1> <int:num2>\nget factorial <int:num>\nget gcd <int...:nums>\nget lcm <int...:nums>\nget primes <int:lowerBound> <int:upperBound>\nget primes <int:upperBound>\nget collatz <int:num>\nget fibonacci <int:limit>\nget name <int:num>\nget min-edit <String:str1> <String:str2>\nget nic-details <String:nicCode>\n\ndo help\ndo prime-factorize <int:num>\ndo permute <String:str>\n\nsolve sle <String...:expressions>\nsolve sudoku <String:puzzle>\n\nis square-free <int:num>\nis prime <int:num>\nis square <int:num>\nis triangular <int:num>\nis pythagorean-triplet <int:num1> <int:num2> <int:num3>";
     
                             break;
                         }
     
                         case "prime-factorize": {
                             try {
-                                const parsedArgs = Utility.parseArgsAsInt(restArgs);
+                                const parsedArgs = ArgumentParser.parseToInt(restArgs);
                                 output = PrimeMath.getPrimeFactorization(parsedArgs[0]);
                             } catch (error) {
                                 output = error.toString();
@@ -211,7 +199,7 @@ client.on("message", message => {
     
                         case "permute": {
                             try {
-                                output = CustomMath.getUniquePermutations(restArgs[0]);
+                                output = StringMath.getUniquePermutations(restArgs[0]);
                             } catch (error) {
                                 output = error.toString();
                             }
@@ -225,19 +213,19 @@ client.on("message", message => {
 
                 case "solve": {
                     switch (method) {
-                        case "sle": {
-                            try {
-                                if (restArgs.length > 1) {
-                                    output = ExpressionMath.getSolution(restArgs);
-                                } else {
-                                    throw Error("Arguments doesn't form a valid system of linear equations");
-                                }
-                            } catch (error) {
-                                output = error.toString();
-                            }
+                        // case "sle": {
+                        //     try {
+                        //         if (restArgs.length > 1) {
+                        //             output = ExpressionMath.getSolution(restArgs);
+                        //         } else {
+                        //             throw Error("Arguments doesn't form a valid system of linear equations");
+                        //         }
+                        //     } catch (error) {
+                        //         output = error.toString();
+                        //     }
     
-                            break;
-                        }
+                        //     break;
+                        // }
 
                         case "sudoku": {
                             try {
@@ -257,8 +245,8 @@ client.on("message", message => {
                     switch (method) {
                         case "square-free": {
                             try {
-                                const parsedArgs = Utility.parseArgsAsInt(restArgs);
-                                output = BasicMath.isSquareFree(parsedArgs[0]);
+                                const parsedArgs = ArgumentParser.parseToInt(restArgs);
+                                output = IntegerMath.isSquareFree(parsedArgs[0]);
                             } catch (error) {
                                 output = error.toString();
                             }
@@ -268,7 +256,7 @@ client.on("message", message => {
     
                         case "prime": {
                             try {
-                                const parsedArgs = Utility.parseArgsAsInt(restArgs);
+                                const parsedArgs = ArgumentParser.parseToInt(restArgs);
                                 output = PrimeMath.isPrime(parsedArgs[0]);
                             } catch (error) {
                                 output = error.toString();
@@ -279,7 +267,7 @@ client.on("message", message => {
     
                         case "square": {
                             try {
-                                const parsedArgs = Utility.parseArgsAsInt(restArgs);
+                                const parsedArgs = ArgumentParser.parseToInt(restArgs);
                                 output = SequenceMath.isSquare(parsedArgs[0]);
                             } catch (error) {
                                 output = error.toString();
@@ -290,7 +278,7 @@ client.on("message", message => {
     
                         case "triangular": {
                             try {
-                                const parsedArgs = Utility.parseArgsAsInt(restArgs);
+                                const parsedArgs = ArgumentParser.parseToInt(restArgs);
                                 output = SequenceMath.isTriangular(parsedArgs[0]);
                             } catch (error) {
                                 output = error.toString();
@@ -304,7 +292,7 @@ client.on("message", message => {
                                 if (restArgs.length < 3) {
                                     throw Error("At least 3 arguments should be provided");
                                 } else {
-                                    const parsedArgs = Utility.parseArgsAsInt(restArgs);
+                                    const parsedArgs = ArgumentParser.parseToInt(restArgs);
                                     output = SequenceMath.isPythagoreanTriplet(parsedArgs);
                                 }
                             } catch (error) {
@@ -320,7 +308,7 @@ client.on("message", message => {
             }
         }
 
-        message.channel.send(Utility.formatOutput(output));
+        message.channel.send(Formatter.formatBotOutput(output));
     }
 });
 
