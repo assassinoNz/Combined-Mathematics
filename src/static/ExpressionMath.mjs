@@ -254,7 +254,6 @@ export class ExpressionMath {
     }
 
     /**Separates any expression into a its fundamental tokens.
-     * WARNING: Negative numeric operands are not supported.
      * WARNING: Decimal numeric operands are not supported.
      * @param {string} expression
      * @param {number} context
@@ -266,9 +265,10 @@ export class ExpressionMath {
 
         let tokens = [];
 
+        //STAGE 1
         for (let c = 0; c < expression.length; c++) {
-            if (ExpressionRegExp.tokens.variableOperand.test(expression[c])|| ExpressionRegExp.tokens.openingBracket.test(expression[c])) {
-                //CASE: Character is a variable operand or an opening bracket
+            if (ExpressionRegExp.tokens.variableOperand.test(expression[c]) || ExpressionRegExp.tokens.openingBracket.test(expression[c]) || ExpressionRegExp.tokens.unaryOperator.test(expression[c])) {
+                //CASE: Character is a variable operand or an opening bracket or a unary operator
                 if (ExpressionRegExp.tokens.operand.test(tokens[tokens.length - 1])) {
                     //CASE: Previous token is an operand
                     //There must be a multiplication between them
@@ -290,7 +290,7 @@ export class ExpressionMath {
                     }
                 }
                 tokens.push(expression[c]);
-            }else if (ExpressionRegExp.characters.singleToken.test(expression[c])) {
+            } else if (ExpressionRegExp.characters.singleToken.test(expression[c])) {
                 //CASE: Character is an accepted token
                 tokens.push(expression[c]);
             } else if (ExpressionRegExp.characters.functionNameCandidate.test(expression[c])) {
@@ -326,7 +326,7 @@ export class ExpressionMath {
                 tokens.push(functionNameToken);
             } else if (ExpressionRegExp.characters.numericOperandCandidate.test(expression[c])) {
                 //CASE: Character is numeric operand starting digit
-                //WARNING: Tokenizer can only recognize positive integers as numerical operands
+                //NOTE: In the first stage, tokenizer can only recognize positive integers as numerical operands
                 //Read ahead to capture the full numeric operand token
                 let numericOperandToken = "";
                 while (ExpressionRegExp.characters.numericOperandCandidate.test(expression[c])) {
@@ -362,12 +362,35 @@ export class ExpressionMath {
 
         //NOTE: Expressions starting with negative operands must be treated accordingly
         //EX: -A-B
-        if (tokens[0] === "-" && ExpressionRegExp.tokens.operand.test(tokens[1])) {
-            //CASE: Expression starts with a negative sign followed by an operand
-            //Make the operand sign negative
-            tokens[1] = "-" + tokens[1];
-            tokens.shift();
+        for (let t = 0; t < tokens.length; t++) {
+            if (/^[+-]$/.test(tokens[t])) {
+                //CASE: token is either + or -
+                if (t === 0 || ExpressionRegExp.tokens.operator.test(tokens[t - 1]) || ExpressionRegExp.tokens.openingBracket.test(tokens[t - 1])) {
+                    //CASE: Previous token is an opening bracket or an operand or this is the first token in the tokens
+                    //This + or - token must be the sign of an operand
+                    if (ExpressionRegExp.tokens.operand.test(tokens[t + 1])) {
+                        //Case: Next token is an operand
+
+                        if (tokens[t] === "-") {
+                            //CASE: Current token is "-"
+                            //Prefix the next operand with the current token before discarding the current token
+                            tokens[t + 1] = tokens[t] + tokens[t + 1];
+                        }
+
+                        //Remove the current token
+                        //WARNING: This changes the length of the tokens array
+                        tokens.splice(t, 1);
+                        t--;
+                    }
+                }
+            }
         }
+        // if (tokens[0] === "-" && ExpressionRegExp.tokens.operand.test(tokens[1])) {
+        //     //CASE: Expression starts with a negative sign followed by an operand
+        //     //Make the operand sign negative
+        //     tokens[1] = "-" + tokens[1];
+        //     tokens.shift();
+        // }
 
         return tokens;
     }
