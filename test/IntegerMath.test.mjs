@@ -35,9 +35,12 @@ describe("IntegerMath", () => {
         it("should return the correct common factors when integer1 < integer2", () => {
             assert.deepStrictEqual(IntegerMath.getCommonIntFactors(10, 15), [1, 5]);
         });
+        it("should return only 1 when one of the integers is 1", () => {
+            assert.deepStrictEqual(IntegerMath.getCommonIntFactors(10, 1), [1]);
+        });
     });
 
-    describe("#GCD()", () => {
+    describe("#gcd()", () => {
         it("should return the non zero integer when one of the integers is 0", () => {
             assert.strictEqual(IntegerMath.gcd(0, 5), 5);
         });
@@ -52,7 +55,7 @@ describe("IntegerMath", () => {
         });
     });
 
-    describe("#getGCD()", () => {
+    describe("#getGcd()", () => {
         it("should return the correct GCD for an arbitrary number of integers", () => {
             assert.strictEqual(IntegerMath.getGcd([5, 10, 15, 20]), 5);
         });
@@ -61,7 +64,7 @@ describe("IntegerMath", () => {
         });
     });
 
-    describe("#LCM()", () => {
+    describe("#lcm()", () => {
         it("should return the non zero integer when one of the integers is 0", () => {
             assert.strictEqual(IntegerMath.lcm(0, 5), 0);
         });
@@ -76,7 +79,7 @@ describe("IntegerMath", () => {
         });
     });
 
-    describe("#getLCM()", () => {
+    describe("#getLcm()", () => {
         it("should return the correct LCM for an arbitrary number of integers", () => {
             assert.strictEqual(IntegerMath.getLcm([5, 10, 15, 20]), 60);
         });
