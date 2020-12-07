@@ -1,5 +1,5 @@
 //@ts-check
-export class MatrixMath {
+export class SquareMatrixMath {
     /**
      * Calculates the determinant of a square matrix
      * @param {number[][]} matrix Must be a square matrix
@@ -120,7 +120,7 @@ export class MatrixMath {
         let resultMatrix = matrix;
 
         for (let i = 1; i < power; i++) {
-            resultMatrix = MatrixMath.multiplyByMatrix(resultMatrix, matrix);
+            resultMatrix = SquareMatrixMath.multiplyByMatrix(resultMatrix, matrix);
         }
 
         return resultMatrix;
@@ -183,11 +183,11 @@ export class MatrixMath {
     }
 
     /**
-     * Calculates the cofactor matrix of the given matrix using the relevant minor and sign matrices
+     * Calculates the co-factor matrix of the given matrix using the relevant minor and sign matrices
      * @param {number[][]} matrix Must be a square matrix
-     * @return {number[][]} The cofactor matrix of the matrix
+     * @return {number[][]} The co-factor matrix of the matrix
      */
-    static getCofactorMatrix(matrix) {
+    static getCoFactorMatrix(matrix) {
         return this.getSignedMatrix(this.getMinorMatrix(matrix));
     }
 
@@ -197,7 +197,7 @@ export class MatrixMath {
      * @return {number[][]} The adjoint matrix of the matrix
      */
     static getAdjointMatrix(matrix) {
-        return this.getTransposeMatrix(this.getCofactorMatrix(matrix));
+        return this.getTransposeMatrix(this.getCoFactorMatrix(matrix));
     }
 
     /**

@@ -263,54 +263,54 @@ export class ExpressionMath {
         //Remove all empty spaces before starting
         expression = expression.replace(/\s/g, "");
 
-        let tokens = [];
-
         //STAGE 1
+        let tokens_v1 = [];
+
         for (let c = 0; c < expression.length; c++) {
             if (ExpressionRegExp.tokens.variableOperand.test(expression[c]) || ExpressionRegExp.tokens.openingBracket.test(expression[c]) || ExpressionRegExp.tokens.unaryOperator.test(expression[c])) {
                 //CASE: Character is a variable operand or an opening bracket or a unary operator
-                if (ExpressionRegExp.tokens.operand.test(tokens[tokens.length - 1])) {
+                if (ExpressionRegExp.tokens.operand.test(tokens_v1[tokens_v1.length - 1])) {
                     //CASE: Previous token is an operand
                     //There must be a multiplication between them
                     switch (context) {
                         case ExpressionContext.BIG_INTEGER:
                         case ExpressionContext.REAL: {
-                            tokens.push("*");
+                            tokens_v1.push("*");
                             break;
                         }
                         case ExpressionContext.MATRIX:
                         case ExpressionContext.BINARY: {
-                            tokens.push(".");
+                            tokens_v1.push(".");
                             break;
                         }
                         case ExpressionContext.BOOLEAN: {
-                            tokens.push("∧");
+                            tokens_v1.push("∧");
                             break;
                         }
                     }
                 }
-                tokens.push(expression[c]);
+                tokens_v1.push(expression[c]);
             } else if (ExpressionRegExp.characters.singleToken.test(expression[c])) {
                 //CASE: Character is an accepted token
-                tokens.push(expression[c]);
+                tokens_v1.push(expression[c]);
             } else if (ExpressionRegExp.characters.functionNameCandidate.test(expression[c])) {
                 //CASE: Character is a function name starting character
-                if (ExpressionRegExp.tokens.operand.test(tokens[tokens.length - 1])) {
+                if (ExpressionRegExp.tokens.operand.test(tokens_v1[tokens_v1.length - 1])) {
                     //CASE: Previous token is an operand
                     //There must be a multiplication between them
                     switch (context) {
                         case ExpressionContext.BIG_INTEGER:
                         case ExpressionContext.REAL: {
-                            tokens.push("*");
+                            tokens_v1.push("*");
                             break;
                         }
                         case ExpressionContext.MATRIX:
                         case ExpressionContext.BINARY: {
-                            tokens.push(".");
+                            tokens_v1.push(".");
                             break;
                         }
                         case ExpressionContext.BOOLEAN: {
-                            tokens.push("∧");
+                            tokens_v1.push("∧");
                             break;
                         }
                     }
@@ -323,7 +323,7 @@ export class ExpressionMath {
                     c++;
                 }
                 c--;
-                tokens.push(functionNameToken);
+                tokens_v1.push(functionNameToken);
             } else if (ExpressionRegExp.characters.numericOperandCandidate.test(expression[c])) {
                 //CASE: Character is numeric operand starting digit
                 //NOTE: In the first stage, tokenizer can only recognize positive integers as numerical operands
@@ -334,7 +334,7 @@ export class ExpressionMath {
                     c++;
                 }
                 c--;
-                tokens.push(numericOperandToken);
+                tokens_v1.push(numericOperandToken);
             } else if (ExpressionRegExp.characters.stringOperandCandidate.test(expression[c])) {
                 //CASE: Character is string operand starting quote
                 //Read ahead to capture the full string operand token
@@ -354,45 +354,48 @@ export class ExpressionMath {
 
                 //NOTE: The while loop ends at the position where c is the ending quote
                 stringOperandToken += '"';
-                tokens.push(stringOperandToken);
+                tokens_v1.push(stringOperandToken);
             } else {
                 throw SyntaxError(`Unknown token "${expression[c]}"`);
             }
         }
 
-        //NOTE: Expressions starting with negative operands must be treated accordingly
+        //STAGE 2
+        const tokens_v2 = [];
+
+        //NOTE: Since + and - sign also acts as unary operators, those cases must be handles
         //EX: -A-B
-        for (let t = 0; t < tokens.length; t++) {
-            if (/^[+-]$/.test(tokens[t])) {
-                //CASE: token is either + or -
-                if (t === 0 || ExpressionRegExp.tokens.operator.test(tokens[t - 1]) || ExpressionRegExp.tokens.openingBracket.test(tokens[t - 1])) {
-                    //CASE: Previous token is an opening bracket or an operand or this is the first token in the tokens
-                    //This + or - token must be the sign of an operand
-                    if (ExpressionRegExp.tokens.operand.test(tokens[t + 1])) {
-                        //Case: Next token is an operand
+        //EX: -A(-B)
+        //EX: A*-B
+        for (let t = 0; t < tokens_v1.length; t++) {
+            if (/^[+-]$/.test(tokens_v1[t]) && ExpressionRegExp.tokens.operand.test(tokens_v1[t + 1]) && (t === 0 || ExpressionRegExp.tokens.operator.test(tokens_v1[t - 1]) || ExpressionRegExp.tokens.openingBracket.test(tokens_v1[t - 1]))) {
+                //CASE: Token is either + or - and
+                //Previous token is an opening bracket or an operand or this is the first token in the tokens
+                //and the next token is an operand
 
-                        if (tokens[t] === "-") {
-                            //CASE: Current token is "-"
-                            //Prefix the next operand with the current token before discarding the current token
-                            tokens[t + 1] = tokens[t] + tokens[t + 1];
-                        }
+                //So, this + or - token must be the sign of that operand
+                if (tokens_v1[t] === "-") {
+                    //CASE: Current token is "-"
+                    //Prefix the next operand with the current token before discarding the current token
+                    tokens_v2.push(tokens_v1[t] + tokens_v1[t + 1]);
 
-                        //Remove the current token
-                        //WARNING: This changes the length of the tokens array
-                        tokens.splice(t, 1);
-                        t--;
-                    }
+                    //Since the next token is already processed, ignore it
+                    t++;
+                } else if (tokens_v1[t] === "+") {
+                    //CASE: Current token is "+"
+                    //No need to prefix an operand with "+"
+                    tokens_v2.push(tokens_v1[t + 1]);
+
+                    //Since the next token is already processed, ignore it
+                    t++;
                 }
+
+            } else {
+                tokens_v2.push(tokens_v1[t]);
             }
         }
-        // if (tokens[0] === "-" && ExpressionRegExp.tokens.operand.test(tokens[1])) {
-        //     //CASE: Expression starts with a negative sign followed by an operand
-        //     //Make the operand sign negative
-        //     tokens[1] = "-" + tokens[1];
-        //     tokens.shift();
-        // }
 
-        return tokens;
+        return tokens_v2;
     }
 
     /**Converts a tokenized infix expression into a postfix expression using the Shunting Yard algorithm

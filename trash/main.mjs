@@ -1,5 +1,4 @@
 //@ts-check
-import { BasicMath } from "../src/static/BasicMath.mjs";
 import { LinearEquationMath } from "../src/static/EquationMath.mjs";
 import { ExpressionContext } from "../src/static/ExpressionMath.mjs";
 import { BooleanMath } from "../src/static/BooleanMath.mjs";
@@ -13,7 +12,7 @@ let valueDictionary = {
 
 let context = ExpressionContext.REAL;
 // let expressions = ["!A!B", "B", "A+B", "A.B", "A>B", "A↔B", "A↑B", "A↓B"];
-let expressions = ["25^B"];
+let expressions = ["-A*-B"];
 
 const tokenizedExpressions = [];
 const postfixedExpressions = [];
@@ -41,5 +40,3 @@ console.log(tokenizedExpressions);
 // console.log(matrices);
 
 // console.log(BooleanMath.generateTruthTable(tokenizedExpressions, context));
-
-

@@ -1,7 +1,7 @@
 //@ts-check
 import { ExpressionMath } from "./ExpressionMath.mjs";
 import { ExpressionRegExp } from "./ExpressionMath.mjs";
-import { MatrixMath } from "./MatrixMath.mjs";
+import { SquareMatrixMath } from "./MatrixMath.mjs";
 
 export class LinearEquationMath {
     /**
@@ -103,9 +103,9 @@ export class LinearEquationMath {
      */
     static convertSLEToMatrixForm(equations, context) {
         const matrices = {
-            coefficientsMatrix: new Array(equations.length),
-            variablesMatrix: new Array(equations.length),
-            constantsMatrix: new Array(equations.length),
+            coefficientsMatrix: [],
+            variablesMatrix: [],
+            constantsMatrix: [],
         };
 
         for (let e = 0; e < equations.length; e++) {
@@ -118,7 +118,7 @@ export class LinearEquationMath {
             //Add an entry in the constants matrix
             matrices.constantsMatrix[e] = [coefficientsDictionary["#"]];
             //Add an entry in the coefficients matrix matrix
-            matrices.coefficientsMatrix[e] = new Array(variables.length - 1);
+            matrices.coefficientsMatrix[e] = [];
             
             //NOTE: v=0 index is the constant
             for (let v = 1; v < variables.length; v++) {
@@ -137,7 +137,7 @@ export class LinearEquationMath {
      */
     static solveSLE(equations, context) {
         const matrices = LinearEquationMath.convertSLEToMatrixForm(equations, context);
-        matrices.solutionMatrix = MatrixMath.multiplyByMatrix(MatrixMath.getInverseMatrix(matrices.coefficientsMatrix), matrices.constantsMatrix);
+        matrices.solutionMatrix = SquareMatrixMath.multiplyByMatrix(SquareMatrixMath.getInverseMatrix(matrices.coefficientsMatrix), matrices.constantsMatrix);
 
         return matrices;
     }
