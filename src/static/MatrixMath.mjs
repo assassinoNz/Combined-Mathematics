@@ -1,52 +1,5 @@
 //@ts-check
-export class SquareMatrixMath {
-    /**
-     * Calculates the determinant of a square matrix
-     * @param {number[][]} matrix Must be a square matrix
-     * @return {number} The determinant of the matrix
-     */
-    static getDeterminant(matrix) {
-        let determinant = 0;
-        //Check if there is only one element inside the matrix
-        if (matrix.length === 1 && matrix[0].length === 1) {
-            determinant = determinant + matrix[0][0];
-        } else {
-            //Else find the determinant using the first row
-            let columnCount = matrix[0].length;
-            for (let i = 0; i < columnCount; i++) {
-                //Clone the matrix to make sure the matrix is not a reference
-                let clonedMatrix = JSON.parse(JSON.stringify(matrix));
-                //Sign determinant according to the sign matrix
-                if (i % 2 === 0) {
-                    determinant = determinant + matrix[0][i] * this.getDeterminant(this.getSplicedMatrix(clonedMatrix, 0, i));
-                }
-                else {
-                    determinant = determinant - matrix[0][i] * this.getDeterminant(this.getSplicedMatrix(clonedMatrix, 0, i));
-                }
-            }
-        }
-        return determinant;
-    }
-
-    /**
-     * Calculates the transposition matrix of a square matrix
-     * @param {number[][]} matrix Must be a square matrix
-     * @return {number[][]} The transposition matrix of the matrix
-     */
-    static getTransposeMatrix(matrix) {
-        const transposeMatrix = [];
-        const columnCount = matrix[0].length;
-        const rowCount = matrix.length;
-        for (let i = 0; i < columnCount; i++) {
-            let transposeMatrixRow = [];
-            for (let j = 0; j < rowCount; j++) {
-                transposeMatrixRow.push(matrix[j][i]);
-            }
-            transposeMatrix.push(transposeMatrixRow);
-        }
-        return transposeMatrix;
-    }
-
+class UtilityMatrixMath {
     /**
      * Removes the specified row and column from a matrix
      * @param {number[][]} matrix Must be a square matrix
@@ -66,30 +19,32 @@ export class SquareMatrixMath {
         //Return splicedMatrix
         return splicedMatrix;
     }
+}
 
+export class MatrixMath {
     /**
-     * Multiplies each element of a matrix with corresponding element of the sign matrix
-     * @param {number[][]} matrix Must be a square matrix
-     * @return {number[][]} The sign matrix of the matrix
+     * Calculates the transposition matrix of a given matrix
+     * @param {number[][]} matrix
+     * @return {number[][]} The transposition matrix of the matrix
      */
-    static getSignedMatrix(matrix) {
-        const signedMatrix = JSON.parse(JSON.stringify(matrix));
-        const rowCount = signedMatrix.length;
-        const columnCount = signedMatrix[0].length;
-        for (let i = 0; i < rowCount; i++) {
-            for (let j = 0; j < columnCount; j++) {
-                if ((i + j) % 2 !== 0) {
-                    signedMatrix[i][j] = -1 * signedMatrix[i][j];
-                }
+    static getTransposeMatrix(matrix) {
+        const transposeMatrix = [];
+        const columnCount = matrix[0].length;
+        const rowCount = matrix.length;
+        for (let i = 0; i < columnCount; i++) {
+            let transposeMatrixRow = [];
+            for (let j = 0; j < rowCount; j++) {
+                transposeMatrixRow.push(matrix[j][i]);
             }
+            transposeMatrix.push(transposeMatrixRow);
         }
-        return signedMatrix;
+        return transposeMatrix;
     }
 
     /**
      * Multiplies the first matrix by the second matrix only where column count of the first matrix equals to the row count of the second matrix
-     * @param {number[][]} matrix1 Must be a square matrix
-     * @param {number[][]} matrix2 Must be a square matrix
+     * @param {number[][]} matrix1
+     * @param {number[][]} matrix2
      * @return {number[][]} The product of the two matrices
      */
     static multiplyByMatrix(matrix1, matrix2) {
@@ -107,22 +62,6 @@ export class SquareMatrixMath {
                 resultMatrix[i][j] = dotProductSum;
             }
         }
-        return resultMatrix;
-    }
-
-    /**
-     * Raises a matrix to to a power
-     * @param {number[][]} matrix Must be a square matrix
-     * @param {number} power
-     * @return {number[][]} The given power of the matrix
-     */
-    static pow(matrix, power) {
-        let resultMatrix = matrix;
-
-        for (let i = 1; i < power; i++) {
-            resultMatrix = SquareMatrixMath.multiplyByMatrix(resultMatrix, matrix);
-        }
-
         return resultMatrix;
     }
 
@@ -147,8 +86,8 @@ export class SquareMatrixMath {
 
     /**
      * Adds two matrices only where column and row count of first matrix equals to the column and row count of second matrix
-     * @param {number[][]} matrix1 Must be a square matrix
-     * @param {number[][]} matrix2 Must be a square matrix
+     * @param {number[][]} matrix1
+     * @param {number[][]} matrix2
      * @return {number[][]} The resultant matrix of matrix1 added to matrix2
      */
     static add(matrix1, matrix2) {
@@ -161,6 +100,71 @@ export class SquareMatrixMath {
                 resultMatrix[i][j] = matrix1[i][j] + matrix2[i][j];
             }
         }
+        return resultMatrix;
+    }
+}
+
+export class SquareMatrixMath {
+    /**
+     * Calculates the determinant of a square matrix
+     * @param {number[][]} matrix Must be a square matrix
+     * @return {number} The determinant of the matrix
+     */
+    static getDeterminant(matrix) {
+        let determinant = 0;
+        //Check if there is only one element inside the matrix
+        if (matrix.length === 1 && matrix[0].length === 1) {
+            determinant = determinant + matrix[0][0];
+        } else {
+            //Else find the determinant using the first row
+            let columnCount = matrix[0].length;
+            for (let i = 0; i < columnCount; i++) {
+                //Clone the matrix to make sure the matrix is not a reference
+                let clonedMatrix = JSON.parse(JSON.stringify(matrix));
+                //Sign determinant according to the sign matrix
+                if (i % 2 === 0) {
+                    determinant = determinant + matrix[0][i] * SquareMatrixMath.getDeterminant(UtilityMatrixMath.getSplicedMatrix(clonedMatrix, 0, i));
+                }
+                else {
+                    determinant = determinant - matrix[0][i] * SquareMatrixMath.getDeterminant(UtilityMatrixMath.getSplicedMatrix(clonedMatrix, 0, i));
+                }
+            }
+        }
+        return determinant;
+    }
+
+    /**
+     * Multiplies each element of a matrix with corresponding element of the sign matrix
+     * @param {number[][]} matrix Must be a square matrix
+     * @return {number[][]} The sign matrix of the matrix
+     */
+    static getSignedMatrix(matrix) {
+        const signedMatrix = JSON.parse(JSON.stringify(matrix));
+        const rowCount = signedMatrix.length;
+        const columnCount = signedMatrix[0].length;
+        for (let i = 0; i < rowCount; i++) {
+            for (let j = 0; j < columnCount; j++) {
+                if ((i + j) % 2 !== 0) {
+                    signedMatrix[i][j] = -1 * signedMatrix[i][j];
+                }
+            }
+        }
+        return signedMatrix;
+    }
+
+    /**
+     * Raises a matrix to a power
+     * @param {number[][]} matrix Must be a square matrix
+     * @param {number} power
+     * @return {number[][]} The given power of the matrix
+     */
+    static pow(matrix, power) {
+        let resultMatrix = matrix;
+
+        for (let i = 1; i < power; i++) {
+            resultMatrix = MatrixMath.multiplyByMatrix(resultMatrix, matrix);
+        }
+
         return resultMatrix;
     }
 
@@ -176,7 +180,7 @@ export class SquareMatrixMath {
         for (let i = 0; i < rowCount; i++) {
             minorMatrix[i] = [];
             for (let j = 0; j < columnCount; j++) {
-                minorMatrix[i][j] = this.getDeterminant(this.getSplicedMatrix(matrix, i, j));
+                minorMatrix[i][j] = SquareMatrixMath.getDeterminant(UtilityMatrixMath.getSplicedMatrix(matrix, i, j));
             }
         }
         return minorMatrix;
@@ -197,7 +201,7 @@ export class SquareMatrixMath {
      * @return {number[][]} The adjoint matrix of the matrix
      */
     static getAdjointMatrix(matrix) {
-        return this.getTransposeMatrix(this.getCoFactorMatrix(matrix));
+        return MatrixMath.getTransposeMatrix(SquareMatrixMath.getCoFactorMatrix(matrix));
     }
 
     /**
@@ -206,11 +210,11 @@ export class SquareMatrixMath {
      * @return {number[][]} The inverse matrix of the matrix
      */
     static getInverseMatrix(matrix) {
-        const determinant = this.getDeterminant(matrix);
+        const determinant = SquareMatrixMath.getDeterminant(matrix);
         if (determinant === 0) {
             return null;
         } else {
-            const inverseMatrix = this.getAdjointMatrix(matrix);
+            const inverseMatrix = SquareMatrixMath.getAdjointMatrix(matrix);
             const rowCount = matrix.length;
             const columnCount = matrix[0].length;
             for (let i = 0; i < rowCount; i++) {
