@@ -1,4 +1,4 @@
-import { MatrixMath } from "./MatrixMath.mjs";
+import { SquareMatrixMath } from "./MatrixMath.mjs";
 import { IntegerMath } from "./NumberMath.mjs";
 import { StringMath } from "./StringMath.mjs";
 
@@ -532,14 +532,14 @@ export class ExpressionMath {
             case ExpressionContext.MATRIX: {
                 switch (operator) {
                     case "+":
-                        return MatrixMath.add(operand1, operand2);
+                        return SquareMatrixMath.add(operand1, operand2);
                     case "-":
-                        return MatrixMath.add(operand2, MatrixMath.multiplyByScalar(operand1, -1));
+                        return SquareMatrixMath.add(operand2, SquareMatrixMath.multiplyByScalar(operand1, -1));
                     case ".":
                     case "*":
-                        return MatrixMath.multiplyByMatrix(operand2, operand1);
+                        return SquareMatrixMath.multiplyByMatrix(operand2, operand1);
                     case "^":
-                        return MatrixMath.pow(operand2, operand1);
+                        return SquareMatrixMath.pow(operand2, operand1);
                     default:
                         throw SyntaxError(`Operator "${operator}" isn't defined for the context "${context}"`);
                 }
@@ -592,7 +592,7 @@ export class ExpressionMath {
                     case "~":
                     case "!":
                     case "¬":
-                        return MatrixMath.getInverseMatrix(operand);
+                        return SquareMatrixMath.getInverseMatrix(operand);
                     default:
                         throw SyntaxError(`Operator "${operator}" isn't defined for the context "${context}"`);
                 }
@@ -710,7 +710,7 @@ export class ExpressionMath {
                 }
             }
             case ExpressionContext.MATRIX:
-                return MatrixMath.multiplyByScalar(value, -1);
+                return SquareMatrixMath.multiplyByScalar(value, -1);
             default: {
                 throw TypeError(`Operator "${operator}" isn't defined for the context "${context}"`);
             }
