@@ -96,9 +96,9 @@ export class ExpressionContext {
 export class ExpressionRegExp {
     static tokens = {
         variableOperand: /^-{0,1}[A-Z]{1}$/,
-        numericOperand: /^-{0,1}\d{1,}[.]{0,1}\d{1,}$|^-{0,1}\d{1,}$/,
+        numericOperand: /^-{0,1}\d{1,}[.]{1}\d{1,}$|^-{0,1}\d{1,}$/,
         stringOperand: /^".*"$/,
-        operand: /^-{0,1}[A-Z]{1}$|^-{0,1}\d{1,}[.]{0,1}\d{1,}$|^-{0,1}\d{1,}$|^['"].*['"]$/,
+        operand: /^-{0,1}[A-Z]{1}$|^-{0,1}\d{1,}[.]{1}\d{1,}$|^-{0,1}\d{1,}$|^['"].*['"]$/,
         leftAssociativeOperator: /^[*/%.&→>∧↑↓↔⊕∨|+-]{1}$/,
         rightAssociativeOperator: /^[¬~!^]{1}$/,
         binaryOperator: /^[*/%.&→>∧↑^↓↔⊕∨|+-]{1}$/,
