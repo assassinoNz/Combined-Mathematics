@@ -1,108 +1,91 @@
 //@ts-check
-import { MatrixMath } from "./MatrixMath.mjs"
+import { MatrixMath } from "./MatrixMath.mjs";
+import { SquareMatrixMath } from "./static/MatrixMath.mjs";
 
 export class Matrix {
-    /**
-     * Transposes the current matrix
-     * @param {Number[][]} multiArray The initial multi array to build the matrix
-     */
+    multiArray = null;
+    rowCount = null;
+    columnCount = null;
+        
     constructor(multiArray = [[1]]) {
         this.multiArray = multiArray;
         this.rowCount = multiArray.length;
         this.columnCount = multiArray[0].length;
-        this.order = `${this.rowCount}x${this.columnCount}`;
-        this.isInvertible = false;
-        this.determinant = null;
-        if (this.rowCount === this.columnCount) {
-            this.determinant = MatrixMath.getDeterminant(multiArray);
-            if (this.determinant !== 0) {
-                this.isInvertible = true;
-            }
-        }
     }
 
-    /**
-     * Returns a new matrix which is the transpose matrix of the current one
-     * @return {Matrix} The transpose matrix of the matrix
-     */
     transpose() {
-        return new Matrix(MatrixMath.getTransposeMatrix(this.multiArray));
+        this.multiArray = MatrixMath.getTransposeMatrix(this.multiArray);
+
+        //Swap the row and column counts
+        [this.rowCount, this.columnCount] = [this.columnCount, this.rowCount];
     }
 
-    /**
-     * Returns a new matrix which is the minor matrix of the current one
-     * @return {Matrix} The minor matrix of the matrix
-     */
-    minorize() {
-        return new Matrix(MatrixMath.getMinorMatrix(this.multiArray));
+    add(matrix) {
+        if (matrix.rowCount !== this.rowCount || matrix.columnCount !== this.columnCount) {
+            throw RangeError(`Cannot add a matrix of order ${matrix.rowCount}x${matrix.columnCount} to this matrix`);
+        } else {
+            this.multiArray = MatrixMath.add(matrix.multiArray, this.multiArray);
+        }
     }
 
-    /**
-     * Returns a new matrix which is the sign matrix of the current one
-     * @return {Matrix} The transpose sign of the matrix
-     */
-    signify() {
-        return new Matrix(MatrixMath.getSignedMatrix(this.multiArray));
+    multiplyBy(operand) {
+        if (typeof operand === "number") {
+            this.multiArray = MatrixMath.multiplyByScalar(this.multiArray, operand);
+        } else if (operand instanceof Matrix) {
+            if (this.columnCount === operand.rowCount) {
+                this.multiArray = MatrixMath.multiplyByMatrix(this.multiArray, operand.multiArray);
+            } else {
+                throw RangeError(`The operand matrix must have a row count of ${this.columnCount} for the matrix product to be defined`);
+            }
+        }
+    }
+}
+
+export class SquareMatrix extends Matrix{
+    determinant = null;
+
+    constructor() {
+        super();
     }
 
-    /**
-     * Returns a new matrix which is the inverse matrix of the current one
-     * @return {Matrix} The inverse matrix of the matrix
-     */
+    isInvertible() {
+        if (this.determinant === null) {
+            this.determinant = SquareMatrixMath.getDeterminant();
+        }
+
+        if (this.determinant === 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    getDeterminant() {
+        if (this.determinant === null) {
+            this.determinant = SquareMatrixMath.getDeterminant();
+            return this.determinant;
+        } else {
+            return this.determinant;
+        }
+    }
+
+    getSignedMatrix() {
+        this.multiArray = MatrixMath.getSignedMatrix(this.multiArray);
+    }
+
+    getCoFactorMatrix() {
+        return SquareMatrixMath.getCoFactorMatrix(this.multiArray);
+    }
+
+    getAdjointMatrix() {
+        return SquareMatrixMath.getCoFactorMatrix(this.multiArray);
+    }
+
     invert() {
-        if (this.isInvertible === true) {
-            return new Matrix(MatrixMath.getInverseMatrix(this.multiArray));
-        } else if (this.rowCount !== this.columnCount) {
-            throw new TypeError("Matrix inversion is not defined for a non-square matrix");
+        if (this.isInvertible()) {
+            this.multiArray = SquareMatrixMath.getInverseMatrix(this.multiArray);
         } else {
-            throw new RangeError("Cannot invert a matrix with a determinant of 0");
-        }
-    }
-
-    /**
-     * Returns a new matrix which is the resultant matrix after the addition of the given matrix
-     * @param {Matrix} matrixToAdd Another matrix of the same order
-     * @return {Matrix} The transpose matrix of the matrix
-     */
-    addTo(matrixToAdd) {
-        if (matrixToAdd instanceof Matrix) {
-            if (matrixToAdd.rowCount === this.rowCount && matrixToAdd.columnCount === this.columnCount) {
-                return new Matrix(MatrixMath.add(this.multiArray, matrixToAdd.multiArray));
-            } else {
-                throw new TypeError("A matrix of the same order is required as the parameter");
-            }
-        } else {
-            throw new TypeError("An instance of Matrix is required as the parameter");
-        }
-    }
-
-    /**
-     * Returns a new matrix which is the product of the current matrix and the given scalar
-     * @param {Number} scalar Another matrix of the same order
-     * @return {Matrix} The product of the current matrix and the given scalar
-     */
-    multiplyByScalar(scalar) {
-        if (typeof scalar === "number") {
-            return new Matrix(MatrixMath.multiplyByScalar(this.multiArray, scalar));
-        } else {
-            throw new TypeError("An instance of Number is required as the scaler");
-        }
-    }
-
-    /**
-     * Returns a new matrix which is the product of the current matrix and the given matrix
-     * @param {Matrix} matrixToMultiply Another matrix of the same row count as the column count of the current matrix
-     * @return {Matrix} The product of the current matrix and the given matrix
-     */
-    multiplyByMatrix(matrixToMultiply) {
-        if (matrixToMultiply instanceof Matrix) {
-            if (this.columnCount === matrixToMultiply.rowCount) {
-                return new Matrix(MatrixMath.multiplyByMatrix(this.multiArray, matrixToMultiply.multiArray));
-            } else {
-                throw new TypeError(`A matrix of ${this.columnCount} columns cannot be multiplied by a matrix of ${matrixToMultiply.rowCount} rows`);
-            }
-        } else {
-            throw new TypeError("An instance of Matrix is required as the parameter");
+            throw Error("This matrix is not invertible");
         }
     }
 }
