@@ -1,4 +1,4 @@
-import { SquareMatrixMath } from "./MatrixMath.mjs";
+import { MatrixMath, SquareMatrixMath } from "./MatrixMath.mjs";
 import { IntegerMath } from "./NumberMath.mjs";
 import { StringMath } from "./StringMath.mjs";
 
@@ -537,7 +537,11 @@ export class ExpressionMath {
                         return SquareMatrixMath.add(operand2, SquareMatrixMath.multiplyByScalar(operand1, -1));
                     case ".":
                     case "*":
-                        return SquareMatrixMath.multiplyByMatrix(operand2, operand1);
+                        if (typeof operand2 === "number") {
+                            return MatrixMath.multiplyByScalar(operand1, operand2);
+                        } else {
+                            return SquareMatrixMath.multiplyByMatrix(operand2, operand1);
+                        }
                     case "^":
                         return SquareMatrixMath.pow(operand2, operand1);
                     default:
@@ -746,6 +750,8 @@ export class ExpressionMath {
                     valueStack.push(parseFloat(postfixTokens[t]));
                 } else if (context === ExpressionContext.BIG_INTEGER) {
                     valueStack.push(BigInt(postfixTokens[t]));
+                } else if (context === ExpressionContext.MATRIX) {
+                    valueStack.push(parseFloat(postfixTokens[t]));
                 }
             } else if (ExpressionRegExp.tokens.stringOperand.test(postfixTokens[t])) {
                 //CASE: Token is a string operand

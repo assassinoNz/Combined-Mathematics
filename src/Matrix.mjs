@@ -1,6 +1,5 @@
 //@ts-check
-import { MatrixMath } from "./MatrixMath.mjs";
-import { SquareMatrixMath } from "./static/MatrixMath.mjs";
+import { MatrixMath, SquareMatrixMath } from "./static/MatrixMath.mjs";
 
 export class Matrix {
     multiArray = null;
