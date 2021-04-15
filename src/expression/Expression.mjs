@@ -31,7 +31,7 @@ export class Expression {
      * @param {string} variable 
      * @param {any} value 
      */
-    assignToVariable(variable, value) {
+    assignVariable(variable, value) {
         this.valueDictionary[variable] = value;
     }
 
