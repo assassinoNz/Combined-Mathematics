@@ -51,7 +51,7 @@ export class LinearEquationMath {
     }
 
     /**
-     * Returns a dictionary containing simplified coefficients  of each variable
+     * Returns a dictionary containing simplified coefficients of each variable
      * @param {string[]} standardizedTokens 
      */
     static generateCoefficientsDictionary(standardizedTokens) {
@@ -101,7 +101,7 @@ export class LinearEquationMath {
      * @param {string[]} equations Linear equation expressions written in the standard notation
      * @param {number} context 
      */
-    static convertSLEToMatrixForm(equations, context) {
+    static convertToMatrix(equations, context) {
         const matrices = {
             coefficientsMatrix: [],
             variablesMatrix: [],
@@ -136,7 +136,7 @@ export class LinearEquationMath {
      * @param {number} context 
      */
     static solveSLE(equations, context) {
-        const matrices = LinearEquationMath.convertSLEToMatrixForm(equations, context);
+        const matrices = LinearEquationMath.convertToMatrix(equations, context);
         matrices.solutionMatrix = SquareMatrixMath.multiplyByMatrix(SquareMatrixMath.getInverseMatrix(matrices.coefficientsMatrix), matrices.constantsMatrix);
 
         return matrices;

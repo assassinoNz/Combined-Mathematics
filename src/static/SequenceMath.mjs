@@ -61,6 +61,6 @@ export class SequenceMath {
      */
     static isPythagoreanTriplet(triplet) {
         const sortedTriplet = triplet.sort();
-        return sortedTriplet[2]*sortedTriplet[2] === sortedTriplet[1]*sortedTriplet[1] + sortedTriplet[0]*sortedTriplet[0];
+        return sortedTriplet[2]**2 === sortedTriplet[1]**2 + sortedTriplet[0]**2;
     }
 }

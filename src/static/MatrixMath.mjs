@@ -5,7 +5,7 @@ class UtilityMatrixMath {
      * @param {number[][]} matrix Must be a square matrix
      * @param {number} rowIndexToRemove Must be smaller than matrix.length
      * @param {number} columnIndexToRemove Must be smaller than matrix[0].length
-     * @return {number[][]} The transposition matrix of the matrix
+     * @return {number[][]} The resultant matrix after removal of the given row and the column
      */
     static getSplicedMatrix(matrix, rowIndexToRemove, columnIndexToRemove) {
         const splicedMatrix = JSON.parse(JSON.stringify(matrix));
@@ -88,7 +88,7 @@ export class MatrixMath {
      * Adds two matrices only where column and row count of first matrix equals to the column and row count of second matrix
      * @param {number[][]} matrix1
      * @param {number[][]} matrix2
-     * @return {number[][]} The resultant matrix of matrix1 added to matrix2
+     * @return {number[][]} The sum of the two matrices
      */
     static add(matrix1, matrix2) {
         const resultMatrix = [[]];
@@ -192,7 +192,7 @@ export class SquareMatrixMath {
      * @return {number[][]} The co-factor matrix of the matrix
      */
     static getCoFactorMatrix(matrix) {
-        return this.getSignedMatrix(this.getMinorMatrix(matrix));
+        return SquareMatrixMath.getSignedMatrix(SquareMatrixMath.getMinorMatrix(matrix));
     }
 
     /**
