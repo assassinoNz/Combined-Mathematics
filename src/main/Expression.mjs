@@ -1,5 +1,5 @@
-import { BinaryExpressionNode } from "../static/ExpressionMath.mjs";
-import { ExpressionMath } from "../static/ExpressionMath.mjs";
+import { BinaryExpressionNode } from "../math/ExpressionMath.mjs";
+import { ExpressionMath } from "../math/ExpressionMath.mjs";
 
 //@ts-check
 export class Expression {

@@ -1,5 +1,5 @@
 //@ts-check
-import { Formatter } from "./Utility.mjs";
+import { Formatter } from "../util/Utility.mjs";
 
 export class MultiPrecisionMath {
     /**

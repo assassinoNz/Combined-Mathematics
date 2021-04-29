@@ -1,11 +1,11 @@
 //@ts-check
 import * as Discord from "discord.js";
-import { IntegerMath, PrimeMath } from "./src/static/NumberMath.mjs";
-import { StringMath } from "./src/static/StringMath.mjs";
-import { SequenceMath } from "./src/static/SequenceMath.mjs";
-import { CustomMath } from "./src/static/CustomMath.mjs";
+import { IntegerMath, PrimeMath } from "./src/math/NumberMath.mjs";
+import { StringMath } from "./src/math/StringMath.mjs";
+import { SequenceMath } from "./src/math/SequenceMath.mjs";
+import { CustomMath } from "./src/math/CustomMath.mjs";
 import { SudokuPuzzle } from "./src/SudokuPuzzle.mjs";
-import { ArrayUtil, Formatter, ArgumentParser } from "./src/static/Utility.mjs";
+import { ArrayUtil, Formatter, ArgumentParser } from "./src/util/Utility.mjs";
 
 const client = new Discord.Client();
 

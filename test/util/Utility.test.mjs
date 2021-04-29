@@ -1,7 +1,7 @@
 import "mocha";
 import * as assert from "assert";
 
-import { Formatter } from "../src/static/Utility.mjs";
+import { Formatter } from "../src/util/Utility.mjs";
 
 //NOTE: Methods in this class aren't error handled. Therefore no use of testing for errors
 describe("Formatter", () => {

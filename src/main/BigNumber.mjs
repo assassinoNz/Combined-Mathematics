@@ -1,5 +1,5 @@
 //@ts-check
-import { MultiPrecisionMath } from "./static/MultiPrecisionMath.mjs";
+import { MultiPrecisionMath } from "../math/MultiPrecisionMath.mjs";
 
 export class BigNumber {
     /** Constructs a BigNumber
