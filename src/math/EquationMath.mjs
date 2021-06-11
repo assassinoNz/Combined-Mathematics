@@ -100,46 +100,60 @@ export class LinearEquationMath {
 
     /**
      * Returns the coefficient, variable and constants matrices for a given SLE
-     * @param {string[]} equations Linear equation expressions written in the standard notation
-     * @param {number} context 
+     * @param {any[]} equationDictionaries An array of dictionaries describing the equations
+     * @return The SLE in matrix representation
      */
-    static convertToMatrix(equations, context) {
+    static convertToMatrices(equationDictionaries) {
+        //NOTE: In an SLE, it is not necessary for a single equation to contain all the variables
+        //Define a set to keep track of all the variables in the SLE
+        const variables = new Set();
+        for (const equationDictionary of equationDictionaries) {
+            for (const variable of Object.keys(equationDictionary)) {
+                variables.add(variable);
+            }
+        }
+
         const matrices = {
-            coefficientsMatrix: [],
             variablesMatrix: [],
+            coefficientsMatrix: [],
             constantsMatrix: [],
         };
 
-        for (let e = 0; e < equations.length; e++) {
-            const tokenizedEquation = ExpressionMath.separateToTokens(equations[e], context);
-            const standardizedEquation = LinearEquationMath.standardizeTokens(tokenizedEquation);
-            const coefficientsDictionary = LinearEquationMath.simplifyToRHS(standardizedEquation);
-
-            const variables = Object.keys(coefficientsDictionary).sort();
-
-            //Add an entry in the constants matrix
-            //NOTE: The equations are reduced to LHS, but in matrix form, constants must be in RHS. So we must multiply by -1
-            matrices.constantsMatrix[e] = [-coefficientsDictionary["#"]];
-            //Add an entry in the coefficients matrix matrix
-            matrices.coefficientsMatrix[e] = [];
-
-            //NOTE: v=0 index is the constant
-            for (let v = 1; v < variables.length; v++) {
-                matrices.variablesMatrix[v - 1] = [variables[v]];
-                matrices.coefficientsMatrix[e][v - 1] = coefficientsDictionary[variables[v]];
+        for (const variable of variables) {
+            if (variable !== "#") {
+                matrices.variablesMatrix.push([variable]);
             }
+        }
+
+        for (const equationDictionary of equationDictionaries) {
+            //NOTE: When building the coefficients matrix, we must iterate in the order of the variables set
+            const coefficientsRow = [];
+            const constantRow = [0];
+            for (const variable of variables) {
+                if (variable === "#") {
+                    //NOTE: The equations are reduced to LHS, but in matrix form, constants must be in RHS. So we must multiply by -1
+                    constantRow[0] = -equationDictionary[variable];
+                } else {
+                    if (variable in equationDictionary) {
+                        coefficientsRow.push(equationDictionary[variable]);
+                    } else {
+                        coefficientsRow.push(0);
+                    }
+                }
+            }
+            matrices.coefficientsMatrix.push(coefficientsRow);
+            matrices.constantsMatrix.push(constantRow);
         }
 
         return matrices;
     }
 
     /**
-     * Returns the coefficient, variable, constants and solution matrices for a given SLE
-     * @param {string[]} equations Linear equation expressions written in the standard notation
-     * @param {number} context 
+     * Adds the solution matrix to a SLE given in matrix form
+     * @param matrices The SLE in matrix from
+     * @return 
      */
-    static solveSLE(equations, context) {
-        const matrices = LinearEquationMath.convertToMatrix(equations, context);
+    static addSolutionMatrix(matrices) {
         matrices.solutionMatrix = SquareMatrixMath.multiplyByMatrix(SquareMatrixMath.getInverseMatrix(matrices.coefficientsMatrix), matrices.constantsMatrix);
 
         return matrices;
