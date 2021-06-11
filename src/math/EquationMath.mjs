@@ -100,17 +100,22 @@ export class LinearEquationMath {
     /**
      * Returns the coefficient, variable and constants matrices for a given SLE
      * @param {any[]} equationDictionaries An array of dictionaries describing the equations
+     * @param {Set<string>} zeroVariables Variables that needed to be set to zero. Useful for linear programming models
      * @return The SLE in matrix representation
      */
-    static convertToMatrices(equationDictionaries) {
+    static convertToMatrices(equationDictionaries, zeroVariables) {
         //NOTE: In an SLE, it is not necessary for a single equation to contain all the variables
         //Define a set to keep track of all the variables in the SLE
-        const variables = new Set();
+        const variablesSet = new Set();
         for (const equationDictionary of equationDictionaries) {
             for (const variable of Object.keys(equationDictionary)) {
-                variables.add(variable);
+                if (!zeroVariables.has(variable)) {
+                    //CASE: Current iteration variable must be included
+                    variablesSet.add(variable);
+                }
             }
         }
+        const variablesArray = Array.from(variablesSet);
 
         const matrices = {
             variablesMatrix: [],
@@ -118,26 +123,32 @@ export class LinearEquationMath {
             constantsMatrix: [],
         };
 
-        for (const variable of variables) {
-            if (variable !== "#") {
-                matrices.variablesMatrix.push([variable]);
-            }
+        //Construct variablesMatrix
+        //NOTE: v=0 is the constant
+        for (let v = 1; v < variablesArray.length; v++) {
+            matrices.variablesMatrix.push([variablesArray[v]]);
         }
 
+        //NOTE: We must have equationDictionaries equal to the number of effective variables
+        //Add missing equation dictionaries
+        const zeroEquationDictionary = Object.fromEntries(variablesArray.map(variable => [variable, 0]));
+        const missingEquationsCount = variablesArray.length - 1 - zeroVariables.size - equationDictionaries.length;
+        for (let i = 0; i < missingEquationsCount; i++) {
+            equationDictionaries.push(zeroEquationDictionary);
+        }
+
+        //Construct coefficientsMatrix and constantsMatrix
         for (const equationDictionary of equationDictionaries) {
             //NOTE: When building the coefficients matrix, we must iterate in the order of the variables set
             const coefficientsRow = [];
-            const constantRow = [0];
-            for (const variable of variables) {
-                if (variable === "#") {
-                    //NOTE: The equations are reduced to LHS, but in matrix form, constants must be in RHS. So we must multiply by -1
-                    constantRow[0] = -equationDictionary[variable];
+            //NOTE: The equations are reduced to LHS, but in matrix form, constants must be in RHS. So we must multiply by -1
+            const constantRow = [-equationDictionary["#"]];
+
+            for (let v = 1; v < variablesArray.length; v++) {
+                if (variablesArray[v] in equationDictionary) {
+                    coefficientsRow.push(equationDictionary[variablesArray[v]]);
                 } else {
-                    if (variable in equationDictionary) {
-                        coefficientsRow.push(equationDictionary[variable]);
-                    } else {
-                        coefficientsRow.push(0);
-                    }
+                    coefficientsRow.push(0);
                 }
             }
             matrices.coefficientsMatrix.push(coefficientsRow);
