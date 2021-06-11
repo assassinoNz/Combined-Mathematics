@@ -1,6 +1,6 @@
 //@ts-check
 import { ExpressionRegExp } from "./ExpressionMath.mjs";
-import { SquareMatrixMath } from "./MatrixMath.mjs";
+import { MatrixMath, SquareMatrixMath } from "./MatrixMath.mjs";
 
 export class LinearEquationMath {
     /**
@@ -164,7 +164,7 @@ export class LinearEquationMath {
      * @return 
      */
     static addSolutionMatrix(matrices) {
-        matrices.solutionMatrix = SquareMatrixMath.multiplyByMatrix(SquareMatrixMath.getInverseMatrix(matrices.coefficientsMatrix), matrices.constantsMatrix);
+        matrices.solutionMatrix = MatrixMath.multiplyByMatrix(SquareMatrixMath.getInverseMatrix(matrices.coefficientsMatrix), matrices.constantsMatrix);
 
         return matrices;
     }
