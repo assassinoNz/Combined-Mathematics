@@ -118,6 +118,7 @@ export class LinearEquationMath {
         const variablesArray = Array.from(variablesSet);
 
         const matrices = {
+            zeroVariables: Array.from(zeroVariables),
             variablesMatrix: [],
             coefficientsMatrix: [],
             constantsMatrix: [],
@@ -160,12 +161,21 @@ export class LinearEquationMath {
 
     /**
      * Adds the solution matrix to a SLE given in matrix form
-     * @param matrices The SLE in matrix from
+     * @param matrixedSLE The SLE in matrix from
      * @return 
      */
-    static addSolutionMatrix(matrices) {
-        matrices.solutionMatrix = MatrixMath.multiplyByMatrix(SquareMatrixMath.getInverseMatrix(matrices.coefficientsMatrix), matrices.constantsMatrix);
+    static addSolution(matrixedSLE) {
+        matrixedSLE.solutionMatrix = MatrixMath.multiplyByMatrix(SquareMatrixMath.getInverseMatrix(matrixedSLE.coefficientsMatrix), matrixedSLE.constantsMatrix);
+        matrixedSLE.solutionDictionary = {};
 
-        return matrices;
+        for (let i=0; i <  matrixedSLE.variablesMatrix.length; i++) {
+            matrixedSLE.solutionDictionary[matrixedSLE.variablesMatrix[i][0]] = matrixedSLE.solutionMatrix[i][0];
+        }
+
+        for (let i=0; i <  matrixedSLE.zeroVariables.length; i++) {
+            matrixedSLE.solutionDictionary[matrixedSLE.zeroVariables[i]] = 0;
+        }
+
+        return matrixedSLE;
     }
 }
