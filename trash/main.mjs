@@ -1,43 +1,46 @@
 //@ts-check
-import { LinearEquationMath } from "../src/static/EquationMath.mjs";
-import { ExpressionContext } from "../src/static/ExpressionMath.mjs";
-import { BooleanMath } from "../src/static/BooleanMath.mjs";
-import { ExpressionMath } from "../src/static/ExpressionMath.mjs";
-import { MatrixMath } from "../src/static/MatrixMath.mjs";
-import { Expression } from "../src/expression/Expression.mjs";
-import { ExpressionNotation } from "../src/static/ExpressionMath.mjs";
-import { SequenceGenerator } from "../src/static/SequenceMath.mjs";
-import { SquareMatrix } from "../src/Matrix.mjs";
+import { LinearEquationMath } from "../src/math/EquationMath.mjs";
+import { ExpressionContext } from "../src/math/ExpressionMath.mjs";
+import { BooleanMath } from "../src/math/BooleanMath.mjs";
+import { ExpressionMath } from "../src/math/ExpressionMath.mjs";
+import { MatrixMath } from "../src/math/MatrixMath.mjs";
+import { Expression } from "../src/main/Expression.mjs";
+import { ExpressionNotation } from "../src/math/ExpressionMath.mjs";
+import { SequenceGenerator } from "../src/math/SequenceMath.mjs";
+import { SquareMatrix } from "../src/main/Matrix.mjs";
 
 // let valueDictionary = {
-//     A: [[1,2],[3,4]]
+//     A: 0,
+//     B: 0
 // }
+// let context = ExpressionContext.REAL;
 
-// let context = ExpressionContext.MATRIX;
-// let expressions = ["!A!B", "B", "A+B", "A.B", "A>B", "A↔B", "A↑B", "A↓B"];
-// let expressions = ["2A"];
-
+// let expressions = ["A+3B+C+0D=9", "2A+B+0C+D=8"];
 // const tokenizedExpressions = [];
 // const postfixedExpressions = [];
 // const evaluatedExpressions = [];
-// const matrices = LinearEquationMath.solveSLE(["A+Z=3", "Z-A=1"], context);
+// const standardizedEquations = [];
+// const equationDictionaries = [];
+
 // for (let e = 0; e < expressions.length; e++) {
-//     tokenizedExpressions[e] = ExpressionMath.separateToTokens(expressions[e], context);
-//     postfixedExpressions[e] = ExpressionMath.infixToPostfix(tokenizedExpressions[e], context);
-//     evaluatedExpressions[e] = ExpressionMath.evaluateExpression(postfixedExpressions[e], valueDictionary, context);
+    // tokenizedExpressions[e] = ExpressionMath.separateToTokens(expressions[e], context);
+    // postfixedExpressions[e] = ExpressionMath.infixToPostfix(tokenizedExpressions[e], context);
+    // evaluatedExpressions[e] = ExpressionMath.evaluateExpression(postfixedExpressions[e], valueDictionary, context);
     // standardizedEquations[e] = LinearEquationMath.standardizeTokens(tokenizedExpressions[e]);
+    // equationDictionaries[e] = LinearEquationMath.simplifyToRHS(standardizedEquations[e]);
     // coefficientDictionaries[e] = LinearEquationMath.generateCoefficientsDictionary(standardizedEquations[e]);
     // LinearEquationMath.addMatrixRow(constantMatrix, coefficientsMatrix, coefficientDictionaries[e]);
 // }
+
+// const matrices = LinearEquationMath.convertToMatrices(equationDictionaries, new Set(["A", "B"]));
+// LinearEquationMath.addSolutionMatrix(matrices);
 
 // console.log(expressions);
 // console.log(tokenizedExpressions);
 // console.log(postfixedExpressions);
 // console.log(evaluatedExpressions);
 // console.log(standardizedEquations);
-// console.log(coefficientDictionaries);
-// console.log(constantMatrix);
-// console.log(coefficientsMatrix);
+// console.log(equationDictionaries);
 // console.log(matrices);
 
 // console.log(BooleanMath.generateTruthTable(tokenizedExpressions, context));
@@ -48,7 +51,6 @@ import { SquareMatrix } from "../src/Matrix.mjs";
 //     console.log(seq.next().value);
 //     i++;
 // }
-
 
 // let m = new SquareMatrix([
 //     [1,3,0],
