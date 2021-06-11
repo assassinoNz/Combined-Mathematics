@@ -17,8 +17,9 @@ export class LinearEquationMath {
                 //CASE: Token is "+"
                 if (ExpressionRegExp.tokens.variableOperand.test(equationTokens[t + 1])) {
                     //CASE: Next token is a variable operand
-                    //Since this token is "+" and the next token is a variable operand, there must be -1* between them
-                    standardizedTokens.push("+", "1", "*");
+                    //Since this token is "+" and the next token is a variable operand, there must be 1* between them
+                    standardizedTokens.push(equationTokens[t], "1", "*", equationTokens[t + 1]);
+                    t = t + 1;
                 } else {
                     standardizedTokens.push(equationTokens[t]);
                 }
@@ -26,8 +27,9 @@ export class LinearEquationMath {
                 //CASE: Token is "-"
                 if (ExpressionRegExp.tokens.variableOperand.test(equationTokens[t + 1])) {
                     //CASE: Next token is a variable operand
-                    //Since this token is "-" and the next token is a variable operand, there must be + -1 * between them
-                    standardizedTokens.push("+", "-1", "*");
+                    //Since this token is "-" and the next token is a variable operand, there must be -1* between them
+                    standardizedTokens.push(equationTokens[t], "-1", "*", equationTokens[t + 1]);
+                    t = t + 1;
                 } else if (ExpressionRegExp.tokens.numericOperand.test(equationTokens[t + 1])) {
                     //CASE: Next token is a numeric operand
                     //Since this token is "-" and the next token is a numeric operand, there must be + between them and "-" should be the sign of the operand
@@ -54,7 +56,7 @@ export class LinearEquationMath {
      * Returns a dictionary containing simplified coefficients of each variable
      * @param {string[]} standardizedTokens 
      */
-    static generateCoefficientsDictionary(standardizedTokens) {
+    static simplifyToRHS(standardizedTokens) {
         let isLHS = true;
 
         const coefficientsDictionary = {
@@ -80,11 +82,11 @@ export class LinearEquationMath {
             } else if (ExpressionRegExp.tokens.numericOperand.test(standardizedTokens[t]) && /^[-+=]$/.test(standardizedTokens[t - 1]) && (standardizedTokens.length - 1 === t || /^[-+=]$/.test(standardizedTokens[t + 1]))) {
                 //CASE: Token is a numeric operand surrounded by either "+" of "-"
                 //NOTE: Token is a constant
-                //NOTE: Constants should be calculated as if they are in the RHS
+                //NOTE: Constants should be calculated as if they are in the LHS
                 if (isLHS) {
-                    coefficientsDictionary["#"] -= parseFloat(standardizedTokens[t]);
-                } else {
                     coefficientsDictionary["#"] += parseFloat(standardizedTokens[t]);
+                } else {
+                    coefficientsDictionary["#"] -= parseFloat(standardizedTokens[t]);
                 }
             } else if (/^=$/.test(standardizedTokens[t])) {
                 //CASE: Token is "="
@@ -111,19 +113,20 @@ export class LinearEquationMath {
         for (let e = 0; e < equations.length; e++) {
             const tokenizedEquation = ExpressionMath.separateToTokens(equations[e], context);
             const standardizedEquation = LinearEquationMath.standardizeTokens(tokenizedEquation);
-            const coefficientsDictionary = LinearEquationMath.generateCoefficientsDictionary(standardizedEquation);
+            const coefficientsDictionary = LinearEquationMath.simplifyToRHS(standardizedEquation);
 
             const variables = Object.keys(coefficientsDictionary).sort();
-            
+
             //Add an entry in the constants matrix
-            matrices.constantsMatrix[e] = [coefficientsDictionary["#"]];
+            //NOTE: The equations are reduced to LHS, but in matrix form, constants must be in RHS. So we must multiply by -1
+            matrices.constantsMatrix[e] = [-coefficientsDictionary["#"]];
             //Add an entry in the coefficients matrix matrix
             matrices.coefficientsMatrix[e] = [];
-            
+
             //NOTE: v=0 index is the constant
             for (let v = 1; v < variables.length; v++) {
-                matrices.variablesMatrix[v-1] = [variables[v]];
-                matrices.coefficientsMatrix[e][v-1] = coefficientsDictionary[variables[v]];
+                matrices.variablesMatrix[v - 1] = [variables[v]];
+                matrices.coefficientsMatrix[e][v - 1] = coefficientsDictionary[variables[v]];
             }
         }
 
