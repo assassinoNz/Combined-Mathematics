@@ -1,5 +1,4 @@
 //@ts-check
-import { ExpressionMath } from "./ExpressionMath.mjs";
 import { ExpressionRegExp } from "./ExpressionMath.mjs";
 import { SquareMatrixMath } from "./MatrixMath.mjs";
 
