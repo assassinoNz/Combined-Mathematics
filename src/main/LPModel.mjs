@@ -13,7 +13,7 @@ export class LPModel {
      * @param {string[]} equations
      * @param {string} objectiveExpression
      */
-    constructor(equations = ["A+3B+C=9", "2A+B+D=8"], objectiveExpression = "A+B") {
+    constructor(equations, objectiveExpression) {
         this.postfixedObjectiveExpression = ExpressionMath.infixToPostfix(ExpressionMath.separateToTokens(objectiveExpression, ExpressionContext.REAL), ExpressionContext.REAL);
 
         for (let e = 0; e < equations.length; e++) {
@@ -26,10 +26,19 @@ export class LPModel {
     /**
      * @param {Set<string>} nonBasicVariables
      */
-    evaluateBasicSolution(nonBasicVariables) {
+    findBasicSolution(nonBasicVariables) {
         const matrixedSLE = LinearEquationMath.convertToMatrices(this.equationDictionaries, nonBasicVariables);
         LinearEquationMath.addSolution(matrixedSLE);
         matrixedSLE.objectiveValue = ExpressionMath.evaluateExpression(this.postfixedObjectiveExpression, matrixedSLE.solutionDictionary, ExpressionContext.REAL);
-        console.log(matrixedSLE);
+        matrixedSLE.feasible = true;
+
+        for (const value of matrixedSLE.solutionMatrix) {
+            if (value[0] < 0) {
+                matrixedSLE.feasible = false;
+                break;
+            }
+        }
+
+        return matrixedSLE;
     }
 }
