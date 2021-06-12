@@ -212,7 +212,7 @@ export class SquareMatrixMath {
     static getInverseMatrix(matrix) {
         const determinant = SquareMatrixMath.getDeterminant(matrix);
         if (determinant === 0) {
-            return null;
+            throw new RangeError("Matrix is not invertible");
         } else {
             const inverseMatrix = SquareMatrixMath.getAdjointMatrix(matrix);
             const rowCount = matrix.length;
