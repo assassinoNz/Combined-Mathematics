@@ -133,7 +133,7 @@ export class LinearEquationMath {
         //NOTE: We must have equationDictionaries equal to the number of effective variables
         //Add missing equation dictionaries
         const zeroEquationDictionary = Object.fromEntries(variablesArray.map(variable => [variable, 0]));
-        const missingEquationsCount = variablesArray.length - 1 - zeroVariables.size - equationDictionaries.length;
+        const missingEquationsCount = variablesArray.length -1 - equationDictionaries.length;
         for (let i = 0; i < missingEquationsCount; i++) {
             equationDictionaries.push(zeroEquationDictionary);
         }
@@ -156,6 +156,7 @@ export class LinearEquationMath {
             matrices.constantsMatrix.push(constantRow);
         }
 
+        console.log(missingEquationsCount, matrices);
         return matrices;
     }
 
