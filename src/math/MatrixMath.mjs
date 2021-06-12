@@ -112,11 +112,12 @@ export class SquareMatrixMath {
      */
     static getDeterminant(matrix) {
         let determinant = 0;
-        //Check if there is only one element inside the matrix
         if (matrix.length === 1 && matrix[0].length === 1) {
+            //CASE: Matrix has only one element
+            //Determinant is that element
             determinant = determinant + matrix[0][0];
         } else {
-            //Else find the determinant using the first row
+            //CASE: Matrix has more than one element
             let columnCount = matrix[0].length;
             for (let i = 0; i < columnCount; i++) {
                 //Clone the matrix to make sure the matrix is not a reference
@@ -174,16 +175,22 @@ export class SquareMatrixMath {
      * @return {number[][]} The minor matrix of the matrix
      */
     static getMinorMatrix(matrix) {
-        const minorMatrix = [[]];
-        const rowCount = matrix.length;
-        const columnCount = matrix[0].length;
-        for (let i = 0; i < rowCount; i++) {
-            minorMatrix[i] = [];
-            for (let j = 0; j < columnCount; j++) {
-                minorMatrix[i][j] = SquareMatrixMath.getDeterminant(UtilityMatrixMath.getSplicedMatrix(matrix, i, j));
+        if (matrix.length === 1 && matrix[0].length === 1) {
+            //CASE: Matrix has only one element
+            //Minor matrix is the same as original matrix
+            return matrix;
+        } else {
+            const minorMatrix = [[]];
+            const rowCount = matrix.length;
+            const columnCount = matrix[0].length;
+            for (let i = 0; i < rowCount; i++) {
+                minorMatrix[i] = [];
+                for (let j = 0; j < columnCount; j++) {
+                    minorMatrix[i][j] = SquareMatrixMath.getDeterminant(UtilityMatrixMath.getSplicedMatrix(matrix, i, j));
+                }
             }
+            return minorMatrix;
         }
-        return minorMatrix;
     }
 
     /**
