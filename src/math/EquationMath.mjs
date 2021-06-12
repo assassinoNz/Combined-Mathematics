@@ -156,7 +156,6 @@ export class LinearEquationMath {
             matrices.constantsMatrix.push(constantRow);
         }
 
-        console.log(missingEquationsCount, matrices);
         return matrices;
     }
 
