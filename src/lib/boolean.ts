@@ -7,7 +7,7 @@ export class BooleanMath {
      * @param tokenizedInfixExpressions Must be tokenized properly
      * @param context
      */
-    static generateTruthTable(tokenizedInfixExpressions: string[][], context: ) {
+    static generateTruthTable(tokenizedInfixExpressions: string[][], context: ExpressionContext) {
         //NOTE: This value dictionary will include all the variables from all the expressions
         let globalValueDictionary: any = {
 
