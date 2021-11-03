@@ -81,7 +81,7 @@ export class MatrixMath {
     }
 }
 
-export class SquareMatrixMath {
+export class SquareMatrixMath extends MatrixMath {
     /**
      * Calculates the determinant of a square matrix
      * @param matrix Must be a square matrix
