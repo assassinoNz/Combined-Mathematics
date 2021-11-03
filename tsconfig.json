@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "allowJs": false,
+        "declaration": false,
+        "declarationMap": false,
+        "sourceMap": true,
+        "outDir": "build",
+        "removeComments": true,
+        "strict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": false,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true
+    }
+}
