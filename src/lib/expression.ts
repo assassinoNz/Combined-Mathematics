@@ -378,8 +378,8 @@ export class ExpressionMath {
      * @return The infix tokens rearranged in postfix notation
     */
     static infixToPostfix(infixTokens: string[], context: ExpressionContext) {
-        let postfixTokens = [];
-        let operatorStack = [];
+        let postfixTokens: string[] = [];
+        let operatorStack: string[] = [];
 
         for (let t = 0; t < infixTokens.length; t++) {
             if (ExpressionRegExp.tokens.ignorable.test(infixTokens[t])) {
@@ -395,13 +395,13 @@ export class ExpressionMath {
             } else if (ExpressionRegExp.tokens.leftAssociativeOperator.test(infixTokens[t])) {
                 //CASE: Token is a left associative operator
                 while ((operatorStack.length > 0) && (!ExpressionRegExp.tokens.openingBracket.test(operatorStack[operatorStack.length - 1])) && (ExpressionMath.getPrecedence(operatorStack[operatorStack.length - 1], context) >= ExpressionMath.getPrecedence(infixTokens[t], context))) {
-                    postfixTokens.push(operatorStack.pop());
+                    postfixTokens.push(operatorStack.pop() as string);
                 }
                 operatorStack.push(infixTokens[t]);
             } else if (ExpressionRegExp.tokens.rightAssociativeOperator.test(infixTokens[t])) {
                 //CASE: Token is a right associative operator
                 while ((operatorStack.length > 0) && (!ExpressionRegExp.tokens.openingBracket.test(operatorStack[operatorStack.length - 1])) && (ExpressionMath.getPrecedence(operatorStack[operatorStack.length - 1], context) > ExpressionMath.getPrecedence(infixTokens[t], context))) {
-                    postfixTokens.push(operatorStack.pop());
+                    postfixTokens.push(operatorStack.pop() as string);
                 }
                 operatorStack.push(infixTokens[t]);
             } else if (ExpressionRegExp.tokens.openingBracket.test(infixTokens[t])) {
@@ -411,7 +411,7 @@ export class ExpressionMath {
                 //CASE: Token is a closing bracket
                 //Unload the stack until a matching opening bracket becomes the top of the stack or stack is empty
                 while ((operatorStack.length > 0) && (operatorStack[operatorStack.length - 1] !== ExpressionRegExp.inverseBrackets[infixTokens[t]])) {
-                    postfixTokens.push(operatorStack.pop());
+                    postfixTokens.push(operatorStack.pop() as string);
                 }
 
                 //NOTE: Now the top of the stack has a matching opening bracket
@@ -423,7 +423,7 @@ export class ExpressionMath {
         }
 
         while (operatorStack.length > 0) {
-            postfixTokens.push(operatorStack.pop());
+            postfixTokens.push(operatorStack.pop() as string);
         }
 
         return postfixTokens;
