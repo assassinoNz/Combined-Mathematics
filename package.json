@@ -18,7 +18,7 @@
     },
     "homepage": "https://github.com/Nirmal-Diaz/Combined-Mathematics#readme",
     "devDependencies": {
-        "mocha": "^7.1.2"
+        "mocha": "^10.2.0"
     },
     "dependencies": {
         "discord.js": "^12.4.0"
