@@ -1,7 +1,7 @@
 export class StringMath {
     /** Returns the name of an integer
     * @param integer Must honor the range 0<=integer<=9999
-    * @return The name of the integer in US English pascal case
+    * @returns The name of the integer in US English pascal case
    */
     static getNumberName(integer: number) {
         if (integer.toString().length > 4) {
@@ -266,7 +266,7 @@ export class StringMath {
      * Returns unique permutations of a string
      * NOTE: This algorithm is much faster with strings which include duplicate characters
      * @param string
-     * @return An array with all the unique permutations of the string
+     * @returns An array with all the unique permutations of the string
      */
     static getUniquePermutations(string: string) {
         let previousLevelPermutations = [string];
@@ -311,7 +311,7 @@ export class StringMath {
      * Returns unique permutations of a string
      * WARNING: Abysmal performance. Method exists only to demonstrate the algorithm
      * @param string
-     * @return An array with all the unique permutations of the string
+     * @returns An array with all the unique permutations of the string
      */
     static getUniquePermutations2(string: string) {
         const permutations: string[] = [];
@@ -339,7 +339,7 @@ export class StringMath {
      * Returns unique permutations of a string
      * NOTE: This algorithm is faster with strings which don't include duplicate characters
      * @param string
-     * @return An array with all the permutations of the string
+     * @returns An array with all the permutations of the string
      */
     static getAllPermutations(string: string) {
         let previousLevelPermutations = [string];

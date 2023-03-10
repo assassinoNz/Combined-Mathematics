@@ -2,7 +2,7 @@ export class MatrixMath {
     /**
      * Calculates the transposition matrix of a given matrix
      * @param matrix
-     * @return The transposition matrix of the matrix
+     * @returns The transposition matrix of the matrix
      */
     static getTransposeMatrix(matrix: number[][]) {
         const transposeMatrix = [];
@@ -22,7 +22,7 @@ export class MatrixMath {
      * Multiplies the first matrix by the second matrix only where column count of the first matrix equals to the row count of the second matrix
      * @param matrix1
      * @param matrix2
-     * @return The product of the two matrices
+     * @returns The product of the two matrices
      */
     static multiplyByMatrix(matrix1: number[][], matrix2: number[][]) {
         const resultMatrix: number[][] = [[]];
@@ -46,7 +46,7 @@ export class MatrixMath {
      * Multiplies each element of a matrix by the given scalar
      * @param matrix Must be a square matrix
      * @param scalar Must be a square matrix
-     * @return The product of the matrix and the scalar
+     * @returns The product of the matrix and the scalar
      */
     static multiplyByScalar(matrix: number[][], scalar: number) {
         const resultMatrix: number[][] = [[]];
@@ -65,7 +65,7 @@ export class MatrixMath {
      * Adds two matrices only where column and row count of first matrix equals to the column and row count of second matrix
      * @param matrix1
      * @param matrix2
-     * @return The sum of the two matrices
+     * @returns The sum of the two matrices
      */
     static add(matrix1: number[][], matrix2: number[][]) {
         const resultMatrix: number[][] = [[]];
@@ -85,7 +85,7 @@ export class SquareMatrixMath extends MatrixMath {
     /**
      * Calculates the determinant of a square matrix
      * @param matrix Must be a square matrix
-     * @return The determinant of the matrix
+     * @returns The determinant of the matrix
      */
     static getDeterminant(matrix: number[][]) {
         let determinant = 0;
@@ -114,7 +114,7 @@ export class SquareMatrixMath extends MatrixMath {
     /**
      * Multiplies each element of a matrix with corresponding element of the sign matrix
      * @param matrix Must be a square matrix
-     * @return The sign matrix of the matrix
+     * @returns The sign matrix of the matrix
      */
     static getSignedMatrix(matrix: number[][]) {
         const signedMatrix = JSON.parse(JSON.stringify(matrix));
@@ -134,7 +134,7 @@ export class SquareMatrixMath extends MatrixMath {
      * Raises a matrix to a power
      * @param matrix Must be a square matrix
      * @param power
-     * @return The given power of the matrix
+     * @returns The given power of the matrix
      */
     static pow(matrix: number[][], power: number) {
         let resultMatrix = matrix;
@@ -149,7 +149,7 @@ export class SquareMatrixMath extends MatrixMath {
     /**
      * Replaces each element with determinant of the spliced matrix obtained after removing the relevant column and row
      * @param matrix Must be a square matrix
-     * @return The minor matrix of the matrix
+     * @returns The minor matrix of the matrix
      */
     static getMinorMatrix(matrix: number[][]) {
         if (matrix.length === 1 && matrix[0].length === 1) {
@@ -173,7 +173,7 @@ export class SquareMatrixMath extends MatrixMath {
     /**
      * Calculates the co-factor matrix of the given matrix using the relevant minor and sign matrices
      * @param matrix Must be a square matrix
-     * @return The co-factor matrix of the matrix
+     * @returns The co-factor matrix of the matrix
      */
     static getCoFactorMatrix(matrix: number[][]) {
         return SquareMatrixMath.getSignedMatrix(SquareMatrixMath.getMinorMatrix(matrix));
@@ -182,7 +182,7 @@ export class SquareMatrixMath extends MatrixMath {
     /**
      * Calculates the adjoint matrix of the given matrix using the relevant minor, sign and cofactor matrices
      * @param matrix Must be a square matrix
-     * @return The adjoint matrix of the matrix
+     * @returns The adjoint matrix of the matrix
      */
     static getAdjointMatrix(matrix: number[][]) {
         return MatrixMath.getTransposeMatrix(SquareMatrixMath.getCoFactorMatrix(matrix));
@@ -191,7 +191,7 @@ export class SquareMatrixMath extends MatrixMath {
     /**
      * Calculates the inverse matrix of the given matrix using the relevant minor, sign, cofactor and adjoint matrices where the determinant isn't zero
      * @param matrix Must be a square matrix
-     * @return The inverse matrix of the matrix
+     * @returns The inverse matrix of the matrix
      */
     static getInverseMatrix(matrix: number[][]) {
         const determinant = SquareMatrixMath.getDeterminant(matrix);

@@ -1,7 +1,7 @@
 export class IntegerMath {
     /** Returns all the integer factors of an integer
      * @param integer
-     * @return All the integer factors of the integer
+     * @returns All the integer factors of the integer
     */
     static getIntFactors(integer: number) {
         const factors = [];
@@ -22,7 +22,7 @@ export class IntegerMath {
     /**
      * Returns the factorial of an integer
      * @param integer
-     * @return The factorial value of the integer
+     * @returns The factorial value of the integer
      */
     static getFactorial(integer: number) {
         let factorialProduct = 1;
@@ -36,7 +36,7 @@ export class IntegerMath {
      * Returns all the common integer factors of 2 integers
      * @param integer1
      * @param integer2
-     * @return The common integer factors of integer1 and integer2
+     * @returns The common integer factors of integer1 and integer2
      */
     static getCommonIntFactors(integer1: number, integer2: number): number[] {
         if (integer1 === 0) {
@@ -52,7 +52,7 @@ export class IntegerMath {
      * Returns the greatest common divisor of 2 integers
      * @param integer1
      * @param integer2
-     * @return The greatest common divisor of integer1 and integer2
+     * @returns The greatest common divisor of integer1 and integer2
      */
     static gcd(integer1: number, integer2: number): number {
         if (integer2 === 0) {
@@ -65,7 +65,7 @@ export class IntegerMath {
     /**
      * Returns the greatest common divisor of an array of integers
      * @param integers
-     * @return The greatest common divisor of the integers
+     * @returns The greatest common divisor of the integers
      */
     static getGcd(integers: number[]) {
         let gcd = integers[0];
@@ -85,7 +85,7 @@ export class IntegerMath {
      * Returns the least common multiple of 2 integers
      * @param  integer1
      * @param  integer2
-     * @return  The least common multiple of integer1 and integer2
+     * @returns  The least common multiple of integer1 and integer2
      */
     static lcm(integer1: number, integer2: number) {
         return (integer1 * integer2) / IntegerMath.gcd(integer1, integer2);
@@ -94,7 +94,7 @@ export class IntegerMath {
     /**
      * Returns the least common multiple of an array of integers
      * @param integers
-     * @return  The least common multiple of the integers
+     * @returns  The least common multiple of the integers
      */
     static getLcm(integers: number[]) {
         let lcm = integers[0];
@@ -110,7 +110,7 @@ export class IntegerMath {
      * Returns the number of permutations that can be done using r elements among n unique elements
      * @param n
      * @param r
-     * @return The nPr
+     * @returns The nPr
      */
     static nPr(n: number, r: number) {
         return IntegerMath.getFactorial(n) / IntegerMath.getFactorial(n - r);
@@ -120,7 +120,7 @@ export class IntegerMath {
      * Returns the number of combinations that can be done using r elements among n unique elements
      * @param n
      * @param r
-     * @return The nCr
+     * @returns The nCr
      */
     static nCr(n: number, r: number) {
         return IntegerMath.getFactorial(n) / (IntegerMath.getFactorial(n - r) * IntegerMath.getFactorial(r));
@@ -129,7 +129,7 @@ export class IntegerMath {
     /**
      * Checks if an integer has no square factors other than 1
      * @param integer
-     * @return
+     * @returns
      */
     static isSquareFree(integer: number) {
         if (integer === 1) {
@@ -146,7 +146,7 @@ export class PrimeMath {
     /**
     * Checks if an integer is a prime
     * @param integer
-    * @return
+    * @returns
     */
     static isPrime(integer: number) {
         if (integer <= 1) {
@@ -164,7 +164,7 @@ export class PrimeMath {
     /** Returns all primes within a given range(inclusive)
      * @param lowerBound Must be greater than or equal to 3
      * @param upperBound
-     * @return All primes between lowerBound(inclusive) and upperBound(inclusive)
+     * @returns All primes between lowerBound(inclusive) and upperBound(inclusive)
     */
     static getPrimesWithin(lowerBound: number, upperBound: number) {
         const primes = [];
@@ -192,7 +192,7 @@ export class PrimeMath {
 
     /** Returns all primes up to a given limit(inclusive)
      * @param limit
-     * @return All primes starting from 2 up to the limit(inclusive)
+     * @returns All primes starting from 2 up to the limit(inclusive)
     */
     static getPrimesUpTo(limit: number) {
         const oddNumbers = [];
@@ -218,7 +218,7 @@ export class PrimeMath {
     /**
      * Returns all prime factors of a given number using a prebuilt primes library
      * @param integer Must honor the range 0<=integer<=1999993 (which is the highest prime below 2*10^6)
-     * @return An array of all the prime factors of the number
+     * @returns An array of all the prime factors of the number
      */
     static getPrimeFactorsWithLibrary(integer: number) {
         // const primes = require("primes2M.json");
@@ -242,7 +242,7 @@ export class PrimeMath {
     /**
      * Returns the prime factorization of an integer
      * @param integer
-     * @return An array of all the prime factors involved in the prime factorization of the integer
+     * @returns An array of all the prime factors involved in the prime factorization of the integer
      */
     static getPrimeFactorization(integer: number) {
         const primeFactors = [];

@@ -36,7 +36,7 @@ export class Expression {
     }
 
     /**
-     * @return {BinaryExpressionNode} Root node of the expression tree
+     * @returns {BinaryExpressionNode} Root node of the expression tree
      */
     getTree() {
         if (this.expressionTree) {

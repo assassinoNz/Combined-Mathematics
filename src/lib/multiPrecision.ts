@@ -1,4 +1,3 @@
-//@ts-check
 import { Formatter } from "../util/util.js";
 
 export class MultiPrecisionMath {
@@ -8,7 +7,7 @@ export class MultiPrecisionMath {
      * NOTE: Can only be used for unsigned(positive) integer addition
      * @param int1 
      * @param int2
-     * @return The sum of int1 and int2
+     * @returns The sum of int1 and int2
      */
     static addUnsignedInt(int1: string, int2: string) {
         //Make both numbers have the same length by adding leading zeros
@@ -42,7 +41,7 @@ export class MultiPrecisionMath {
      * NOTE: Subtraction refers to the operation and not the number's sign
      * @param largerInt 
      * @param smallerInt
-     * @return The difference of largerInt and smallerInt
+     * @returns The difference of largerInt and smallerInt
      */
     static subtractUnsignedInt(largerInt: string, smallerInt: string) {
         //Make both numbers have the same length by adding leading zeros
@@ -87,7 +86,7 @@ export class MultiPrecisionMath {
      * NOTE: Positive sign must be omitted for positive integers
      * @param int1 
      * @param int2
-     * @return The sum of int1 and int2
+     * @returns The sum of int1 and int2
      */
     static addInt(int1: string, int2: string) {
         let int1Sign = "";
@@ -132,7 +131,7 @@ export class MultiPrecisionMath {
      * NOTE: Can only be used for unsigned(positive) decimal number addition
      * @param dec1 
      * @param dec2
-     * @return The sum of dec1 and dec2
+     * @returns The sum of dec1 and dec2
      */
     static addUnsignedDec(dec1: string, dec2: string) {
         const dec1Parts = dec1.split(".");
@@ -165,7 +164,7 @@ export class MultiPrecisionMath {
      * NOTE: Subtraction refers to the operation and not the number's sign
      * @param largerDec
      * @param smallerDec
-     * @return The difference of largerDec and smallerDec
+     * @returns The difference of largerDec and smallerDec
      */
     static subtractUnsignedDec(largerDec: string, smallerDec: string) {
         const largerDecParts = largerDec.split(".");
@@ -198,7 +197,7 @@ export class MultiPrecisionMath {
      * NOTE: Positive sign must be omitted for positive integers
      * @param dec1 
      * @param dec2
-     * @return The sum of dec1 and dec2
+     * @returns The sum of dec1 and dec2
      */
     static addDec(dec1: string, dec2: string) {
         let dec1Sign = "";
@@ -247,7 +246,7 @@ export class MultiPrecisionMath {
      * NOTE: Can only be used for unsigned(positive) integer multiplication
      * @param integer 
      * @param multiplier Must honor the range 0<=multiplier<=NUmber.MAX_SAFE_INTEGER/9
-     * @return The product of integer with multiplier
+     * @returns The product of integer with multiplier
      */
     static multiplyUnsignedInt(integer: string, multiplier: number) {
         const resultDigits = [];
@@ -276,7 +275,7 @@ export class MultiPrecisionMath {
      * NOTE: Positive sign must be omitted for positive integers
      * @param integer 
      * @param multiplier Must honor the range 0<=multiplier<=NUmber.MAX_SAFE_INTEGER/9
-     * @return The product of integer with multiplier
+     * @returns The product of integer with multiplier
      */
     static multiplyInt(integer: string, multiplier: number) {
         let signString = "";
@@ -295,7 +294,7 @@ export class MultiPrecisionMath {
      * NOTE: Can only be used for unsigned(positive) decimal number multiplication
      * @param decimal 
      * @param multiplier Must honor the range 0<=multiplier<=NUmber.MAX_SAFE_INTEGER/9
-     * @return The product of decimal with multiplier
+     * @returns The product of decimal with multiplier
      */
     static multiplyUnsignedDec(decimal: string, multiplier: number) {
         let decDecimals = decimal.split("").reverse().indexOf(".");
@@ -326,7 +325,7 @@ export class MultiPrecisionMath {
      * NOTE: Positive sign must be omitted for positive integers
      * @param decimal 
      * @param multiplier Must honor the range 0<=multiplier<=NUmber.MAX_SAFE_INTEGER/9
-     * @return The product of decimal with multiplier
+     * @returns The product of decimal with multiplier
      */
     static multiplyDec(decimal: string, multiplier: number) {
         let signString = "";
@@ -345,7 +344,7 @@ export class MultiPrecisionMath {
      * NOTE: Can only be used for signed integer multiplication
      * @param int1 
      * @param int2
-     * @return The product of int1 with int2
+     * @returns The product of int1 with int2
      */
     static multiplyUnsignedInt2(int1: string, int2: string) {
         const productRows = [];
@@ -386,7 +385,7 @@ export class MultiPrecisionMath {
      * NOTE: Positive sign must be omitted for positive integers
      * @param int1 
      * @param int2
-     * @return The product of int1 with int2
+     * @returns The product of int1 with int2
      */
     static multiplyInt2(int1: string, int2: string) {
         let signString = "";
@@ -405,7 +404,7 @@ export class MultiPrecisionMath {
      * NOTE: Can only be used for unsigned(positive) decimal number multiplication
      * @param dec1
      * @param dec2
-     * @return The product of dec1 with dec2
+     * @returns The product of dec1 with dec2
      */
     static multiplyUnsignedDec2(dec1: string, dec2: string) {
         const dec1Decimals = dec1.split("").reverse().indexOf(".");
@@ -436,7 +435,7 @@ export class MultiPrecisionMath {
      * NOTE: Positive sign must be omitted for positive integers
      * @param dec1
      * @param dec2
-     * @return The product of dec1 with dec2
+     * @returns The product of dec1 with dec2
      */
     static multiplyDec2(dec1: string, dec2: string) {
         let signString = "";
@@ -454,7 +453,7 @@ export class MultiPrecisionMath {
      * NOTE: Can only be used for signed decimal number addition
      * @param dec1 
      * @param dec2
-     * @return The sum of dec1 and dec2
+     * @returns The sum of dec1 and dec2
      */
     static addDecWithBigInt(dec1: string, dec2: string) {
         const dec1Parts = dec1.split(".");
@@ -487,7 +486,7 @@ export class MultiPrecisionMath {
      * NOTE: Can only be used for signed decimal number multiplication
      * @param dec1 
      * @param dec2
-     * @return The product of dec1 and dec2
+     * @returns The product of dec1 and dec2
      */
     static multiplyDecWithBigInt(dec1: string, dec2: string) {
         const dec1Parts = dec1.split(".");

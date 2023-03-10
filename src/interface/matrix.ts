@@ -4,7 +4,7 @@ class MatrixUtil {
      * @param matrix Must be a square matrix
      * @param rowIndexToRemove Must be smaller than matrix.length
      * @param columnIndexToRemove Must be smaller than matrix[0].length
-     * @return The resultant matrix after removal of the given row and the column
+     * @returns The resultant matrix after removal of the given row and the column
      */
     static getSplicedMatrix(matrix: number[][], rowIndexToRemove: number, columnIndexToRemove: number) {
         const splicedMatrix = JSON.parse(JSON.stringify(matrix));

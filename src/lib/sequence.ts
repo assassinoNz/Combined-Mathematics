@@ -33,7 +33,7 @@ export class SequenceMath {
     /**
     * Checks if an integer is a perfect square
     * @param integer
-    * @return
+    * @returns
     */
     static isSquare(integer: number) {
         const squareRoot = Math.sqrt(integer);
@@ -47,7 +47,7 @@ export class SequenceMath {
     /**
      * Checks if an integer is a triangular number
      * @param integer 
-     * @return
+     * @returns
      */
     static isTriangular(integer: number) {
         return this.isSquare((8 * integer) + 1);
@@ -56,7 +56,7 @@ export class SequenceMath {
     /**
      * Checks if an integer triplet makes a Pythagorean triangle (A triangle with integer valued sides)
      * @param triplet
-     * @return
+     * @returns
      */
     static isPythagoreanTriplet(triplet: number[]) {
         const sortedTriplet = triplet.sort();

@@ -1,4 +1,4 @@
-import { ExpressionContext, ExpressionNotation } from "../util/expression.js";
+import { ExpressionContext, ExpressionNotation } from "../enum/expression.js";
 import { MatrixMath, SquareMatrixMath } from "./matrix.js";
 import { IntegerMath } from "./number.js";
 import { StringMath } from "./string.js";
@@ -14,7 +14,7 @@ export class BinaryExpressionNode {
 
     /**
      * @param notation
-     * @return Token array of the node in the given notation
+     * @returns Token array of the node in the given notation
      */
     tokenize(notation: ExpressionNotation) {
         switch (notation) {
@@ -55,7 +55,6 @@ export class BinaryExpressionNode {
         }
     }
 
-    
     private tokenizeToPostfix(node: BinaryExpressionNode): string[] {
         if (node.left instanceof BinaryExpressionNode && node.right === null) {
             //CASE: Node is a unary operator
@@ -193,7 +192,7 @@ export class ExpressionMath {
     /**
      * Returns all the variables in an expression
      * @param tokens
-     * @return All the variables found in the expression
+     * @returns All the variables found in the expression
      */
     static getVariables(tokens: string|string[]) {
         const variables = new Set<string>();
@@ -231,7 +230,7 @@ export class ExpressionMath {
      * WARNING: Decimal numeric operands are not supported.
      * @param expression
      * @param context
-     * @return The expression separated into its fundamental tokens
+     * @returns The expression separated into its fundamental tokens
     */
     static separateToTokens(expression: string, context: ExpressionContext) {
         //Remove all empty spaces before starting
@@ -375,7 +374,7 @@ export class ExpressionMath {
     /**Converts a tokenized infix expression into a postfix expression using the Shunting Yard algorithm
      * @param infixTokens
      * @param context
-     * @return The infix tokens rearranged in postfix notation
+     * @returns The infix tokens rearranged in postfix notation
     */
     static infixToPostfix(infixTokens: string[], context: ExpressionContext) {
         let postfixTokens: string[] = [];
@@ -435,7 +434,7 @@ export class ExpressionMath {
      * @param operand1
      * @param operand2
      * @param context
-     * @return The value after evaluating the single binary expression
+     * @returns The value after evaluating the single binary expression
      */
     static evaluateBinaryExpression(operator: string, operand1: boolean|number|string|number[][], operand2: boolean|number|string|number[][], context: ExpressionContext) {
         //WARNING: This code heavily relies on the switch statement's fall-through feature
@@ -543,7 +542,7 @@ export class ExpressionMath {
      * @param operator 
      * @param operand
      * @param context
-     * @return The value after evaluating the single unary expression
+     * @returns The value after evaluating the single unary expression
      */
     static evaluateUnaryExpression(operator: string, operand: boolean|number|string|number[][], context: ExpressionContext) {
         switch (context) {
@@ -590,7 +589,7 @@ export class ExpressionMath {
      * @param argument1 
      * @param argument2 
      * @param context
-     * @return The value after evaluating the binary function
+     * @returns The value after evaluating the binary function
      */
     static evaluateBinaryFunction(func: string, argument1: number|string, argument2: number|string, context: ExpressionContext) {
         //WARNING: This code heavily relies on the switch statement's fall-through feature
@@ -640,7 +639,7 @@ export class ExpressionMath {
      * @param func 
      * @param operand
      * @param context
-     * @return The value after evaluating the unary function
+     * @returns The value after evaluating the unary function
      */
     static evaluateUnaryFunction(func: string, argument: number, context: ExpressionContext) {
         switch (context) {
@@ -675,7 +674,7 @@ export class ExpressionMath {
      * NOTE: Negation is done when an operand is prefixed with "-"
      * @param value
      * @param context
-     * @return The value after negating it according to the context
+     * @returns The value after negating it according to the context
      */
     static negateOperandValue(value: number|number[][], context: ExpressionContext) {
         switch (context) {
@@ -703,7 +702,7 @@ export class ExpressionMath {
      * @param postfixTokens Must be an expression with only numeric operands
      * @param valueDictionary A dictionary that maps a variable to it's value
      * @param context
-     * @return The value after evaluating the complex expression
+     * @returns The value after evaluating the complex expression
      */
     static evaluateExpression(postfixTokens: string[], valueDictionary: any, context: ExpressionContext) {
         const valueStack = [];
@@ -754,7 +753,7 @@ export class ExpressionMath {
     /**
      * Solves an expression with only numeric operands to a single value
      * @param postfixTokens Must be an expression with only numeric operands
-     * @return The root node of the expression tree
+     * @returns The root node of the expression tree
      */
     static generateExpressionTree(postfixTokens: string[]) {
         const nodeStack: BinaryExpressionNode[] = [];

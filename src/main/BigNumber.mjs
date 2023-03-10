@@ -34,7 +34,7 @@ export class BigNumber {
 
     /** Returns a new big number with the operand added to this
      * @param {BigNumber} operand
-     * @return {BigNumber} A new big number with the sum of this and operand
+     * @returns {BigNumber} A new big number with the sum of this and operand
     */
     add(operand) {
         if (operand instanceof BigNumber) {
@@ -70,7 +70,7 @@ export class BigNumber {
 
     /** Returns a new big number wth this multiplied by the operand
      * @param {BigNumber} operand
-     * @return {BigNumber} A new big number with the product of this and operand
+     * @returns {BigNumber} A new big number with the product of this and operand
     */
     multiply(operand) {
         if (operand instanceof BigNumber) {
@@ -95,7 +95,7 @@ export class BigNumber {
     /** Returns a new big number wth this multiplied by the operand
      * NOTE: Using the multiply method is recommended if the operand is greater than ((Number.MAX_SAFE_INTEGER - 9) / 9)
      * @param {number} operand
-     * @return {BigNumber} A new big number with the product of this and operand
+     * @returns {BigNumber} A new big number with the product of this and operand
     */
     multiplyByNumber(operand) {
         if (typeof operand === "number") {

@@ -1,5 +1,5 @@
-import { ExpressionContext } from "../util/expression";
-import { ExpressionMath } from "./expression";
+import { ExpressionContext } from "../util/expression.ts";
+import { ExpressionMath } from "../lib/expression.ts";
 
 export class BooleanMath {
     /**
@@ -58,6 +58,6 @@ export class BooleanMath {
             }
         }
 
-        return truthTable;
+        console.table(truthTable);
     }
 }

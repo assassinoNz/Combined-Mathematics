@@ -5,7 +5,7 @@ export class LinearEquationMath {
     /**
      * Returns formatted tokens where variable operand tokens have explicit coefficients
      * @param equationTokens 
-     * @return Standardized equation tokens
+     * @returns Standardized equation tokens
      */
     static standardizeTokens(equationTokens: string[]) {
         const standardizedTokens = [];
@@ -100,7 +100,7 @@ export class LinearEquationMath {
      * Returns the coefficient, variable and constants matrices for a given SLE
      * @param equationDictionaries An array of dictionaries describing the equations
      * @param zeroVariables Variables that needed to be set to zero. Useful for linear programming models
-     * @return The SLE in matrix representation
+     * @returns The SLE in matrix representation
      */
     static convertToMatrices(equationDictionaries: any[], zeroVariables: Set<string>) {
         //NOTE: In an SLE, it is not necessary for a single equation to contain all the variables
@@ -158,7 +158,7 @@ export class LinearEquationMath {
     /**
      * Adds the solution matrix to a SLE given in matrix form
      * @param SLEMatrix The SLE in matrix from
-     * @return 
+     * @returns 
      */
     static addSolution(SLEMatrix: SLEMatrix) {
         SLEMatrix.solutionMatrix = MatrixMath.multiplyByMatrix(SquareMatrixMath.getInverseMatrix(SLEMatrix.coefficientsMatrix), SLEMatrix.constantsMatrix);
