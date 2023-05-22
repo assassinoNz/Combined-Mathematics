@@ -1,20 +1,14 @@
-import { BinaryExpressionNode } from "../math/ExpressionMath.mjs";
-import { ExpressionMath } from "../math/ExpressionMath.mjs";
+import { ExpressionContext } from "../enum/expression";
+import { BinaryExpressionNode, ExpressionMath } from "../lib/expression";
 
-//@ts-check
 export class Expression {
-    expression = null;
-    context = null;
-    expressionTreeRoot = null;
-    postfixTokens = null;
-
+    expression: string;
+    context: ExpressionContext;
+    expressionTreeRoot: BinaryExpressionNode;
+    postfixTokens: string[];
     valueDictionary = null;
 
-    /**
-     * @param {string} expression 
-     * @param {number} context 
-     */
-    constructor(expression, context) {
+    constructor(expression: string, context: ExpressionContext) {
         this.expression = expression;
         this.context = context;
 
@@ -27,19 +21,12 @@ export class Expression {
         return this.valueDictionary;
     }
 
-    /**
-     * @param {string} variable 
-     * @param {any} value 
-     */
     assignVariable(variable, value) {
         this.valueDictionary[variable] = value;
     }
 
-    /**
-     * @returns {BinaryExpressionNode} Root node of the expression tree
-     */
     getTree() {
-        if (this.expressionTree) {
+        if (this.expressionTreeRoot) {
             return this.expressionTreeRoot;
         } else {
             this.expressionTreeRoot = ExpressionMath.generateExpressionTree(this.postfixTokens);

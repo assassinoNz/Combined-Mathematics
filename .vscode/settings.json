@@ -2,5 +2,7 @@
     "files.exclude": {
         "**/*.js": true,
         "**/*.js.map": true
-    }
+    },
+    "deno.enable": true,
+    "deno.unstable": true
 }

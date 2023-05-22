@@ -1,4 +1,4 @@
-import { Formatter } from "../util/util.js";
+import { Formatter } from "../util/format.js";
 
 export class MultiPrecisionMath {
     /**

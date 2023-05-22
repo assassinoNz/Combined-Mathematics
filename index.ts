@@ -1,7 +1,12 @@
-import { Roots, DiffEqs } from "./src/consumer/numerical.ts";
+// import { ArraySort } from "./src/lib/algorithm.ts";
 
-Roots.newtonRaphson((x:number) => Math.exp(x)-2*x, (x:number) => Math.exp(x)-2, 2);
-// Roots.secant((x:number) => x**2-4, 5, 4);
-// Roots.bisection((x:number) => x**2-4, 0, 5);
+import { ExpressionContext } from "./src/enum/expression.ts";
+import { ExpressionMath } from "./src/lib/expression.ts";
 
-// DiffEqs.euler((x: number, y: number) => 1/(2*y), 1, 2, 1, 5);
+// const arr = [54, 26, 93, 17, 77, 31, 44, 55, 20];
+// ArraySort.insertionSort(arr);
+// console.log(arr);
+
+let tokens = ExpressionMath.separateToTokens("((15 / (7-(1+1))) * 3) - (2 + (1 + 1))", ExpressionContext.REAL);
+
+console.log(ExpressionMath.infixToPostfix(tokens, ExpressionContext.REAL));
